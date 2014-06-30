@@ -1,0 +1,16 @@
+<plugin name='algosvers' version='0.35' grailsVersion='2.4.2 &gt; *'>
+  <author>Gac</author>
+  <title>Algosvers Plugin</title>
+  <description>Brief summary/description of the plugin.
+</description>
+  <documentation>http://grails.org/plugin/algosvers</documentation>
+  <type>AlgosversGrailsPlugin</type>
+  <resources>
+    <resource>BootStrap</resource>
+    <resource>VersioneBootStrap</resource>
+    <resource>spring.resources</resource>
+    <resource>it.algos.algosvers.VersioneController</resource>
+    <resource>it.algos.algosvers.Versione</resource>
+    <resource>it.algos.algosvers.VersioneService</resource>
+  </resources>
+</plugin>

@@ -1,0 +1,12 @@
+<plugin name='algoslib' version='0.54' grailsVersion='2.4.2 &gt; *'>
+  <author>Gac</author>
+  <title>Algoslib Plugin</title>
+  <description>Brief summary/description of the plugin.
+</description>
+  <documentation>http://grails.org/plugin/algoslib</documentation>
+  <type>AlgoslibGrailsPlugin</type>
+  <resources>
+    <resource>BootStrap</resource>
+    <resource>spring.resources</resource>
+  </resources>
+</plugin>

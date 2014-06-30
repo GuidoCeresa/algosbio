@@ -1,0 +1,16 @@
+<plugin name='algoswiki' version='0.91' grailsVersion='2.4.2 &gt; *'>
+  <author>Gac &amp; Alex</author>
+  <authorEmail>gac@algos.it</authorEmail>
+  <title>Libreria per Grails</title>
+  <description>Libreria di funzionalita per wikipedia realizzata con Grails</description>
+  <documentation>http://grails.org/plugin/algoswiki</documentation>
+  <type>AlgoswikiGrailsPlugin</type>
+  <resources>
+    <resource>BootStrap</resource>
+    <resource>WikiBootStrap</resource>
+    <resource>spring.resources</resource>
+    <resource>it.algos.algoswiki.LoginWikiController</resource>
+    <resource>it.algos.algoswiki.LogWikiService</resource>
+    <resource>it.algos.algoswiki.WikiService</resource>
+  </resources>
+</plugin>
