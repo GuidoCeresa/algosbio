@@ -17,6 +17,7 @@ import it.algos.algoslib.LibTesto
 import it.algos.algoslib.LibTime
 import it.algos.algoslib.LibWiki
 import it.algos.algospref.LibPref
+import it.algos.algospref.Pref
 import it.algos.algospref.Preferenze
 import it.algos.algoswiki.Edit
 import it.algos.algoswiki.TipoAllineamento
@@ -38,7 +39,7 @@ class StatisticheService {
         // variabili e costanti locali di lavoro
         String titolo = PATH + 'Attività'
         String testo = ''
-        String summary = Preferenze.getStr(LibBio.SUMMARY)
+        String summary = Pref.getStr(LibBio.SUMMARY)
         int numUsate = AttivitaService.numAttivita()
         int numNonUsate = AttivitaService.numAttivitaNonUsate()
 
@@ -57,7 +58,7 @@ class StatisticheService {
     public nazionalitaUsate() {
         String titolo = PATH + 'Nazionalità'
         String testo = ''
-        String summary = Preferenze.getStr(LibBio.SUMMARY)
+        String summary = Pref.getStr(LibBio.SUMMARY)
         int numUsate = NazionalitaService.numNazionalita()
         int numNonUsate = NazionalitaService.numNazionalitaNonUsate()
 
@@ -364,7 +365,7 @@ class StatisticheService {
     def paginaSintesi() {
         String titolo = PATH + 'Statistiche'
         String testo = ''
-        String summary = LibPref.getString(LibBio.SUMMARY)
+        String summary = Pref.getStr(LibBio.SUMMARY)
 
         testo += getTestoTop()
         testo += getTestoBodySintesi()

@@ -1,8 +1,18 @@
+import groovy.sql.Sql
+import it.algos.algospref.Pref
+import it.algos.algospref.Preferenze
+import it.algos.algospref.Type
+import it.algos.algosbio.LibBio
+
+import javax.sql.DataSource
+
 class VersioneBootStrap {
 
     // utilizzo di un service con la businessLogic per l'elaborazione dei dati
     // il service viene iniettato automaticamente
     def versioneService
+
+    DataSource dataSource
 
     //--metodo invocato direttamente da Grails
     //--tutte le aggiunte, modifiche e patch vengono inserite con una versione
@@ -15,10 +25,284 @@ class VersioneBootStrap {
         if (versioneService && versioneService.installaVersione(1)) {
             versioneService.newVersione('Applicazione', 'Installazione iniziale')
         }// fine del blocco if
+
+        //--connessione tra applicazione e tomcate
+        if (versioneService && versioneService.installaVersione(2)) {
+            versioneService.newVersione('DataSource', 'Aggiunto autoReconnect=true')
+        }// fine del blocco if
+
+        //--aggiunte alcune preferenze
+        if (versioneService && versioneService.installaVersione(3)) {
+            versioneService.newVersione('Preferenze', 'Aggiunto cassetto e colonne')
+        }// fine del blocco if
+
+        //--registra solo se il contenuto (data esclusa) è modificato
+        if (versioneService && versioneService.installaVersione(4)) {
+            versioneService.newVersione('Upload', 'Aggiunto controllo differenze significative in fase di registrazione voce')
+        }// fine del blocco if
+
+        //--aggiunte alcune preferenze
+        if (versioneService && versioneService.installaVersione(5)) {
+            versioneService.newVersione('Grafica', 'Formattato il numero di persone nel template in testa pagina')
+        }// fine del blocco if
+
+        //--aggiunte alcune preferenze
+        if (versioneService && versioneService.installaVersione(6)) {
+            versioneService.newVersione('Upload', 'Ordinamento alfabetico nei sotogruppi di giorni e anni')
+        }// fine del blocco if
+
+        //--aggiunte alcune preferenze
+        if (versioneService && versioneService.installaVersione(7)) {
+            versioneService.newVersione('Preferenze', 'Aggiunto taglio per antroponimi')
+        }// fine del blocco if
+
+        if (versioneService && versioneService.installaVersione(8)) {
+            versioneService.newVersione('Applicazione', 'Aggiunta tavola Professione')
+        }// fine del blocco if
+
+        if (versioneService && versioneService.installaVersione(9)) {
+            versioneService.newVersione('Applicazione', 'Riattivate liste di nomi')
+        }// fine del blocco if
+
+        //--aggiunte alcune preferenze
+        if (versioneService && versioneService.installaVersione(10)) {
+            versioneService.newVersione('Preferenze', 'Aggiunto usaOccorrenzeAntroponimi')
+        }// fine del blocco if
+
+        //--aggiunte alcune preferenze
+        if (versioneService && versioneService.installaVersione(11)) {
+            versioneService.newVersione('Preferenze', 'Aggiunto confrontaSoloPrimoNomeAntroponimi')
+        }// fine del blocco if
+
+        //--aggiunte alcune preferenze
+        if (versioneService && versioneService.installaVersione(12)) {
+            versioneService.newVersione('Antroponimi', 'Modificato titolo delle pagine')
+        }// fine del blocco if
+
+        //--aggiunte alcuni parametri
+        if (versioneService && versioneService.installaVersione(13)) {
+            versioneService.newVersione('BioGrails', 'Nuovo parametro didascaliaListe')
+        }// fine del blocco if
+
+        //--aggiunte alcune preferenze
+        if (versioneService && versioneService.installaVersione(14)) {
+            versioneService.newVersione('Preferenze', 'Aggiunto summary')
+        }// fine del blocco if
+
+        //--aggiunte alcune preferenze
+        if (versioneService && versioneService.installaVersione(15)) {
+            versioneService.newVersione('Preferenze', 'Aggiunti valori per le statistiche')
+        }// fine del blocco if
+
+        //--aggiunte alcune preferenze
+        if (versioneService && versioneService.installaVersione(16)) {
+            versioneService.newVersione('Preferenze', 'Aggiunti valori per i crono jobs')
+        }// fine del blocco if
+
+        //--completa il nuovo campo ordine delle preferenze
+        if (versioneService && versioneService.installaVersione(17)) {
+            //@todo occorre creare manualmente il campo con "alter table preferenze add ordine integer not null"
+            def preferenze = Preferenze.list()
+            Preferenze preferenza
+
+            preferenze?.each {
+                preferenza = it
+                preferenza.ordine = preferenza.id
+                preferenza.save(flush: true)
+            } // fine del ciclo each
+
+            versioneService.newVersione('Preferenze', 'Aggiunti i campi ordine e descrizione')
+        }// fine del blocco if
+
+        //--modificate le constraints di BioWiki
+        if (versioneService && versioneService.installaVersione(18)) {
+            //@todo occorre modificare manualmente il db con "alter table bio_wiki modify column extra_lista longtext set utf8 collate utf8 default null"
+            //@todo occorre modificare manualmente il db con "alter table bio_wiki modify column errori longtext set utf8 collate utf8 default null"
+            versioneService.newVersione('Database', 'Modificati con default null i campi: BioWiki.extraLista, BioWiki.errori')
+        }// fine del blocco if
+
+        //--creata una nuova preferenza
+        if (versioneService && versioneService.installaVersione(19)) {
+            Pref pref = new Pref()
+            pref.ordine = 3
+            pref.code = LibBio.USA_TAVOLA_CONTENUTI
+            pref.descrizione = 'Mostra il sommario in testa alle pagine'
+            pref.type = Type.booleano
+            pref.bool = true
+            pref.save(flush: true)
+            versioneService.newVersione('Preferenze', 'USA_TAVOLA_CONTENUTI di default true')
+        }// fine del blocco if
+
+        //--aggiunte alcune preferenze
+        if (versioneService && versioneService.installaVersione(20)) {
+            Pref pref = new Pref()
+            pref.ordine = 4
+            pref.code = LibBio.TAGLIO_META_ATTIVITA
+            pref.descrizione = 'Lunghezza di circa metà della lista delle attività. Calibrato per il tempo impiegato ad elaborarle/caricarle e non sul numero di attività.'
+            pref.type = Type.intero
+            pref.intero = 250
+            pref.save(flush: true)
+            versioneService.newVersione('Preferenze', 'Aggiunto valore di taglio per lo sdoppiamento di attività')
+        }// fine del blocco if
+
+        //--modifica nome
+        if (versioneService && versioneService.installaVersione(21)) {
+            versioneService.newVersione('Applicazione', 'Modificato nome in algosbio')
+        }// fine del blocco if
+
+        //--modifica jobs
+        if (versioneService && versioneService.installaVersione(21)) {
+            versioneService.newVersione('Jobs', 'Modificato il timing')
+        }// fine del blocco if
+
+        //--spostate alcune preferenze da Preferenze a Pref
+        if (versioneService && versioneService.installaVersione(22)) {
+            scambiaPreferenzeBooleane(LibBio.USA_CRONO_DOWNLOAD, 'tutti i giorni a mezzanotte')
+            versioneService.newVersione('Preferenze', 'Spostata USA_CRONO_DOWNLOAD')
+        }// fine del blocco if
+
+        //--spostate alcune preferenze da Preferenze a Pref
+        if (versioneService && versioneService.installaVersione(23)) {
+            scambiaPreferenzeBooleane(LibBio.USA_CRONO_UPLOAD, 'tutti i giorni alle 8')
+            versioneService.newVersione('Preferenze', 'Spostata USA_CRONO_UPLOAD')
+        }// fine del blocco if
+
+        //--spostate alcune preferenze da Preferenze a Pref
+        if (versioneService && versioneService.installaVersione(24)) {
+            scambiaPreferenzeBooleane(LibBio.USA_CRONO_ELABORA, 'sabato e domenica ogni ora, dalle 10 alle 11 di sera')
+            versioneService.newVersione('Preferenze', 'Spostata USA_CRONO_ELABORA')
+        }// fine del blocco if
+
+        //--spostate alcune preferenze da Preferenze a Pref
+        if (versioneService && versioneService.installaVersione(25)) {
+            scambiaPreferenzeBooleane(LibBio.USA_CRONO_ATTIVITA, 'tutti i giovedi alle 10')
+            versioneService.newVersione('Preferenze', 'Spostata USA_CRONO_ATTIVITA')
+        }// fine del blocco if
+
+        //--spostate alcune preferenze da Preferenze a Pref
+        if (versioneService && versioneService.installaVersione(26)) {
+            scambiaPreferenzeBooleane(LibBio.USA_CRONO_NAZIONALITA, 'tutti i venerdi alle 10')
+            versioneService.newVersione('Preferenze', 'Spostata USA_CRONO_NAZIONALITA')
+        }// fine del blocco if
+
+        //--spostate alcune preferenze da Preferenze a Pref
+        if (versioneService && versioneService.installaVersione(27)) {
+            scambiaPreferenzeBooleane(LibBio.USA_LIMITE_DOWNLOAD, 'usa un limite per le pagine in download')
+            versioneService.newVersione('Preferenze', 'Spostata USA_LIMITE_DOWNLOAD')
+        }// fine del blocco if
+
+        //--spostate alcune preferenze da Preferenze a Pref
+        if (versioneService && versioneService.installaVersione(28)) {
+            scambiaPreferenzeIntero(LibBio.MAX_DOWNLOAD, 'numero massimo di pagine in download')
+            versioneService.newVersione('Preferenze', 'Spostata MAX_DOWNLOAD')
+        }// fine del blocco if
+
+        //--spostate alcune preferenze da Preferenze a Pref
+        if (versioneService && versioneService.installaVersione(29)) {
+            scambiaPreferenzeBooleane(LibBio.DEBUG, 'ambiente di debug')
+            versioneService.newVersione('Preferenze', 'Spostata DEBUG')
+        }// fine del blocco if
+
     }// fine della closure
 
-    //--metodo invocato direttamente da Grails
+
+    private static void creaPrefStr(String code, String valore) {
+        creaPrefStr(code, valore, '')
+    }// fine del metodo
+
+    private static void creaPrefStr(String code, String valore, String descrizione) {
+        Pref pref
+        int ordine = getMaxOrdine()
+
+        pref = new Pref()
+        pref.ordine = ordine
+        pref.type = Type.stringa
+        pref.code = code
+        pref.stringa = valore
+        if (descrizione) {
+            pref.descrizione = descrizione
+        }// fine del blocco if
+        pref.save(flush: true)
+    }// fine del metodo
+
+    def allungaCampo(Sql sql, String nomeCampo) {
+        String query = "alter table wiki.bio_grails modify column `${nomeCampo}` varchar(765)"
+        sql.execute(query)
+        println('Allungato (longtext) il campo ${nomeCampo}')
+    }// fine del metodo
+
+    private static void scambiaPreferenzeBooleane(String code) {
+        scambiaPreferenzeBooleane(code, '')
+    }// fine del metodo
+
+    private static void scambiaPreferenze(String code, String descrizione,Type type) {
+        Preferenze preferenza
+        Pref pref
+        int ordine = getMaxOrdine()
+
+        preferenza = Preferenze.findByCode(code)
+        if (preferenza) {
+            ordine++
+            pref = new Pref()
+            pref.ordine = ordine
+            pref.type = type
+            pref.code = preferenza.code
+            if (descrizione) {
+                pref.descrizione = descrizione
+            } else {
+                pref.descrizione = preferenza.descrizione
+            }// fine del blocco if-else
+
+            switch (type) {
+                case Type.booleano:
+                    pref.bool = preferenza.getBool()
+                    break
+                case Type.intero:
+                    pref.intero = preferenza.getInt()
+                    break
+                default: // caso non definito
+                    break
+            } // fine del blocco switch
+
+            pref.save(flush: true)
+        }// fine del blocco if
+
+        if (preferenza && Pref.findByCode(code)) {
+            preferenza.delete(flush: true)
+        }// fine del blocco if
+    }// fine del metodo
+
+    private static void scambiaPreferenzeBooleane(String code, String descrizione) {
+        scambiaPreferenze(code,descrizione,Type.booleano)
+    }// fine del metodo
+
+    private static void scambiaPreferenzeIntero(String code, String descrizione) {
+        scambiaPreferenze(code,descrizione,Type.intero)
+    }// fine del metodo
+
+    private static void scambiaPreferenze(ArrayList lista) {
+        lista?.each {
+            scambiaPreferenze((String) it)
+        } // fine del ciclo each
+    }// fine del metodo
+
+    private static int getMaxOrdine() {
+        int ordine = 0
+        def lista
+        Pref preferenza
+
+        lista = Pref.list([sort: 'ordine', order: 'desc'])
+        if (lista) {
+            preferenza = lista[0]
+            if (preferenza) {
+                ordine = preferenza.ordine
+            }// fine del blocco if
+        }// fine del blocco if
+
+        return ordine
+    }// fine del metodo
+
     def destroy = {
     }// fine della closure
 
-}// fine della classe di tipo BootStrap
+}// fine della classe

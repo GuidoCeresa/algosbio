@@ -18,6 +18,7 @@ import it.algos.algoslib.Lib
 import it.algos.algoslib.LibArray
 import it.algos.algoslib.LibTesto
 import it.algos.algospref.LibPref
+import it.algos.algospref.Pref
 import it.algos.algospref.Preferenze
 import it.algos.algoswiki.Login
 import it.algos.algoswiki.QueryCatPageid
@@ -126,8 +127,8 @@ class BioWikiService {
 
         //--Limitazione del numero di voci da considerare
         if (continua) {
-            if (Preferenze.getBool(LibBio.USA_LIMITE_DOWNLOAD)) {
-                maxDownload = Preferenze.getInt(LibBio.MAX_DOWNLOAD)
+            if (Pref.getBool(LibBio.USA_LIMITE_DOWNLOAD)) {
+                maxDownload = Pref.getInt(LibBio.MAX_DOWNLOAD)
                 listaNuoviRecordsDaCreare = LibArray.estraArray(listaRecordsMancanti, maxDownload)
             } else {
                 listaNuoviRecordsDaCreare = listaRecordsMancanti
@@ -242,8 +243,8 @@ class BioWikiService {
         listaRecordsDatabaseTime = creaListaRecordsDatabaseTime()
 
         //--Limita eventualmente la lista secondo i parametri usaLimiteDownload e maxDownload
-        if (LibPref.getBool('usaLimiteDownload')) {
-            maxDownload = LibPref.getInt('maxDownload')
+        if (Pref.getBool(LibBio.USA_LIMITE_DOWNLOAD)) {
+            maxDownload = Pref.getInt(LibBio.MAX_DOWNLOAD)
             listaRecordsDaControllareTime = LibArray.estraArray(listaRecordsDatabaseTime, maxDownload)
         } else {
             listaRecordsDaControllareTime = listaRecordsDatabaseTime
@@ -659,7 +660,7 @@ class BioWikiService {
      */
     private ArrayList<Integer> getListaModificateBio(ArrayList listaRecordsModificatiWiki) {
         ArrayList<Integer> listaRecordsModificatiBio = null
-        boolean usaPagineSingole = LibPref.getBool(LibBio.USA_PAGINE_SINGOLE)
+        boolean usaPagineSingole = Pref.getBool(LibBio.USA_PAGINE_SINGOLE)
         int dimBlocco = 100
         ArrayList<Integer> listaPageids
 
@@ -1123,11 +1124,11 @@ class BioWikiService {
         boolean continua = (code && code in String)
 
         if (continua) {
-            continua = (LibPref.getBool(code))
+            continua = (Pref.getBool(code))
         }// fine del blocco if
 
         if (continua) {
-            ritorno = (LibPref.getBool(code).equals('true'))
+            ritorno = (Pref.getBool(code).equals('true'))
         }// fine del blocco if
 
         // valore di ritorno

@@ -5,6 +5,7 @@ import it.algos.algoslib.Lib
 import it.algos.algoslib.LibTesto
 import it.algos.algoslib.LibTime
 import it.algos.algospref.LibPref
+import it.algos.algospref.Pref
 import it.algos.algoswiki.Pagina
 import it.algos.algoswiki.QueryInfoCat
 import it.algos.algoswiki.Risultato
@@ -541,7 +542,7 @@ class LibBio {
      * Restituisce il summary dal parametro summary e dal parametro version
      */
     public static getSummary() {
-        return LibPref.getString(SUMMARY)
+        return Pref.getString(SUMMARY)
     }// fine della closure
 
     public static boolean contiene(ArrayList lista, def elemento) {

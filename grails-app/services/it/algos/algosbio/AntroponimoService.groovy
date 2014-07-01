@@ -1013,7 +1013,7 @@ class AntroponimoService {
             testo += '|'
             testo += nome
             testo += ']]'
-            if (LibPref.getBool('usaOccorrenzeAntroponimi')) {
+            if (Pref.getBool('usaOccorrenzeAntroponimi')) {
                 numVoci = numeroVociCheUsanoNome(nome)
                 testo += ' ('
                 testo += "'''"

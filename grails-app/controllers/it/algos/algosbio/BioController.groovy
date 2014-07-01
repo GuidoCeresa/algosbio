@@ -321,8 +321,8 @@ class BioController {
         int recordsTotaliVuoti
         int vociBiograficheTotali
 
-        if (LibPref.getBool(LibBio.USA_LIMITE_ELABORA)) {
-            params.max = LibPref.getInt(LibBio.MAX_ELABORA)
+        if (Pref.getBool(LibBio.USA_LIMITE_ELABORA)) {
+            params.max = Pref.getInt(LibBio.MAX_ELABORA)
         }// fine del blocco if
 
         //--selezione dei menu extra
