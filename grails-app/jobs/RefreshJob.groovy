@@ -2,24 +2,17 @@
 
 import it.algos.algoslib.LibGrails
 import it.algos.algoslib.LibTesto
-import it.algos.algoslogo.Evento
-import it.algos.algoslogo.EventoService
 import it.algos.algoslogo.Logo
 
-//
 class RefreshJob {
-
-    // utilizzo di un service con la businessLogic per l'elaborazione dei dati
-    // il service viene iniettato automaticamente
-    def logoService
 
     //--delay iniziale
     // execute job 1 minute after start
     public static int DELAY = 1000 * 60
 
     //--codifica della frequenza
-    // execute job once in 15 minutes
-    public static int FREQUENZA = 1000 * 60 * 15
+    // execute job once in 30 minutes
+    public static int FREQUENZA = 1000 * 60 * 30
 
     // utilizzo di un service con la businessLogic per l'elaborazione dei dati
     // il service viene iniettato automaticamente
@@ -31,15 +24,11 @@ class RefreshJob {
 
     def execute() {
         def logs
-        def eventoSetup  = Evento.findByNome(EventoService.SETUP)
-
         try { // prova ad eseguire il codice
             logs = Logo.getAll()
             if (logs.size() > 0) {
                 //--non fa nulla, ma ha comunque ''risvegliato'' l'applicazione
             } else {
-                //--solo la prima volta
-                logoService.setInfo(null, eventoSetup, 'gac', '', "Setup iniziale")
                 spedisceMail('Applicazione installata e funzionante - Non ci sono logs')
             }// fine del blocco if-else
         } catch (Exception unErrore) { // intercetta l'errore
