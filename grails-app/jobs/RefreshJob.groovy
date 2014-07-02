@@ -26,7 +26,7 @@ class RefreshJob {
         def logs
         try { // prova ad eseguire il codice
             logs = Logo.getAll()
-            if (logs.size() > 0) {
+            if (logs.size() > 1) {
                 //--non fa nulla, ma ha comunque ''risvegliato'' l'applicazione
             } else {
                 spedisceMail('Applicazione installata e funzionante - Non ci sono logs')
