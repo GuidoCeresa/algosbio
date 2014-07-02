@@ -48,11 +48,11 @@ class RefreshJob {
         oggetto = LibTesto.primaMaiuscola(oggetto)
 
         if (mailService) {
-            mailService.sendMail {
-                to mailTo
-                subject oggetto
-                body testo
-            }// fine della closure
+//            mailService.sendMail {
+//                to mailTo
+//                subject oggetto
+//                body testo
+//            }// fine della closure
         }// fine del blocco if
 
     }// fine del metodo
