@@ -542,7 +542,7 @@ class LibBio {
      * Restituisce il summary dal parametro summary e dal parametro version
      */
     public static getSummary() {
-        return Pref.getString(SUMMARY)
+        return Pref.getStr(SUMMARY)
     }// fine della closure
 
     public static boolean contiene(ArrayList lista, def elemento) {
