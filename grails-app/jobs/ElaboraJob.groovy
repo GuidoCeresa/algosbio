@@ -11,8 +11,8 @@ class ElaboraJob {
 
     //--codifica dell'orario di attivazione
     //--MON, TUE, WED, THU, FRI, SAT, SUN
-    //--tutti i giorni dalle 12 alle 11 di sera
-    private static String cronExpressionElabora = "0 0 12-23 ? * *"
+    //--tutti i giorni dalle 10 alle 11 di sera
+    private static String cronExpressionElabora = "0 0 10-23 ? * *"
 
     static triggers = {
         cron name: 'elabora', cronExpression: cronExpressionElabora
