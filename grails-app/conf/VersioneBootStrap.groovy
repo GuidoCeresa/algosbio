@@ -203,6 +203,18 @@ class VersioneBootStrap {
             versioneService.newVersione('Preferenze', 'Spostata DEBUG')
         }// fine del blocco if
 
+        //--spostate alcune preferenze da Preferenze a Pref
+        if (versioneService && versioneService.installaVersione(30)) {
+            scambiaPreferenzeBooleane(LibBio.USA_LIMITE_ELABORA, 'rielaborazione da BioWiki a BioGrails')
+            versioneService.newVersione('Preferenze', 'Spostata USA_LIMITE_ELABORA')
+        }// fine del blocco if
+
+        //--spostate alcune preferenze da Preferenze a Pref
+        if (versioneService && versioneService.installaVersione(31)) {
+            scambiaPreferenzeIntero(LibBio.MAX_ELABORA, 'numero massimo di pagine in elaborazione')
+            versioneService.newVersione('Preferenze', 'Spostata MAX_ELABORA')
+        }// fine del blocco if
+
     }// fine della closure
 
 

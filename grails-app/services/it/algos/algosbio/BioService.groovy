@@ -20,6 +20,7 @@ import it.algos.algoslib.LibTesto
 import it.algos.algoslib.LibTime
 import it.algos.algoslogo.Evento
 import it.algos.algospref.LibPref
+import it.algos.algospref.Pref
 import it.algos.algospref.Preferenze
 import it.algos.algoswiki.*
 import org.h2.engine.Setting
@@ -104,8 +105,8 @@ class BioService {
             }// fine del blocco if
         }// fine del blocco if-else
 
-        if (LibPref.getBool(LibBio.USA_LIMITE_ELABORA)) {
-            maxElabora = LibPref.getInt(LibBio.MAX_ELABORA)
+        if (Pref.getBool(LibBio.USA_LIMITE_ELABORA)) {
+            maxElabora = Pref.getInt(LibBio.MAX_ELABORA)
             listaPageId = LibArray.estraArray(listaPageId, maxElabora)
         }// fine del blocco if
 
