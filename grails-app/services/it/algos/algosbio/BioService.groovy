@@ -623,7 +623,7 @@ class BioService {
         String testoOut
         String prefix = '<!'
 
-        if (luogoNascitaLink.contains(prefix)) {
+        if (luogoNascita && luogoNascitaLink.contains(prefix)) {
             luogoNascitaLink = luogoNascitaLink.substring(0, luogoNascitaLink.indexOf(prefix))
         }// fine del blocco if
 
@@ -643,7 +643,7 @@ class BioService {
         String testoOut
         String prefix = '<!'
 
-        if (luogoMorteLink.contains(prefix)) {
+        if (luogoMorteLink && luogoMorteLink.contains(prefix)) {
             luogoMorteLink = luogoMorteLink.substring(0, luogoMorteLink.indexOf(prefix))
         }// fine del blocco if
 
