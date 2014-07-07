@@ -373,7 +373,7 @@
 
 
 
-<g:select id="giornoMeseNascitaLink" name="giornoMeseNascitaLink.id" from="${it.algos.botbio.Giorno.list()}" optionKey="id" value="${bioGrailsInstance?.giornoMeseNascitaLink?.id}" class="many-to-one" noSelection="['null': '']"/>
+<g:select id="giornoMeseNascitaLink" name="giornoMeseNascitaLink.id" from="${it.algos.algosbio.Giorno.list()}" optionKey="id" value="${bioGrailsInstance?.giornoMeseNascitaLink?.id}" class="many-to-one" noSelection="['null': '']"/>
 </div>
 
 <div class="fieldcontain ${hasErrors(bean: bioGrailsInstance, field: 'giornoMeseMorteLink', 'error')} ">
@@ -392,7 +392,7 @@
 
 
 
-<g:select id="giornoMeseMorteLink" name="giornoMeseMorteLink.id" from="${it.algos.botbio.Giorno.list()}" optionKey="id" value="${bioGrailsInstance?.giornoMeseMorteLink?.id}" class="many-to-one" noSelection="['null': '']"/>
+<g:select id="giornoMeseMorteLink" name="giornoMeseMorteLink.id" from="${it.algos.algosbio.Giorno.list()}" optionKey="id" value="${bioGrailsInstance?.giornoMeseMorteLink?.id}" class="many-to-one" noSelection="['null': '']"/>
 </div>
 
 <div class="fieldcontain ${hasErrors(bean: bioGrailsInstance, field: 'annoNascitaLink', 'error')} ">
@@ -411,7 +411,7 @@
 
 
 
-<g:select id="annoNascitaLink" name="annoNascitaLink.id" from="${it.algos.botbio.Anno.list()}" optionKey="id" value="${bioGrailsInstance?.annoNascitaLink?.id}" class="many-to-one" noSelection="['null': '']"/>
+<g:select id="annoNascitaLink" name="annoNascitaLink.id" from="${it.algos.algosbio.Anno.list()}" optionKey="id" value="${bioGrailsInstance?.annoNascitaLink?.id}" class="many-to-one" noSelection="['null': '']"/>
 </div>
 
 <div class="fieldcontain ${hasErrors(bean: bioGrailsInstance, field: 'annoMorteLink', 'error')} ">
@@ -430,7 +430,7 @@
 
 
 
-<g:select id="annoMorteLink" name="annoMorteLink.id" from="${it.algos.botbio.Anno.list()}" optionKey="id" value="${bioGrailsInstance?.annoMorteLink?.id}" class="many-to-one" noSelection="['null': '']"/>
+<g:select id="annoMorteLink" name="annoMorteLink.id" from="${it.algos.algosbio.Anno.list()}" optionKey="id" value="${bioGrailsInstance?.annoMorteLink?.id}" class="many-to-one" noSelection="['null': '']"/>
 </div>
 
 <div class="fieldcontain ${hasErrors(bean: bioGrailsInstance, field: 'attivitaLink', 'error')} ">
@@ -449,7 +449,7 @@
 
 
 
-<g:select id="attivitaLink" name="attivitaLink.id" from="${it.algos.botbio.Attivita.list()}" optionKey="id" value="${bioGrailsInstance?.attivitaLink?.id}" class="many-to-one" noSelection="['null': '']"/>
+<g:select id="attivitaLink" name="attivitaLink.id" from="${it.algos.algosbio.Attivita.list()}" optionKey="id" value="${bioGrailsInstance?.attivitaLink?.id}" class="many-to-one" noSelection="['null': '']"/>
 </div>
 
 <div class="fieldcontain ${hasErrors(bean: bioGrailsInstance, field: 'attivita2Link', 'error')} ">
@@ -468,7 +468,7 @@
 
 
 
-<g:select id="attivita2Link" name="attivita2Link.id" from="${it.algos.botbio.Attivita.list()}" optionKey="id" value="${bioGrailsInstance?.attivita2Link?.id}" class="many-to-one" noSelection="['null': '']"/>
+<g:select id="attivita2Link" name="attivita2Link.id" from="${it.algos.algosbio.Attivita.list()}" optionKey="id" value="${bioGrailsInstance?.attivita2Link?.id}" class="many-to-one" noSelection="['null': '']"/>
 </div>
 
 <div class="fieldcontain ${hasErrors(bean: bioGrailsInstance, field: 'attivita3Link', 'error')} ">
@@ -487,7 +487,7 @@
 
 
 
-<g:select id="attivita3Link" name="attivita3Link.id" from="${it.algos.botbio.Attivita.list()}" optionKey="id" value="${bioGrailsInstance?.attivita3Link?.id}" class="many-to-one" noSelection="['null': '']"/>
+<g:select id="attivita3Link" name="attivita3Link.id" from="${it.algos.algosbio.Attivita.list()}" optionKey="id" value="${bioGrailsInstance?.attivita3Link?.id}" class="many-to-one" noSelection="['null': '']"/>
 </div>
 
 <div class="fieldcontain ${hasErrors(bean: bioGrailsInstance, field: 'nazionalitaLink', 'error')} ">
@@ -506,6 +506,6 @@
 
 
 
-<g:select id="nazionalitaLink" name="nazionalitaLink.id" from="${it.algos.botbio.Nazionalita.list()}" optionKey="id" value="${bioGrailsInstance?.nazionalitaLink?.id}" class="many-to-one" noSelection="['null': '']"/>
+<g:select id="nazionalitaLink" name="nazionalitaLink.id" from="${it.algos.algosbio.Nazionalita.list()}" optionKey="id" value="${bioGrailsInstance?.nazionalitaLink?.id}" class="many-to-one" noSelection="['null': '']"/>
 </div>
 
