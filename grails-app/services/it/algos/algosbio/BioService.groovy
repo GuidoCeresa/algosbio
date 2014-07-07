@@ -620,7 +620,12 @@ class BioService {
     } // fine del metodo
 
     private static String fixLuogoNato(String luogoNascita, String luogoNascitaLink) {
-        String testoOut = ''
+        String testoOut
+        String prefix = '<!'
+
+        if (luogoNascitaLink.contains(prefix)) {
+            luogoNascitaLink = luogoNascitaLink.substring(0, luogoNascitaLink.indexOf(prefix))
+        }// fine del blocco if
 
         if (luogoNascitaLink) {
             testoOut = luogoNascitaLink
@@ -635,7 +640,12 @@ class BioService {
     } // fine del metodo
 
     private static String fixLuogoMorto(String luogoMorte, String luogoMorteLink) {
-        String testoOut = ''
+        String testoOut
+        String prefix = '<!'
+
+        if (luogoMorteLink.contains(prefix)) {
+            luogoMorteLink = luogoMorteLink.substring(0, luogoMorteLink.indexOf(prefix))
+        }// fine del blocco if
 
         if (luogoMorteLink) {
             testoOut = luogoMorteLink
