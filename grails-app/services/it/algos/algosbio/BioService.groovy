@@ -153,7 +153,7 @@ class BioService {
         int pageid
 
         inizio = System.currentTimeMillis()
-        numVociTxt = LibTesto.formatNum(listaRecordsDaElaborare.size())
+        numVociTxt = LibTesto.formatNum(listaRecordsDaElaborare.size().toString())
         log.info "Inizio del metodo elabora per ${numVociTxt} records"
 
         listaRecordsDaElaborare?.each {
@@ -623,7 +623,10 @@ class BioService {
         String testoOut
         String prefix = '<!'
 
-        if (luogoNascita && luogoNascitaLink.contains(prefix)) {
+        if (luogoNascita && luogoNascita.contains(prefix)) {
+            luogoNascita = luogoNascita.substring(0, luogoNascita.indexOf(prefix))
+        }// fine del blocco if
+        if (luogoNascitaLink && luogoNascitaLink.contains(prefix)) {
             luogoNascitaLink = luogoNascitaLink.substring(0, luogoNascitaLink.indexOf(prefix))
         }// fine del blocco if
 
@@ -643,6 +646,9 @@ class BioService {
         String testoOut
         String prefix = '<!'
 
+        if (luogoMorte && luogoMorte.contains(prefix)) {
+            luogoMorte = luogoMorte.substring(0, luogoMorte.indexOf(prefix))
+        }// fine del blocco if
         if (luogoMorteLink && luogoMorteLink.contains(prefix)) {
             luogoMorteLink = luogoMorteLink.substring(0, luogoMorteLink.indexOf(prefix))
         }// fine del blocco if

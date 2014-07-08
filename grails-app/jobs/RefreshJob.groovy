@@ -26,7 +26,7 @@ class RefreshJob {
         def logs
         try { // prova ad eseguire il codice
             logs = Logo.getAll()
-            if (logs.size() > 1) {
+            if (logs.size() > 0) {
                 //--non fa nulla, ma ha comunque ''risvegliato'' l'applicazione
             } else {
                 spedisceMail('Applicazione installata e funzionante - Non ci sono logs')
@@ -48,11 +48,11 @@ class RefreshJob {
         oggetto = LibTesto.primaMaiuscola(oggetto)
 
         if (mailService) {
-//            mailService.sendMail {
-//                to mailTo
-//                subject oggetto
-//                body testo
-//            }// fine della closure
+            mailService.sendMail {
+                to mailTo
+                subject oggetto
+                body testo
+            }// fine della closure
         }// fine del blocco if
 
     }// fine del metodo

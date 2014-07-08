@@ -215,6 +215,12 @@ class VersioneBootStrap {
             versioneService.newVersione('Preferenze', 'Spostata MAX_ELABORA')
         }// fine del blocco if
 
+        //--spostate alcune preferenze da Preferenze a Pref
+        if (versioneService && versioneService.installaVersione(32)) {
+            scambiaPreferenzeBooleane(LibBio.REGISTRA_SOLO_MODIFICHE_SOSTANZIALI, 'registra solo le modifiche essenziali escludendo la sola data')
+            versioneService.newVersione('Preferenze', 'Spostata REGISTRA_SOLO_MODIFICHE_SOSTANZIALI')
+        }// fine del blocco if
+
     }// fine della closure
 
 
