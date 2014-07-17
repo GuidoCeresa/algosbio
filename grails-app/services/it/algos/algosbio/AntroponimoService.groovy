@@ -192,7 +192,7 @@ class AntroponimoService {
 
     //--ricostruisce i records di antroponimi
     public static void spazzolaPacchetto(ArrayList<String> listaNomiUniciDiversiPerAccento) {
-        int soglia = Preferenze.getInt(LibBio.SOGLIA_ANTROPONIMI)
+        int soglia = Pref.getInt(LibBio.SOGLIA_ANTROPONIMI)
 
         listaNomiUniciDiversiPerAccento?.each {
             spazzolaNome(it, soglia)
@@ -250,8 +250,8 @@ class AntroponimoService {
     }// fine del metodo
 
     def elencoNomi() {
-        int taglio = Preferenze.getInt(LibBio.TAGLIO_ANTROPONIMI)
-        int soglia = Preferenze.getInt(LibBio.SOGLIA_ANTROPONIMI)
+        int taglio = Pref.getInt(LibBio.TAGLIO_ANTROPONIMI)
+        int soglia = Pref.getInt(LibBio.SOGLIA_ANTROPONIMI)
         String testo = ''
         String titolo = progetto + 'Liste'
         String summary = LibBio.getSummary()
@@ -288,7 +288,7 @@ class AntroponimoService {
     private static String getElencoHead(int numNomi) {
         String testoTitolo = ''
         String dataCorrente = LibTime.getGioMeseAnnoLungo(new Date())
-        int soglia = Preferenze.getInt(LibBio.SOGLIA_ANTROPONIMI)
+        int soglia = Pref.getInt(LibBio.SOGLIA_ANTROPONIMI)
         int numBio = BioGrails.count()
 
         testoTitolo += '<noinclude>'
@@ -386,7 +386,7 @@ class AntroponimoService {
     //--costruisce una lista di nomi
     private static ArrayList<String> getListaNomi() {
         ArrayList<String> listaNomi
-        int taglio = Preferenze.getInt(LibBio.TAGLIO_ANTROPONIMI)
+        int taglio = Pref.getInt(LibBio.TAGLIO_ANTROPONIMI)
         String query = "select nome from Antroponimo where voci>'${taglio}' order by nome asc"
 
         //esegue la query
@@ -402,7 +402,7 @@ class AntroponimoService {
         ArrayList<BioGrails> listaBiografie = new ArrayList()
         BioGrails bio
         String nomeBio
-        boolean confrontaSoloPrimo = Preferenze.getBool(LibBio.CONFRONTA_SOLO_PRIMO_NOME_ANTROPONIMI)
+        boolean confrontaSoloPrimo = Pref.getBool(LibBio.CONFRONTA_SOLO_PRIMO_NOME_ANTROPONIMI)
         ArrayList<BioGrails> listaGrezza
 
         //--recupera una lista 'grezza' di tutti i nomi
@@ -437,7 +437,7 @@ class AntroponimoService {
 
     public String getNomeSingolo(String nomeIn) {
         String nomeOut = nomeIn
-        boolean confrontaSoloPrimo = Preferenze.getBool(LibBio.CONFRONTA_SOLO_PRIMO_NOME_ANTROPONIMI)
+        boolean confrontaSoloPrimo = Pref.getBool(LibBio.CONFRONTA_SOLO_PRIMO_NOME_ANTROPONIMI)
         String tagSpazio = ' '
         int pos
 
@@ -962,7 +962,7 @@ class AntroponimoService {
 
     public String getRiepilogoBody(ArrayList<String> listaVoci) {
         String testo = ''
-        int taglio = Preferenze.getInt(LibBio.TAGLIO_ANTROPONIMI)
+        int taglio = Pref.getInt(LibBio.TAGLIO_ANTROPONIMI)
         LinkedHashMap mappa = null
         String chiave
         String nome

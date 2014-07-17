@@ -221,6 +221,130 @@ class VersioneBootStrap {
             versioneService.newVersione('Preferenze', 'Spostata REGISTRA_SOLO_MODIFICHE_SOSTANZIALI')
         }// fine del blocco if
 
+        //--spostate alcune preferenze da Preferenze a Pref
+        if (versioneService && versioneService.installaVersione(33)) {
+            scambiaPreferenzeStringa(LibBio.ANNO_DEBUG, 'anno da utilizzare nel debug degli anni')
+            versioneService.newVersione('Preferenze', 'Spostata ANNO_DEBUG')
+        }// fine del blocco if
+
+        //--spostate alcune preferenze da Preferenze a Pref
+        if (versioneService && versioneService.installaVersione(34)) {
+            scambiaPreferenzeStringa(LibBio.CAT_DEBUG, 'categoria da utilizzare nel debug di biografie')
+            versioneService.newVersione('Preferenze', 'Spostata CAT_DEBUG')
+        }// fine del blocco if
+
+        //--spostate alcune preferenze da Preferenze a Pref
+        if (versioneService && versioneService.installaVersione(35)) {
+            scambiaPreferenzeBooleane(LibBio.USA_CRONO_ANTROPONIMI, 'tutti i lunedi alle 10')
+            versioneService.newVersione('Preferenze', 'Spostata USA_CRONO_ANTROPONIMI')
+        }// fine del blocco if
+
+        //--spostate alcune preferenze da Preferenze a Pref
+        if (versioneService && versioneService.installaVersione(36)) {
+            scambiaPreferenzeBooleane(LibBio.USA_OCCORRENZE_ANTROPONIMI, '')
+            versioneService.newVersione('Preferenze', 'Spostata USA_OCCORRENZE_ANTROPONIMI')
+        }// fine del blocco if
+
+        //--spostate alcune preferenze da Preferenze a Pref
+        if (versioneService && versioneService.installaVersione(37)) {
+            scambiaPreferenzeIntero(LibBio.TAGLIO_ANTROPONIMI, 'numero di voci necessario per creare la pagina del nome')
+            versioneService.newVersione('Preferenze', 'Spostata TAGLIO_ANTROPONIMI')
+        }// fine del blocco if
+
+        //--spostate alcune preferenze da Preferenze a Pref
+        if (versioneService && versioneService.installaVersione(38)) {
+            scambiaPreferenzeIntero(LibBio.SOGLIA_ANTROPONIMI, 'numero di voci necessario per elencare il nome nella lista')
+            versioneService.newVersione('Preferenze', 'Spostata SOGLIA_ANTROPONIMI')
+        }// fine del blocco if
+
+        //--spostate alcune preferenze da Preferenze a Pref
+        if (versioneService && versioneService.installaVersione(39)) {
+            scambiaPreferenzeStringa(LibBio.ULTIMA_SINTESI, "data dell'ultima sintesi pubblicata su wiki")
+            versioneService.newVersione('Preferenze', 'Spostata ULTIMA_SINTESI')
+        }// fine del blocco if
+
+        //--spostate alcune preferenze da Preferenze a Pref
+        if (versioneService && versioneService.installaVersione(40)) {
+            scambiaPreferenzeIntero(LibBio.VOCI, 'numero di voci gestite')
+            versioneService.newVersione('Preferenze', 'Spostata VOCI')
+        }// fine del blocco if
+
+        //--spostate alcune preferenze da Preferenze a Pref
+        if (versioneService && versioneService.installaVersione(41)) {
+            scambiaPreferenzeIntero(LibBio.GIORNI, 'numero di giorni gestiti')
+            versioneService.newVersione('Preferenze', 'Spostata GIORNI')
+        }// fine del blocco if
+
+        //--spostate alcune preferenze da Preferenze a Pref
+        if (versioneService && versioneService.installaVersione(42)) {
+            scambiaPreferenzeIntero(LibBio.ANNI, 'numero di anni gestiti')
+            versioneService.newVersione('Preferenze', 'Spostata ANNI')
+        }// fine del blocco if
+
+        //--spostate alcune preferenze da Preferenze a Pref
+        if (versioneService && versioneService.installaVersione(43)) {
+            scambiaPreferenzeIntero(LibBio.ATTIVITA, 'numero di attività gestite')
+            versioneService.newVersione('Preferenze', 'Spostata ATTIVITA')
+        }// fine del blocco if
+
+        //--spostate alcune preferenze da Preferenze a Pref
+        if (versioneService && versioneService.installaVersione(44)) {
+            scambiaPreferenzeIntero(LibBio.NAZIONALITA, 'numero di nazionalità lista')
+            versioneService.newVersione('Preferenze', 'Spostata NAZIONALITA')
+        }// fine del blocco if
+
+        //--spostate alcune preferenze da Preferenze a Pref
+        if (versioneService && versioneService.installaVersione(45)) {
+            scambiaPreferenzeIntero(LibBio.ATTESA, 'numero -medio- di giorni di attesa per il controllo/riscrittura delle voci biografiche')
+            versioneService.newVersione('Preferenze', 'Spostata ATTESA')
+        }// fine del blocco if
+
+        //--cancellata una preferenza da Preferenze
+        if (versioneService && versioneService.installaVersione(46)) {
+            Preferenze preferenza = Preferenze.findByCode(LibBio.SUMMARY)
+
+            if (preferenza) {
+                preferenza.delete(flush: true)
+            }// fine del blocco if
+
+            versioneService.newVersione('Preferenze', 'Cancellata SUMMARY da Preferenze in quanto già implementata in Pref')
+        }// fine del blocco if
+
+        //--spostate alcune preferenze da Preferenze a Pref
+        if (versioneService && versioneService.installaVersione(47)) {
+            scambiaPreferenzeBooleane(LibBio.USA_PAGINE_SINGOLE, 'controllo modifiche per singola pagina')
+            versioneService.newVersione('Preferenze', 'Spostata USA_PAGINE_SINGOLE')
+        }// fine del blocco if
+
+        //--spostate alcune preferenze da Preferenze a Pref
+        if (versioneService && versioneService.installaVersione(48)) {
+            scambiaPreferenzeBooleane(LibBio.USA_CASSETTO, 'presenta le liste in un cassetto')
+            versioneService.newVersione('Preferenze', 'Spostata USA_CASSETTO')
+        }// fine del blocco if
+
+        //--spostate alcune preferenze da Preferenze a Pref
+        if (versioneService && versioneService.installaVersione(49)) {
+            scambiaPreferenzeBooleane(LibBio.USA_COLONNE, 'presenta le liste in colonne affiancate')
+            versioneService.newVersione('Preferenze', 'Spostata USA_CASSETTO')
+        }// fine del blocco if
+
+        //--spostate alcune preferenze da Preferenze a Pref
+        if (versioneService && versioneService.installaVersione(50)) {
+            scambiaPreferenzeBooleane(LibBio.CONFRONTA_SOLO_PRIMO_NOME_ANTROPONIMI, 'differnza tra nomi singoli e composti')
+            versioneService.newVersione('Preferenze', 'Spostata CONFRONTA_SOLO_PRIMO_NOME_ANTROPONIMI')
+        }// fine del blocco if
+
+        //--spostate alcune preferenze da Preferenze a Pref
+        if (versioneService && versioneService.installaVersione(51)) {
+            scambiaPreferenzeIntero(LibBio.MAX_RIGHE_CASSETTO, 'numero massimo di righe oltre il quale scatta il cassetto')
+            versioneService.newVersione('Preferenze', 'Spostata MAX_RIGHE_CASSETTO')
+        }// fine del blocco if
+
+        //--spostate alcune preferenze da Preferenze a Pref
+        if (versioneService && versioneService.installaVersione(52)) {
+            scambiaPreferenzeIntero(LibBio.MAX_RIGHE_COLONNE, 'numero massimo di righe oltre il quale scattano le colonne affiancate')
+            versioneService.newVersione('Preferenze', 'Spostata MAX_RIGHE_COLONNE')
+        }// fine del blocco if
     }// fine della closure
 
 
@@ -253,7 +377,7 @@ class VersioneBootStrap {
         scambiaPreferenzeBooleane(code, '')
     }// fine del metodo
 
-    private static void scambiaPreferenze(String code, String descrizione,Type type) {
+    private static void scambiaPreferenze(String code, String descrizione, Type type) {
         Preferenze preferenza
         Pref pref
         int ordine = getMaxOrdine()
@@ -278,6 +402,9 @@ class VersioneBootStrap {
                 case Type.intero:
                     pref.intero = preferenza.getInt()
                     break
+                case Type.stringa:
+                    pref.stringa = preferenza.getStr()
+                    break
                 default: // caso non definito
                     break
             } // fine del blocco switch
@@ -291,11 +418,15 @@ class VersioneBootStrap {
     }// fine del metodo
 
     private static void scambiaPreferenzeBooleane(String code, String descrizione) {
-        scambiaPreferenze(code,descrizione,Type.booleano)
+        scambiaPreferenze(code, descrizione, Type.booleano)
     }// fine del metodo
 
     private static void scambiaPreferenzeIntero(String code, String descrizione) {
-        scambiaPreferenze(code,descrizione,Type.intero)
+        scambiaPreferenze(code, descrizione, Type.intero)
+    }// fine del metodo
+
+    private static void scambiaPreferenzeStringa(String code, String descrizione) {
+        scambiaPreferenze(code, descrizione, Type.stringa)
     }// fine del metodo
 
     private static void scambiaPreferenze(ArrayList lista) {

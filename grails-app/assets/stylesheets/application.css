@@ -11,3 +11,17 @@
 *= require mobile
 *= require_self
 */
+/* MODIFICHE GAC */
+/* modificato per allargare al massimo */
+body {
+    margin: 0 2em 0 2em;
+    max-width: 1960px;
+}
+
+/* modificato per evitare la sottolineatura */
+/* modificato per avere il bold */
+a:link, a:visited, a:hover {
+    color: #48802c;
+    font-weight: bold;
+    text-decoration: none;
+}

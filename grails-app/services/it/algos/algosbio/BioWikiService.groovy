@@ -300,8 +300,8 @@ class BioWikiService {
         String titoloCategoria = TITOLO_CATEGORIA
         def num = 0
         Login login = grailsApplication.config.login
-        boolean debug = Preferenze.getBool((String) grailsApplication.config.debug)
-        String catDebug = Preferenze.getStr((String) grailsApplication.config.catDebug)
+        boolean debug = Pref.getBool(LibBio.DEBUG)
+        String catDebug = Pref.getStr(LibBio.CAT_DEBUG)
         QueryCatPageid query = null
         long inizio = System.currentTimeMillis()
         long fine
@@ -705,7 +705,7 @@ class BioWikiService {
      */
     public regolaVociNuoveModificate(ArrayList<Integer> listaVoci) {
         // variabili e costanti locali di lavoro
-        boolean usaPagineSingole = Preferenze.getBool((String) grailsApplication.config.usaPagineSingole)
+        boolean usaPagineSingole = Pref.getBool((String) grailsApplication.config.usaPagineSingole)
         int dimBlocco = 100
         ArrayList<Integer> listaPageids
 

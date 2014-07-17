@@ -403,7 +403,7 @@ class StatisticheService {
     private static getTitoliSintesi() {
         def titoli
         String statistiche = 'statistiche'
-        String vecchiaData = Preferenze.getStr(LibBio.ULTIMA_SINTESI)
+        String vecchiaData = Pref.getStr(LibBio.ULTIMA_SINTESI)
         String nuovaData = LibTime.getGioMeseAnnoLungo(new Date())
         String differenze = 'diff.'
 
@@ -423,7 +423,7 @@ class StatisticheService {
     private static getRigaVoci() {
         ArrayList riga = new ArrayList()
         String descrizione = ':Categoria:BioBot|Template bio'
-        def oldValue = Preferenze.getInt(LibBio.VOCI)
+        def oldValue = Pref.getInt(LibBio.VOCI)
         def newValue = BioGrails.count()
         def differenze
 
@@ -456,7 +456,7 @@ class StatisticheService {
     private static getRigaGiorni() {
         ArrayList riga = new ArrayList()
         String descrizione = 'Giorni interessati'
-        def oldValue = Preferenze.getInt(LibBio.GIORNI)
+        def oldValue = Pref.getInt(LibBio.GIORNI)
         def newValue = Giorno.count()
         def differenze
         String nota = 'Previsto il [[29 febbraio]] per gli [[Anno bisestile|anni bisestili]]'
@@ -491,7 +491,7 @@ class StatisticheService {
     private static getRigaAnni() {
         ArrayList riga = new ArrayList()
         String descrizione = 'Anni interessati'
-        def oldValue = Preferenze.getInt(LibBio.ANNI)
+        def oldValue = Pref.getInt(LibBio.ANNI)
         def newValue = Anno.count()
         def differenze
         String nota = 'Potenzialmente dal [[1000 a.C.]] al [[{{CURRENTYEAR}}]]'
@@ -526,7 +526,7 @@ class StatisticheService {
     private static getRigaAttivita() {
         ArrayList riga = new ArrayList()
         String descrizione = PATH + 'Attività|Attività utilizzate'
-        def oldValue = Preferenze.getInt(LibBio.ATTIVITA)
+        def oldValue = Pref.getInt(LibBio.ATTIVITA)
         def newValue = Attivita.executeQuery('select distinct plurale from Attivita').size()
         def differenze
 
@@ -560,7 +560,7 @@ class StatisticheService {
     private static getRigaNazionalita() {
         ArrayList riga = new ArrayList()
         String descrizione = PATH + 'Nazionalità|Nazionalità utilizzate'
-        def oldValue = Preferenze.getInt(LibBio.NAZIONALITA)
+        def oldValue = Pref.getInt(LibBio.NAZIONALITA)
         def newValue = Nazionalita.executeQuery('select distinct plurale from Nazionalita').size()
         def differenze
 
@@ -594,7 +594,7 @@ class StatisticheService {
     private static getRigaAttesa() {
         ArrayList riga = new ArrayList()
         String descrizione = 'Giorni di attesa'
-        def oldValue = Preferenze.getInt(LibBio.ATTESA)
+        def oldValue = Pref.getInt(LibBio.ATTESA)
         def newValue = NUOVA_ATTESA
         def differenze
         String nota = 'Giorni di attesa indicativi prima che ogni singola voce venga ricontrollata per registrare eventuali modifiche intervenute nei parametri significativi.'
@@ -653,7 +653,7 @@ class StatisticheService {
         mappaSintesi?.each {
             chiave = (String) it.getKey()
             valore = it.getValue()
-            preferenza = Preferenze.findByCode(chiave)
+            preferenza = Pref.findByCode(chiave)
             if (preferenza) {
                 preferenza.value = valore
                 preferenza.save(flush: true)

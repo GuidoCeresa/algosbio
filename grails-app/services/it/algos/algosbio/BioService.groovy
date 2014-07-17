@@ -3908,7 +3908,7 @@ class BioService {
     public static summarySetting = {
         // variabili e costanti locali di lavoro
         String ritorno
-        String summary = Preferenze.getStr('summary')
+        String summary = Pref.getStr('summary')
         String versioneCorrente = Preferenze.getStr('version')
         String ultimaVersione = '9.3'
 

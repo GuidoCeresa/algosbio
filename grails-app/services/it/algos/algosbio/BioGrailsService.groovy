@@ -16,6 +16,7 @@ package it.algos.algosbio
 import it.algos.algoslib.LibTesto
 import it.algos.algoslib.LibTime
 import it.algos.algoslib.LibWiki
+import it.algos.algospref.Pref
 import it.algos.algospref.Preferenze
 import it.algos.algoswiki.Risultato
 import it.algos.algoswiki.WikiLib
@@ -662,8 +663,8 @@ class BioGrailsService {
 
     private static fixTestoColonne(String testoIn, int numPersone) {
         String testoOut = testoIn
-        boolean usaColonne = Preferenze.getBool(LibBio.USA_COLONNE)
-        int maxRigheColonne = Preferenze.getInt(LibBio.MAX_RIGHE_COLONNE)
+        boolean usaColonne = Pref.getBool(LibBio.USA_COLONNE)
+        int maxRigheColonne = Pref.getInt(LibBio.MAX_RIGHE_COLONNE)
 
         if (usaColonne && (numPersone > maxRigheColonne)) {
             testoOut = WikiLib.listaDueColonne(testoIn)
@@ -681,8 +682,8 @@ class BioGrailsService {
         // variabili e costanti locali di lavoro
         String testoOut = testoIn
         String titolo
-        boolean usaCassetto = Preferenze.getBool(LibBio.USA_CASSETTO)
-        int maxRigheCassetto = Preferenze.getInt(LibBio.MAX_RIGHE_CASSETTO)
+        boolean usaCassetto = Pref.getBool(LibBio.USA_CASSETTO)
+        int maxRigheCassetto = Pref.getInt(LibBio.MAX_RIGHE_CASSETTO)
         String nateMorte
 
         if (usaSempreCassetto) {
