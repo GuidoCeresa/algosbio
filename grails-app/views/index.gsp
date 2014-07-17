@@ -98,7 +98,7 @@
     <h2>Moduli disponibili:</h2>
     <ul>
         <g:each var="c" in="${grailsApplication.controllerClasses.findAll {
-            it.getName() != 'Dbdoc' && it.getName() != 'Assets' && it.getName() != 'Preferenze'
+            it.getName() != 'Dbdoc' && it.getName() != 'Assets'
         }}">
             <li class="controller"><g:link controller="${c.logicalPropertyName}">${c.getName()}</g:link></li>
         </g:each>
