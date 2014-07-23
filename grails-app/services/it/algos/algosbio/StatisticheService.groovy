@@ -19,6 +19,7 @@ import it.algos.algoslib.LibWiki
 import it.algos.algospref.LibPref
 import it.algos.algospref.Pref
 import it.algos.algospref.Preferenze
+import it.algos.algospref.Type
 import it.algos.algoswiki.Edit
 import it.algos.algoswiki.TipoAllineamento
 import it.algos.algoswiki.WikiLib
@@ -371,6 +372,9 @@ class StatisticheService {
         testo += getTestoBodySintesi()
         testo += getTestoBottomSintesi()
 
+        def a = mappaSintesi
+        registraPreferenze()
+
         if (titolo && testo && summary) {
             new Edit(titolo, testo, summary)
             registraPreferenze()
@@ -645,18 +649,41 @@ class StatisticheService {
     /**
      * Registra nelle preferenze i nuovi valori che diventeranno i vecchi per la prossima sintesi
      */
-    private static registraPreferenze() {
-        def preferenza
+    public static registraPreferenze() {
+        def pref
         String chiave
         def valore
+        Type type
 
         mappaSintesi?.each {
             chiave = (String) it.getKey()
             valore = it.getValue()
-            preferenza = Pref.findByCode(chiave)
-            if (preferenza) {
-                preferenza.value = valore
-                preferenza.save(flush: true)
+            pref = Pref.findByCode(chiave)
+
+            if (pref) {
+                type = pref.type
+
+                switch (type) {
+                    case Type.booleano:
+                        if (valore instanceof Boolean) {
+                            pref.setBool(valore)
+                        }// fine del blocco if
+                        break
+                    case Type.intero:
+                        if (valore instanceof Integer) {
+                            pref.setIntero(valore)
+                        }// fine del blocco if
+                        break
+                    case Type.stringa:
+                        if (valore instanceof String) {
+                            pref.setStringa(valore)
+                        }// fine del blocco if
+                        break
+                    default: // caso non definito
+                        break
+                } // fine del blocco switch
+
+                pref.save(flush: true)
             }// fine del blocco if
         } // fine del ciclo each
         mappaSintesi.clear()
