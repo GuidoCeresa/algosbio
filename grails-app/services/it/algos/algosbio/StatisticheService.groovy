@@ -373,7 +373,6 @@ class StatisticheService {
         testo += getTestoBottomSintesi()
 
         def a = mappaSintesi
-        registraPreferenze()
 
         if (titolo && testo && summary) {
             new Edit(titolo, testo, summary)
