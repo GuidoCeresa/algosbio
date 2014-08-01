@@ -32,20 +32,20 @@
 				</li>
 				</g:if>
 			
-				<g:if test="${localitaInstance?.link}">
+				<g:if test="${localitaInstance?.nati}">
 				<li class="fieldcontain">
-					<span id="link-label" class="property-label"><g:message code="localita.link.label" default="Link" /></span>
+					<span id="nati-label" class="property-label"><g:message code="localita.nati.label" default="Nati" /></span>
 					
-						<span class="property-value" aria-labelledby="link-label"><g:fieldValue bean="${localitaInstance}" field="link"/></span>
+						<span class="property-value" aria-labelledby="nati-label"><g:fieldValue bean="${localitaInstance}" field="nati"/></span>
 					
 				</li>
 				</g:if>
 			
-				<g:if test="${localitaInstance?.voci}">
+				<g:if test="${localitaInstance?.morti}">
 				<li class="fieldcontain">
-					<span id="voci-label" class="property-label"><g:message code="localita.voci.label" default="Voci" /></span>
+					<span id="morti-label" class="property-label"><g:message code="localita.morti.label" default="Morti" /></span>
 					
-						<span class="property-value" aria-labelledby="voci-label"><g:fieldValue bean="${localitaInstance}" field="voci"/></span>
+						<span class="property-value" aria-labelledby="morti-label"><g:fieldValue bean="${localitaInstance}" field="morti"/></span>
 					
 				</li>
 				</g:if>

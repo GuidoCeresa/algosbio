@@ -4,8 +4,8 @@ class Localita {
 
     /** nomi interni dei campi (ordine non garantito) */
     String nome
-    String link
-    int voci
+    int nati
+    int morti
 
     /**
      * regolazione delle proprietà di ogni campo
@@ -14,11 +14,10 @@ class Localita {
      * la possibilità di avere valori nulli, di default è false
      */
     static constraints = {
-        nome()
-        link()
-        voci()
+        nome(blank: false, nullable: false, unique: true)
+        nati()
+        morti()
     } // end of static constraints
-
 
     /**
      * Grails support two tipe of Inheritance:

@@ -205,43 +205,27 @@
 <g:textField name="nazionalita" value="${bioGrailsInstance?.nazionalita}"/>
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: bioGrailsInstance, field: 'localitaNato', 'error')} ">
-	<label for="localitaNato">
-		<g:message code="bioGrails.localitaNato.label" default="Localita Nato" />
-		
-	</label>
-	
 
 
 
-
-
-
-
-
-
-
-<g:textField name="localitaNato" value="${bioGrailsInstance?.localitaNato}"/>
+<div class="fieldcontain ${hasErrors(bean: bioGrailsInstance, field: 'luogoNatoLink', 'error')} ">
+    <label for="luogoNatoLink">
+        <g:message code="bioGrails.luogoNatoLink.label" default="Località Link" />
+    </label>
+    <g:select id="luogoNatoLink" name="luogoNatoLink.id" from="${it.algos.algosbio.Localita.list()}" optionKey="id" value="${bioGrailsInstance?.luogoNatoLink?.id}" class="many-to-one" noSelection="['null': '']"/>
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: bioGrailsInstance, field: 'localitaMorto', 'error')} ">
-	<label for="localitaMorto">
-		<g:message code="bioGrails.localitaMorto.label" default="Localita Morto" />
-		
-	</label>
-	
-
-
-
-
-
-
-
-
-
-
-<g:textField name="localitaMorto" value="${bioGrailsInstance?.localitaMorto}"/>
+<div class="fieldcontain ${hasErrors(bean: bioGrailsInstance, field: 'luogoMortoLink', 'error')} ">
+    <label for="luogoMortoLink">
+        <g:message code="bioGrails.luogoMortoLink.label" default="Località Link" />
+    </label>
+    <g:select id="luogoMortoLink" name="luogoMortoLink.id" from="${it.algos.algosbio.Localita.list()}" optionKey="id" value="${bioGrailsInstance?.luogoMortoLink?.id}" class="many-to-one" noSelection="['null': '']"/>
 </div>
+
+
+
+
+
 
 <div class="fieldcontain ${hasErrors(bean: bioGrailsInstance, field: 'didascaliaBase', 'error')} ">
 	<label for="didascaliaBase">
@@ -493,19 +477,8 @@
 <div class="fieldcontain ${hasErrors(bean: bioGrailsInstance, field: 'nazionalitaLink', 'error')} ">
 	<label for="nazionalitaLink">
 		<g:message code="bioGrails.nazionalitaLink.label" default="Nazionalita Link" />
-		
 	</label>
-	
-
-
-
-
-
-
-
-
-
-
 <g:select id="nazionalitaLink" name="nazionalitaLink.id" from="${it.algos.algosbio.Nazionalita.list()}" optionKey="id" value="${bioGrailsInstance?.nazionalitaLink?.id}" class="many-to-one" noSelection="['null': '']"/>
 </div>
+
 

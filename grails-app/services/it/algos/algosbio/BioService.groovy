@@ -67,7 +67,7 @@ class BioService {
     //--Elabora i link alle tavole collegate
     //--Crea le didascalie
     public ArrayList<Integer> elaboraAll() {
-        if (!LibPref.getBool(LibBio.USA_LIMITE_ELABORA)) {
+        if (Pref.getBool(LibBio.USA_LIMITE_ELABORA)) {
             //--Azzera il flag
             BioWiki.executeUpdate('update BioWiki set elaborata=false')
         }// fine del blocco if
@@ -172,7 +172,7 @@ class BioService {
                 }// fine del blocco if
 
                 try { // prova ad eseguire il codice
-                    bioGrailsRegistrata = bioGrails.save()
+                    bioGrailsRegistrata = bioGrails.save(flush: true)
                 } catch (Exception unErrore) { // intercetta l'errore
                     log.error unErrore + bioWiki.title
                 }// fine del blocco try-catch
@@ -298,6 +298,8 @@ class BioService {
             bioGrails.attivita2Link = AttivitaService.getAttivita(bioGrails.attivita2)
             bioGrails.attivita3Link = AttivitaService.getAttivita(bioGrails.attivita3)
             bioGrails.nazionalitaLink = NazionalitaService.getNazionalita(bioGrails.nazionalita)
+            bioGrails.luogoNatoLink = LocalitaService.getLuogoNascita(bioWiki)
+            bioGrails.luogoMortoLink = LocalitaService.getLuogoMorte(bioWiki)
 //            bioGrails.save(flush: false)
         }// fine del blocco if
 

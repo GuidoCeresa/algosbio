@@ -54,11 +54,11 @@
                 <g:sortableColumn property="nome"
                                   title="${message(code: 'localita.nome.label', default: 'Nome')}"/>
                 
-                <g:sortableColumn property="link"
-                                  title="${message(code: 'localita.link.label', default: 'Link')}"/>
+                <g:sortableColumn property="nati"
+                                  title="${message(code: 'localita.nati.label', default: 'Nati')}"/>
                 
-                <g:sortableColumn property="voci"
-                                  title="${message(code: 'localita.voci.label', default: 'Voci')}"/>
+                <g:sortableColumn property="morti"
+                                  title="${message(code: 'localita.morti.label', default: 'Morti')}"/>
                 
             </tr>
         </g:else>
@@ -79,10 +79,10 @@
                                 id="${localitaInstance.id}">${fieldValue(bean: localitaInstance, field: "nome")}</g:link></td>
                     
                     <td><g:link action="show"
-                                id="${localitaInstance.id}">${fieldValue(bean: localitaInstance, field: "link")}</g:link></td>
+                                id="${localitaInstance.id}">${fieldValue(bean: localitaInstance, field: "nati")}</g:link></td>
                     
                     <td><g:link action="show"
-                                id="${localitaInstance.id}">${fieldValue(bean: localitaInstance, field: "voci")}</g:link></td>
+                                id="${localitaInstance.id}">${fieldValue(bean: localitaInstance, field: "morti")}</g:link></td>
                     
                 </tr>
             </g:each>

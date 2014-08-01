@@ -11,21 +11,21 @@
 
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: localitaInstance, field: 'link', 'error')} required">
-	<label for="link">
-		<g:message code="localita.link.label" default="Link" />
+<div class="fieldcontain ${hasErrors(bean: localitaInstance, field: 'nati', 'error')} required">
+	<label for="nati">
+		<g:message code="localita.nati.label" default="Nati" />
 		<span class="required-indicator">*</span>
 	</label>
-	<g:textField name="link" required="" value="${localitaInstance?.link}"/>
+	<g:field name="nati" type="number" value="${localitaInstance.nati}" required=""/>
 
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: localitaInstance, field: 'voci', 'error')} required">
-	<label for="voci">
-		<g:message code="localita.voci.label" default="Voci" />
+<div class="fieldcontain ${hasErrors(bean: localitaInstance, field: 'morti', 'error')} required">
+	<label for="morti">
+		<g:message code="localita.morti.label" default="Morti" />
 		<span class="required-indicator">*</span>
 	</label>
-	<g:field name="voci" type="number" value="${localitaInstance.voci}" required=""/>
+	<g:field name="morti" type="number" value="${localitaInstance.morti}" required=""/>
 
 </div>
 

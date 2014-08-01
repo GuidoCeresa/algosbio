@@ -130,25 +130,8 @@
                 
             </li>
         </g:if>
-        
-        <g:if test="${bioGrailsInstance?.localitaNato}">
-            <li class="fieldcontain">
-                <span id="localitaNato-label" class="property-label"><g:message code="bioGrails.localitaNato.label" default="Localita Nato" /></span>
-                
-                <span class="property-value" aria-labelledby="localitaNato-label"><g:fieldValue bean="${bioGrailsInstance}" field="localitaNato"/></span>
-                
-            </li>
-        </g:if>
-        
-        <g:if test="${bioGrailsInstance?.localitaMorto}">
-            <li class="fieldcontain">
-                <span id="localitaMorto-label" class="property-label"><g:message code="bioGrails.localitaMorto.label" default="Localita Morto" /></span>
-                
-                <span class="property-value" aria-labelledby="localitaMorto-label"><g:fieldValue bean="${bioGrailsInstance}" field="localitaMorto"/></span>
-                
-            </li>
-        </g:if>
-        
+
+
         <g:if test="${bioGrailsInstance?.didascaliaBase}">
             <li class="fieldcontain">
                 <span id="didascaliaBase-label" class="property-label"><g:message code="bioGrails.didascaliaBase.label" default="Didascalia Base" /></span>
@@ -202,7 +185,25 @@
                 
             </li>
         </g:if>
-        
+
+    <g:if test="${bioGrailsInstance?.luogoNatoLink}">
+        <li class="fieldcontain">
+            <span id="luogoNatoLink-label" class="property-label"><g:message code="bioGrails.luogoNatoLink.label" default="Luogo Nato Link" /></span>
+
+            <span class="property-value" aria-labelledby="luogoNatoLink-label"><g:link controller="localita" action="show" id="${bioGrailsInstance?.luogoNatoLink?.id}">${bioGrailsInstance?.luogoNatoLink?.encodeAsHTML()}</g:link></span>
+
+        </li>
+    </g:if>
+
+    <g:if test="${bioGrailsInstance?.luogoMortoLink}">
+        <li class="fieldcontain">
+            <span id="luogoMortoLink-label" class="property-label"><g:message code="bioGrails.luogoMortoLink.label" default="Luogo Morto Link" /></span>
+
+            <span class="property-value" aria-labelledby="luogoMortoLink-label"><g:link controller="localita" action="show" id="${bioGrailsInstance?.luogoMortoLink?.id}">${bioGrailsInstance?.luogoMortoLink?.encodeAsHTML()}</g:link></span>
+
+        </li>
+    </g:if>
+
         <g:if test="${bioGrailsInstance?.giornoMeseNascitaLink}">
             <li class="fieldcontain">
                 <span id="giornoMeseNascitaLink-label" class="property-label"><g:message code="bioGrails.giornoMeseNascitaLink.label" default="Giorno Mese Nascita Link" /></span>
@@ -265,16 +266,17 @@
                 
             </li>
         </g:if>
-        
-        <g:if test="${bioGrailsInstance?.nazionalitaLink}">
-            <li class="fieldcontain">
-                <span id="nazionalitaLink-label" class="property-label"><g:message code="bioGrails.nazionalitaLink.label" default="Nazionalita Link" /></span>
-                
-                <span class="property-value" aria-labelledby="nazionalitaLink-label"><g:link controller="nazionalita" action="show" id="${bioGrailsInstance?.nazionalitaLink?.id}">${bioGrailsInstance?.nazionalitaLink?.encodeAsHTML()}</g:link></span>
-                
-            </li>
-        </g:if>
-        
+
+    <g:if test="${bioGrailsInstance?.nazionalitaLink}">
+        <li class="fieldcontain">
+            <span id="nazionalitaLink-label" class="property-label"><g:message code="bioGrails.nazionalitaLink.label" default="Nazionalita Link" /></span>
+
+            <span class="property-value" aria-labelledby="nazionalitaLink-label"><g:link controller="nazionalita" action="show" id="${bioGrailsInstance?.nazionalitaLink?.id}">${bioGrailsInstance?.nazionalitaLink?.encodeAsHTML()}</g:link></span>
+
+        </li>
+    </g:if>
+
+
     </ol>
     <g:form>
         <fieldset class="buttons">

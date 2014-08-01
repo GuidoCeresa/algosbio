@@ -8,7 +8,17 @@ import grails.transaction.Transactional
 class LocalitaController {
 
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
-    private static int MAX = 20
+
+    // utilizzo di un service con la businessLogic per l'elaborazione dei dati
+    // il service viene iniettato automaticamente
+    def localitaService
+
+    private static int MAX = 100
+
+    def elabora() {
+        localitaService.elabora()
+        redirect(action: 'index')
+    } // fine del metodo
 
     def index(Integer max) {
         if (!params.max) params.max = MAX
@@ -21,7 +31,7 @@ class LocalitaController {
         //--selezione dei menu extra
         //--solo azione e di default controller=questo; classe e titolo vengono uguali
         //--mappa con [cont:'controller', action:'metodo', icon:'iconaImmagine', title:'titoloVisibile']
-        menuExtra = []
+        menuExtra = ['elabora']
         params.menuExtra = menuExtra
         // fine della definizione
 
@@ -59,7 +69,7 @@ class LocalitaController {
         respond Localita.list(params), model: [titoloLista       : titoloLista,
                                                menuExtra         : menuExtra,
                                                campiLista        : campiLista,
-                                               provaInstanceCount: recordsTotali,
+                                               localitaInstanceCount: recordsTotali,
                                                params            : params]
     } // fine del metodo
 

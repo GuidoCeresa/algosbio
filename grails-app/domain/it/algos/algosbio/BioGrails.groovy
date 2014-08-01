@@ -51,6 +51,8 @@ class BioGrails {
     Attivita attivita2Link = null
     Attivita attivita3Link = null
     Nazionalita nazionalitaLink = null
+    Localita luogoNatoLink = null
+    Localita luogoMortoLink = null
 
     //--altri campi di controllo
 //    boolean meseNascitaValido = false
@@ -108,6 +110,8 @@ class BioGrails {
         attivita2Link(nullable: true)
         attivita3Link(nullable: true)
         nazionalitaLink(nullable: true)
+        luogoNatoLink(nullable: true)
+        luogoMortoLink(nullable: true)
     } // end of static constraints
 
     /**

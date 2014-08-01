@@ -16,6 +16,7 @@ package it.algos.algosbio
 import it.algos.algos.DialogoController
 import it.algos.algos.TipoDialogo
 import it.algos.algoslib.Lib
+import it.algos.algospref.Pref
 import org.codehaus.groovy.grails.commons.DefaultGrailsDomainClass
 import org.springframework.dao.DataIntegrityViolationException
 
@@ -79,7 +80,7 @@ class BioGrailsController {
         }// fine del blocco if
 
         if (continua) {
-            bioService.elabora()
+            bioService.elaboraAll()
             oldDataTxt = LibBio.voceElaborataVecchia()
             flash.message = oldDataTxt
         }// fine del blocco if
@@ -128,7 +129,7 @@ class BioGrailsController {
         }// fine del blocco if
 
         if (continua) {
-            if (Preferenze.getBool(LibBio.USA_LIMITE_ELABORA)) {
+            if (Pref.getBool(LibBio.USA_LIMITE_ELABORA)) {
                 bioService.elabora()
             } else {
                 bioService.elaboraAll()
@@ -226,10 +227,14 @@ class BioGrailsController {
         //--mappa con [campo:'nomeDelCampo', title:'titoloVisibile', sort:'ordinamento']
         campiLista = [
                 'pageid',
-                'forzaOrdinamento',
+                'title',
                 'didascaliaBase',
-                [campo: 'giornoMeseNascitaLink', title: 'giorno'],
-                [campo: 'annoNascitaLink', title: 'anno'],
+                [campo: 'giornoMeseNascitaLink', title: 'gg n.'],
+                [campo: 'annoNascitaLink', title: 'anno n.'],
+                [campo: 'luogoNatoLink', title: 'nato'],
+                [campo: 'giornoMeseMorteLink', title: 'gg m.'],
+                [campo: 'annoMorteLink', title: 'anno m.'],
+                [campo: 'luogoMortoLink', title: 'morto'],
                 [campo: 'attivitaLink', title: 'att'],
                 [campo: 'nazionalitaLink', title: 'naz']]
         // fine della definizione
