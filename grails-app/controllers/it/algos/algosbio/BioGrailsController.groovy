@@ -44,7 +44,7 @@ class BioGrailsController {
     //--passa al metodo effettivo
     def resetElabora() {
         params.titolo = 'Elaborazione'
-        def lista = BioWiki.executeQuery('select id from BioWiki where elaborata=false')
+        def lista = BioWiki.executeQuery('select id from BioWiki where elaborata=true')
 
         if (lista && lista.size() > 0) {
             params.tipo = TipoDialogo.conferma

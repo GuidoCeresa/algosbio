@@ -66,13 +66,11 @@ class BioService {
     //--Regola il flag 'elaborata'=true per tutti i recordas elaborati
     //--Elabora i link alle tavole collegate
     //--Crea le didascalie
-    public ArrayList<Integer> elaboraAll() {
+    public void elaboraAll() {
         if (Pref.getBool(LibBio.USA_LIMITE_ELABORA)) {
             //--Azzera il flag
             BioWiki.executeUpdate('update BioWiki set elaborata=false')
         }// fine del blocco if
-
-        return elabora()
     } // fine del metodo
 
     //--Elaborazione dei dati da BioWiki a BioGrails
