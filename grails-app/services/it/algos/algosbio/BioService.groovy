@@ -86,6 +86,7 @@ class BioService {
         ArrayList<Integer> listaDidascalieNulle
         ArrayList<Integer> listaNonElaborate
         ArrayList<Integer> listaPageId = null
+        int totaleVociDaElaborare = 0
         int maxElabora
 
         listaDidascalieNulle = (ArrayList<Integer>) BioGrails.executeQuery('select pageid from BioGrails where didascaliaListe is null')
@@ -102,6 +103,11 @@ class BioService {
                 listaPageId = listaNonElaborate
             }// fine del blocco if
         }// fine del blocco if-else
+
+        if (listaPageId) {
+            totaleVociDaElaborare = listaPageId.size()
+            log.info "Ci sono in totale " + LibTesto.formatNum(totaleVociDaElaborare) + " voci da elaborare"
+        }// fine del blocco if
 
         if (Pref.getBool(LibBio.USA_LIMITE_ELABORA)) {
             maxElabora = Pref.getInt(LibBio.MAX_ELABORA)
