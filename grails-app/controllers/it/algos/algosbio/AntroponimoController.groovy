@@ -12,10 +12,17 @@
 /* flagOverwrite = true */
 
 package it.algos.algosbio
+
 import it.algos.algos.DialogoController
 import it.algos.algos.TipoDialogo
+import it.algos.algospref.Pref
 import org.codehaus.groovy.grails.commons.DefaultGrailsDomainClass
+import org.codehaus.groovy.grails.orm.hibernate.HibernateSession
+import org.hibernate.FlushMode
 import org.springframework.dao.DataIntegrityViolationException
+import org.springframework.orm.hibernate3.SessionFactoryUtils
+
+import javax.persistence.FlushModeType
 
 class AntroponimoController {
 
@@ -32,10 +39,10 @@ class AntroponimoController {
         redirect(action: 'list', params: params)
     } // fine del metodo
 
-    //--importa (usa il nome-metodo create, perchè è il primo ed unico della lista standard)
+    //--ricostruisce
     //--mostra un avviso di spiegazione per l'operazione da compiere
     //--passa al metodo effettivo
-    def create() {
+    def ricostruisce() {
         params.tipo = TipoDialogo.conferma
         params.titolo = 'Creazione dalle voci'
         params.avviso = []
@@ -61,6 +68,7 @@ class AntroponimoController {
                 if (valore.equals(DialogoController.DIALOGO_CONFERMA)) {
                     if (antroponimoService) {
                         antroponimoService.costruisce()
+                        antroponimoService.creaPagineControllo()
                     }// fine del blocco if
                     flash.message = 'Operazione effettuata. Sono stati creati gli antroponimi'
                 }// fine del blocco if
@@ -87,7 +95,7 @@ class AntroponimoController {
     //--crea/aggiorna le pagine antroponimi
     def elaboraDopoConferma() {
         String valore
-        boolean debug = Preferenze.getBool((String) grailsApplication.config.debug)
+        boolean debug = Pref.getBool((String) grailsApplication.config.debug)
         flash.message = 'Operazione annullata. Pagine antroponimi non modificate.'
 
         if (params.valore) {
@@ -125,6 +133,7 @@ class AntroponimoController {
         //--solo azione e di default controller=questo; classe e titolo vengono uguali
         //--mappa con [cont:'controller', action:'metodo', icon:'iconaImmagine', title:'titoloVisibile']
         menuExtra = [
+                [cont: 'antroponimo', action: 'ricostruisce', icon: 'frecciasu', title: 'Ricostruzione completa'],
                 [cont: 'antroponimo', action: 'elabora', icon: 'frecciasu', title: 'Upload antroponimi'],
         ]
         // fine della definizione
@@ -169,11 +178,11 @@ class AntroponimoController {
         //--menuExtra e campiLista possono essere nulli o vuoti
         //--se campiLista è vuoto, mostra tutti i campi (primi 8)
         render(view: 'list', model: [
-                antroponimoInstanceList: lista,
+                antroponimoInstanceList : lista,
                 antroponimoInstanceTotal: lista.size(),
-                menuExtra: menuExtra,
-                titoloLista: titoloLista,
-                campiLista: campiLista],
+                menuExtra               : menuExtra,
+                titoloLista             : titoloLista,
+                campiLista              : campiLista],
                 params: params)
     } // fine del metodo
 

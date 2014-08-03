@@ -58,7 +58,9 @@ class AntroponimoService {
             durata = fine - inizio
             durata = durata / 1000
             numAntro = Antroponimo.count()
-            mess = 'Elaborati ' + LibTesto.formatNum(delta) + ' antroponimi in ' + durata + ' sec. per un totale di ' + LibTesto.formatNum(k + delta) + ' antroponimi teorici e creati ' + LibTesto.formatNum(numAntro) + ' nuovi record in totale'
+            mess = 'Elaborate ' + LibTesto.formatNum(delta) + ' voci in ' + durata + ' sec. per un totale di '
+            mess += LibTesto.formatNum(k + delta) + '/' + LibTesto.formatNum(totaleVoci) + ' voci.'
+            mess += ' Creati ' + LibTesto.formatNum(numAntro) + ' nuovi antroponimi'
             println(mess)
         } // fine del ciclo for
 
@@ -81,7 +83,7 @@ class AntroponimoService {
 
     //--cancella i records di antroponimi
     public static void cancellaTutto() {
-        def recs = Antroponimo.findAll()
+        def recs = Antroponimo.list()
 
         recs?.each {
             it.delete(flush: true)
@@ -207,7 +209,7 @@ class AntroponimoService {
             numVoci = numeroVociCheUsanoNome(nome)
             if (numVoci > soglia) {
                 lunghezza = nome.length()
-                new Antroponimo(nome: nome, voci: numVoci, lunghezza: lunghezza).save()
+                new Antroponimo(nome: nome, voci: numVoci, lunghezza: lunghezza).save(flush: true)
             }// fine del blocco if
         }// fine del blocco if
     }// fine del metodo
@@ -237,16 +239,20 @@ class AntroponimoService {
             elaboraSingoloNome((String) it)
         }// fine del ciclo each
 
-        //crea la pagina riepilogativa
         if (listaNomi) {
-            creaPaginaRiepilogativa(listaNomi)
+            creaPagineControllo()
         }// fine del blocco if
+    }// fine del metodo
+
+    public creaPagineControllo() {
+        //crea la pagina riepilogativa
+        creaPaginaRiepilogativa()
 
         //crea le pagine di riepilogo di tutti i nomi
         elencoNomi()
 
         //crea la pagina di controllo didascalie
-        this.creaPaginaDidascalie()
+        creaPaginaDidascalie()
     }// fine del metodo
 
     def elencoNomi() {
@@ -767,7 +773,7 @@ class AntroponimoService {
     }// fine del metodo
 
     // pagina di controllo/servizio
-    private creaPaginaDidascalie() {
+    public creaPaginaDidascalie() {
         String titolo = progetto + 'Didascalie'
         String testo = ''
         String summary = 'Biobot'
@@ -932,16 +938,19 @@ class AntroponimoService {
     /**
      * Crea la pagina riepilogativa
      */
-    public creaPaginaRiepilogativa(ArrayList<String> listaVoci) {
+    public creaPaginaRiepilogativa() {
+        ArrayList<String> listaVoci = getListaNomi()
         String testo = ''
         String titolo = progetto + 'Nomi'
         String summary = 'Biobot'
 
-        testo += getRiepilogoHead()
-        testo += getRiepilogoBody(listaVoci)
-        testo += getRiepilogoFooter()
+        if (listaVoci) {
+            testo += getRiepilogoHead()
+            testo += getRiepilogoBody(listaVoci)
+            testo += getRiepilogoFooter()
 
-        new Edit(titolo, testo, summary)
+            new Edit(titolo, testo, summary)
+        }// fine del blocco if
     }// fine del metodo
 
 
