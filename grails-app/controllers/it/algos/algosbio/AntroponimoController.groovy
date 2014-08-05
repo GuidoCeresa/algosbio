@@ -186,11 +186,11 @@ class AntroponimoController {
                 params: params)
     } // fine del metodo
 
-//--metodo di esportazione dei dati
-//--funziona SOLO se il flag -usaExport- è true (iniettato e regolato in ExportBootStrap)
-//--se non si regola la variabile -titleReport- non mette nessun titolo al report
-//--se non si regola la variabile -records- esporta tutti i records
-//--se non si regola la variabile -fields- esporta tutti i campi
+    //--metodo di esportazione dei dati
+    //--funziona SOLO se il flag -usaExport- è true (iniettato e regolato in ExportBootStrap)
+    //--se non si regola la variabile -titleReport- non mette nessun titolo al report
+    //--se non si regola la variabile -records- esporta tutti i records
+    //--se non si regola la variabile -fields- esporta tutti i campi
     def export = {
         String titleReport = new Date()
         def records = null
@@ -211,6 +211,10 @@ class AntroponimoController {
                 exportService.export((String) params.format, response.outputStream, records, fields, [:], [:], parameters)
             }// fine del blocco if
         }// fine del blocco if
+    } // fine del metodo
+
+    def create() {
+        respond new Antroponimo(params)
     } // fine del metodo
 
 

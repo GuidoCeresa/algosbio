@@ -304,6 +304,7 @@ class BioService {
             bioGrails.nazionalitaLink = NazionalitaService.getNazionalita(bioGrails.nazionalita)
             bioGrails.luogoNatoLink = LocalitaService.getLuogoNascita(bioWiki)
             bioGrails.luogoMortoLink = LocalitaService.getLuogoMorte(bioWiki)
+            bioGrails.nomeLink = AntroponimoService.getAntroponimo(bioWiki.nome)
 //            bioGrails.save(flush: false)
         }// fine del blocco if
 

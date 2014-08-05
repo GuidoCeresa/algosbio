@@ -455,30 +455,21 @@
 <g:select id="attivita2Link" name="attivita2Link.id" from="${it.algos.algosbio.Attivita.list()}" optionKey="id" value="${bioGrailsInstance?.attivita2Link?.id}" class="many-to-one" noSelection="['null': '']"/>
 </div>
 
+
+
 <div class="fieldcontain ${hasErrors(bean: bioGrailsInstance, field: 'attivita3Link', 'error')} ">
 	<label for="attivita3Link">
 		<g:message code="bioGrails.attivita3Link.label" default="Attivita3 Link" />
-		
 	</label>
-	
-
-
-
-
-
-
-
-
-
-
 <g:select id="attivita3Link" name="attivita3Link.id" from="${it.algos.algosbio.Attivita.list()}" optionKey="id" value="${bioGrailsInstance?.attivita3Link?.id}" class="many-to-one" noSelection="['null': '']"/>
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: bioGrailsInstance, field: 'nazionalitaLink', 'error')} ">
-	<label for="nazionalitaLink">
-		<g:message code="bioGrails.nazionalitaLink.label" default="Nazionalita Link" />
-	</label>
-<g:select id="nazionalitaLink" name="nazionalitaLink.id" from="${it.algos.algosbio.Nazionalita.list()}" optionKey="id" value="${bioGrailsInstance?.nazionalitaLink?.id}" class="many-to-one" noSelection="['null': '']"/>
-</div>
 
+
+<div class="fieldcontain ${hasErrors(bean: bioGrailsInstance, field: 'nomeLink', 'error')} ">
+	<label for="nomeLink">
+		<g:message code="bioGrails.nomeLink.label" default="Nome Link" />
+	</label>
+<g:select id="nomeLink" name="nomeLink.id" from="${it.algos.algosbio.Antroponimo.list()}" optionKey="id" value="${bioGrailsInstance?.nomeLink?.id}" class="many-to-one" noSelection="['null': '']"/>
+</div>
 

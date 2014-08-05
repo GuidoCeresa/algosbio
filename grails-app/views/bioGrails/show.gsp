@@ -276,6 +276,15 @@
         </li>
     </g:if>
 
+    <g:if test="${bioGrailsInstance?.nomeLink}">
+        <li class="fieldcontain">
+            <span id="nomeLink-label" class="property-label"><g:message code="bioGrails.nomeLink.label" default="Nome Link" /></span>
+
+            <span class="property-value" aria-labelledby="nomeLink-label"><g:link controller="antroponimo" action="show" id="${bioGrailsInstance?.nomeLink?.id}">${bioGrailsInstance?.nomeLink?.encodeAsHTML()}</g:link></span>
+
+        </li>
+    </g:if>
+
 
     </ol>
     <g:form>

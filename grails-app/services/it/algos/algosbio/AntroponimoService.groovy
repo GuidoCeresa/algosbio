@@ -1057,4 +1057,22 @@ class AntroponimoService {
         return testo
     }// fine del metodo
 
+    /**
+     * Ritorna l'antroponimo dal link alla voce
+     * Se non esiste, lo crea
+     */
+    public static Antroponimo getAntroponimo(String nome) {
+        Antroponimo antroponimo = null
+
+        if (nome) {
+            antroponimo = Antroponimo.findByNome(nome)
+            if (!antroponimo) {
+                antroponimo = new Antroponimo(nome: nome)
+                antroponimo.save(flush: true)
+            }// fine del blocco if
+        }// fine del blocco if
+
+        return antroponimo
+    } // fine del metodo
+
 } // fine della service classe
