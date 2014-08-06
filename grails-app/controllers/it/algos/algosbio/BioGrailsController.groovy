@@ -118,6 +118,7 @@ class BioGrailsController {
         String valore
         boolean continua = false
         flash.message = 'Operazione annullata. Le voci biografiche non sono state elaborate.'
+        String oldDataTxt
 
         if (params.valore) {
             if (params.valore instanceof String) {
@@ -134,6 +135,8 @@ class BioGrailsController {
             } else {
                 bioService.elaboraAll()
             }// fine del blocco if-else
+            oldDataTxt = LibBio.voceElaborataVecchia()
+            flash.message = oldDataTxt
         }// fine del blocco if
 
         redirect(action: 'list')
@@ -274,12 +277,12 @@ class BioGrailsController {
         //--menuExtra e campiLista possono essere nulli o vuoti
         //--se campiLista è vuoto, mostra tutti i campi (primi 8)
         render(view: 'list', model: [
-                bioGrailsInstanceList: lista,
+                bioGrailsInstanceList : lista,
                 bioGrailsInstanceTotal: recordsTotali,
-                menuExtra: menuExtra,
-                titoloLista: titoloLista,
-                campiLista: campiLista,
-                noMenuCreate: noMenuCreate],
+                menuExtra             : menuExtra,
+                titoloLista           : titoloLista,
+                campiLista            : campiLista,
+                noMenuCreate          : noMenuCreate],
                 params: params)
     } // fine del metodo
 
@@ -381,8 +384,8 @@ class BioGrailsController {
         //--menuExtra può essere nullo o vuoto
         render(view: 'show', model: [
                 bioGrailsInstance: bioGrailsInstance,
-                menuExtra: menuExtra,
-                noMenuCreate: noMenuCreate],
+                menuExtra        : menuExtra,
+                noMenuCreate     : noMenuCreate],
                 params: params)
     } // fine del metodo
 

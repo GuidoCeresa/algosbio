@@ -154,7 +154,7 @@ class AntroponimoService {
 
         String tag = ''
 
-        if (nomeIn.length() < 100) {
+        if (nomeIn.length() > 1 && nomeIn.length() < 100) {
             nomeOut = nomeIn
 
             if (usaNomeSingolo) {
@@ -1061,14 +1061,27 @@ class AntroponimoService {
      * Ritorna l'antroponimo dal link alla voce
      * Se non esiste, lo crea
      */
-    public static Antroponimo getAntroponimo(String nome) {
+    public static Antroponimo getAntroponimo(String nomeDaControllare) {
         Antroponimo antroponimo = null
+        String nome = ''
+        int soglia = Pref.getInt(LibBio.SOGLIA_ANTROPONIMI)
+        int voci = 0
+
+        if (nomeDaControllare) {
+            nome = check(nomeDaControllare)
+        }// fine del blocco if
+
+        if (nome) {
+            voci = numeroVociCheUsanoNome(nome)
+        }// fine del blocco if
 
         if (nome) {
             antroponimo = Antroponimo.findByNome(nome)
             if (!antroponimo) {
-                antroponimo = new Antroponimo(nome: nome)
-                antroponimo.save(flush: true)
+                if (voci > soglia) {
+                    antroponimo = new Antroponimo(nome: nome, voci: voci)
+                    antroponimo.save(flush: true)
+                }// fine del blocco if
             }// fine del blocco if
         }// fine del blocco if
 
