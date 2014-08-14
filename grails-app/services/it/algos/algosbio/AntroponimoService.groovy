@@ -235,13 +235,20 @@ class AntroponimoService {
         listaNomi = getListaNomi()
 
         //crea le pagine dei singoli nomi (circa 600)
-        listaNomi?.each {
-            elaboraSingoloNome((String) it)
-        }// fine del ciclo each
+        if (listaNomi) {
+            elabora(listaNomi)
+        }// fine del blocco if
 
         if (listaNomi) {
             creaPagineControllo()
         }// fine del blocco if
+    }// fine del metodo
+
+    // Elabora le pagine
+    def elabora(ArrayList<String> listaNomi) {
+        listaNomi?.each {
+            elaboraSingoloNome((String) it)
+        }// fine del ciclo each
     }// fine del metodo
 
     public creaPagineControllo() {
@@ -390,7 +397,7 @@ class AntroponimoService {
     }// fine del metodo
 
     //--costruisce una lista di nomi
-    private static ArrayList<String> getListaNomi() {
+    public static ArrayList<String> getListaNomi() {
         ArrayList<String> listaNomi
         int taglio = Pref.getInt(LibBio.TAGLIO_ANTROPONIMI)
         String query = "select nome from Antroponimo where voci>'${taglio}' order by nome asc"

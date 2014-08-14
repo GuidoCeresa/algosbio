@@ -15,6 +15,8 @@ package it.algos.algosbio
 
 import it.algos.algos.DialogoController
 import it.algos.algos.TipoDialogo
+import it.algos.algoslib.Lib
+import it.algos.algoslib.LibTesto
 import it.algos.algospref.Pref
 import org.codehaus.groovy.grails.commons.DefaultGrailsDomainClass
 import org.codehaus.groovy.grails.orm.hibernate.HibernateSession
@@ -103,11 +105,11 @@ class AntroponimoController {
                 valore = (String) params.valore
                 if (valore.equals(DialogoController.DIALOGO_CONFERMA)) {
                     if (grailsApplication && grailsApplication.config.login) {
-                        antroponimoService.elabora()
+                        elaboraBase()
                         flash.message = 'Operazione effettuata. Sono stati creati/aggiornate le pagine antroponimi'
                     } else {
                         if (debug) {
-                            antroponimoService.elabora()
+                            elaboraBase()
                             flash.message = 'Operazione effettuata. Sono stati creati/aggiornate le pagine antroponimi'
                         } else {
                             flash.error = 'Devi essere loggato per poter caricare gli antroponimi'
@@ -120,6 +122,56 @@ class AntroponimoController {
         redirect(action: 'list')
     } // fine del metodo
 
+    private elaboraBase() {
+        ArrayList<String> listaNomi = null
+        int dimBlocco = 10
+        ArrayList<String> listaBlocchiNomi
+        int numVoci = 0
+        String numVociTxt
+        long inizioInizio = System.currentTimeMillis()
+        long inizio=0
+        long fine=0
+        long durata=0
+        long durataTotale=0
+        String tempoTxt
+        String tempoTotaleTxt
+        int cont = 0
+        String vociCreateTxt = ''
+        int vociCreate = 0
+
+        //--costruisce una lista di nomi (circa 600)
+        if (antroponimoService) {
+            listaNomi = antroponimoService.getListaNomi()
+        }// fine del blocco if
+
+        //--crea le pagine dei singoli nomi a blocchi
+        if (listaNomi) {
+            inizio = inizioInizio
+            numVoci = listaNomi.size()
+            numVociTxt = LibTesto.formatNum(numVoci)
+            log.info "Inizio del metodo di creazione di ${numVociTxt} voci di Antroponimi"
+            listaBlocchiNomi = Lib.Array.splitArray(listaNomi, dimBlocco)
+            listaBlocchiNomi?.each {
+                cont++
+                antroponimoService.elabora((ArrayList) it)
+                fine = System.currentTimeMillis()
+                durataTotale = fine - inizioInizio
+                durata = fine - inizio
+                durataTotale = durataTotale / 1000
+                durata = durata / 1000
+                tempoTotaleTxt = LibTesto.formatNum(durataTotale)
+                tempoTxt = LibTesto.formatNum(durata)
+                vociCreate = cont * dimBlocco
+                vociCreateTxt = LibTesto.formatNum(vociCreate)
+                log.info "Aggiornate ${vociCreateTxt}/${numVociTxt} voci di Antroponimi in ${tempoTxt}/${tempoTotaleTxt} secondi"
+                inizio = fine
+            }// fine del ciclo each
+        }// fine del blocco if
+
+        if (listaNomi) {
+            antroponimoService.creaPagineControllo()
+        }// fine del blocco if
+    } // fine del metodo
 
     def list(Integer max) {
         params.max = Math.min(max ?: 1000, 1000)
