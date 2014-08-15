@@ -29,7 +29,6 @@ class BotbioTagLib {
 
         //--controllers dei plugins
         testoOut += tagController('Pref')
-        testoOut += tagController('Preferenze')
         testoOut += tagController('Versione')
         testoOut += tagController('Evento')
         testoOut += tagController('Logo')

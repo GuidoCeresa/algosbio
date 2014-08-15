@@ -124,15 +124,15 @@ class AntroponimoController {
 
     private elaboraBase() {
         ArrayList<String> listaNomi = null
-        int dimBlocco = 10
+        int dimBlocco = Pref.getInt(LibBio.CICLO_ANTROPONIMI, 10)
         ArrayList<String> listaBlocchiNomi
         int numVoci = 0
         String numVociTxt
         long inizioInizio = System.currentTimeMillis()
-        long inizio=0
-        long fine=0
-        long durata=0
-        long durataTotale=0
+        long inizio = 0
+        long fine = 0
+        long durata = 0
+        long durataTotale = 0
         String tempoTxt
         String tempoTotaleTxt
         int cont = 0

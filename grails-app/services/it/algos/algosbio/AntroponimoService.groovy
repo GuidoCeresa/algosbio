@@ -276,7 +276,7 @@ class AntroponimoService {
         int voci
         String vociTxt
 
-        listaNomi = Antroponimo.findAllByVociGreaterThan(soglia - 1, [sort: 'voci', order: 'desc'])
+        listaNomi = Antroponimo.findAllByVociGreaterThan(soglia, [sort: 'voci', order: 'desc'])
         lista.add(['#', 'Nome', 'Voci'])
         listaNomi?.each {
             vociTxt = ''
@@ -324,7 +324,7 @@ class AntroponimoService {
         testoTitolo += "<ref>Non vengono riportati nomi che iniziano con '''<'''</ref>"
         testoTitolo += " utilizzati nelle '''"
         testoTitolo += LibTesto.formatNum(numBio)
-        testoTitolo += "''' voci biografiche con occorrenze maggiori od uguali a '''"
+        testoTitolo += "''' voci biografiche con occorrenze maggiori di '''"
         testoTitolo += soglia
         testoTitolo += "'''"
         testoTitolo += aCapo
@@ -393,7 +393,7 @@ class AntroponimoService {
         testo += this.getNomeFooter(nome)
 
         //registra la pagina
-        new Edit(titolo, testo, summary)
+        new EditBio(titolo, testo, summary)
     }// fine del metodo
 
     //--costruisce una lista di nomi

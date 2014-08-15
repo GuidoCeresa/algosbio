@@ -24,7 +24,8 @@ class EditBio extends Edit {
         paginaDaRegistrare = true
         boolean registraSoloModificheSostanziali = Pref.getBool(LibBio.REGISTRA_SOLO_MODIFICHE_SOSTANZIALI)
         String testoOld = super.getTestoPrimaRequest()
-        String tagInizioVoceSignificativa = '</noinclude>'
+//        String tagInizioVoceSignificativa = '</noinclude>'
+        String tagInizioVoceSignificativa = '}}'
         String testoOldSignificativo = ''
         String testoNew = super.getTestoNew()
         String testoNewSignificativo
@@ -38,9 +39,11 @@ class EditBio extends Edit {
             }// fine del blocco if
             if (testoOldSignificativo && testoNewSignificativo) {
                 if (testoNewSignificativo.equals(testoOldSignificativo)) {
+                    def stop
                     paginaDaRegistrare = false
                 }// fine del blocco if
             }// fine del blocco if
+            def stop2
         }// fine del blocco if
     } // fine del metodo
 

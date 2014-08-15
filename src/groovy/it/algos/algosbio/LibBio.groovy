@@ -48,6 +48,7 @@ class LibBio {
     public static final String EVENTO_TESTO_TROPPO_LUNGO = 'DataTooLong'
     public static final String TAGLIO_ANTROPONIMI = 'taglioAntroponimi'
     public static final String SOGLIA_ANTROPONIMI = 'sogliaAntroponimi'
+    public static final String CICLO_ANTROPONIMI = 'cicloAntroponimi'
     public static final String USA_OCCORRENZE_ANTROPONIMI = 'usaOccorrenzeAntroponimi'
     public static final String CONFRONTA_SOLO_PRIMO_NOME_ANTROPONIMI = 'confrontaSoloPrimoNomeAntroponimi'
     public static final String SUMMARY = 'summary'

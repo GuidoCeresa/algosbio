@@ -345,6 +345,18 @@ class VersioneBootStrap {
             scambiaPreferenzeIntero(LibBio.MAX_RIGHE_COLONNE, 'numero massimo di righe oltre il quale scattano le colonne affiancate')
             versioneService.newVersione('Preferenze', 'Spostata MAX_RIGHE_COLONNE')
         }// fine del blocco if
+
+        //--creata una nuova preferenza
+        if (versioneService && versioneService.installaVersione(53)) {
+            Pref pref = new Pref()
+            pref.ordine = Pref.list().size() + 1
+            pref.code = LibBio.CICLO_ANTROPONIMI
+            pref.descrizione = 'Numero di voci del blocco elaborazione antroponimi'
+            pref.type = Type.intero
+            pref.intero = 10
+            pref.save(flush: true)
+            versioneService.newVersione('Preferenze', 'CICLO_ANTROPONIMI di default dieci')
+        }// fine del blocco if
     }// fine della closure
 
 
