@@ -1,6 +1,5 @@
 import it.algos.algosbio.LibBio
 import it.algos.algospref.Pref
-import it.algos.algospref.Preferenze
 
 /**
  * Created with IntelliJ IDEA.
