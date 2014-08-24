@@ -15,6 +15,7 @@ package it.algos.algosbio
 
 import it.algos.algoslib.LibTesto
 import it.algos.algoslib.LibWiki
+import it.algos.algospref.Pref
 import it.algos.algoswiki.WikiService
 
 class AttivitaService {
@@ -33,34 +34,38 @@ class AttivitaService {
      * Aggiunge al database i records mancanti
      */
     public download() {
-        // variabili e costanti locali di lavoro
-        Map mappa = null
-
         // Recupera la mappa dalla pagina wiki
-        mappa = this.getMappa()
+        Map mappa = this.getMappa()
 
         // Aggiunge i records mancanti
         if (mappa) {
             mappa?.each {
                 this.aggiungeRecord(it)
             }// fine di each
-            log.info 'Aggiornati sul DB i records di attività (plurale)'
-        }// fine del blocco if
+
+            if (Pref.getBool(LibBio.USA_LOG_INFO, false)) {
+                log.info 'Aggiornati sul DB i records di attività (plurale)'
+            }// fine del blocco if
+        }// fine del blocco if-else
     } // fine del metodo
 
     /**
-     * Recupera la mappa dalla pagina wiki
+     * Recupera la mappa dalla pagina di servizio wiki
      */
     private getMappa() {
         // variabili e costanti locali di lavoro
         Map mappa = null
 
         // Legge la pagina di servizio
-        // Recupera la mappa dalla pagina wiki
-        mappa = wikiService.leggeModuloMappa(TITOLO)
+        if (wikiService && TITOLO) {
+            mappa = wikiService.leggeModuloMappa(TITOLO)
+        }// fine del blocco if
 
         if (!mappa) {
             log.warn 'Non sono riuscito a leggere la pagina plurale attività dal server wiki'
+            if (Pref.getBool(LibBio.USA_MAIL_INFO, false)) {
+                //spedisce mail
+            }// fine del blocco if
         }// fine del blocco if
 
         // valore di ritorno

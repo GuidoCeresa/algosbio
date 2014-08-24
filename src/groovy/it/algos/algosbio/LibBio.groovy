@@ -63,6 +63,8 @@ class LibBio {
     public static final String MODIFICATI = 'recordsModificati'
     public static final String CANCELLATI = 'recordsCancellati'
     public static final String TAGLIO_META_ATTIVITA = 'taglioMetaAttivita'
+    public static final String USA_LOG_INFO = 'usaLogInfo'
+    public static final String USA_MAIL_INFO = 'usaMailInfo'
 
 
     // campi di una mappa

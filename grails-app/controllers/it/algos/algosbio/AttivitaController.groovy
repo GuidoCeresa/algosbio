@@ -127,8 +127,6 @@ class AttivitaController {
         //--solo azione e di default controller=questo; classe e titolo vengono uguali
         //--mappa con [cont:'controller', action:'metodo', icon:'iconaImmagine', title:'titoloVisibile']
         menuExtra = [
-                [cont: 'attivita', action: 'uploadAttivitaPrimaMeta', icon: 'frecciasu', title: 'Upload prime attività'],
-                [cont: 'attivita', action: 'uploadAttivitaSecondaMeta', icon: 'frecciasu', title: 'Upload seconde attività'],
                 [cont: 'attivita', action: 'uploadAttivita', icon: 'frecciasu', title: 'Upload all'],
         ]
         // fine della definizione

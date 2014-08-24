@@ -139,6 +139,11 @@ class AntroponimoController {
         String vociCreateTxt = ''
         int vociCreate = 0
 
+        //--ricontrolla la lista dei plurali per genere
+        if (antroponimoService) {
+            antroponimoService.download()
+        }// fine del blocco if
+
         //--costruisce una lista di nomi (circa 600)
         if (antroponimoService) {
             listaNomi = antroponimoService.getListaNomi()
