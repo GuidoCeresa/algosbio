@@ -66,7 +66,6 @@ class LibBio {
     public static final String USA_LOG_INFO = 'usaLogInfo'
     public static final String USA_MAIL_INFO = 'usaMailInfo'
 
-
     // campi di una mappa
     public static final String MAPPA_TITOLO_PARAGRAFO = 'titoloParagrafo'
     public static final String MAPPA_SOTTO_TITOLO = 'sottoTitolo'
@@ -1174,5 +1173,61 @@ class LibBio {
         // valore di ritorno
         return diversa
     } // fine della closure
+
+    /**
+     * Tempo trascorso in secondi
+     */
+    public static String getSec(long inizio) {
+        String tempoTxt
+        long durata
+        long fine
+        String spazio = ' '
+        String suffix = spazio + 'sec'
+        int mille = 1000
+
+        fine = System.currentTimeMillis()
+        durata = fine - inizio
+        if (durata > mille) {
+            durata = durata / mille
+            tempoTxt = LibTesto.formatNum(durata)
+        } else {
+            tempoTxt = 'meno di 1'
+        }// fine del blocco if-else
+
+        tempoTxt = tempoTxt + suffix
+
+        return tempoTxt
+    } // fine del metodo
+
+    /**
+     * Tempo trascorso in minuti
+     */
+    public static String getMin(long inizio) {
+        String tempoTxt
+        long durata
+        long fine
+        String spazio = ' '
+        String suffix = spazio + 'min'
+        int mille = 1000
+        int secondi = 60
+
+        fine = System.currentTimeMillis()
+        durata = fine - inizio
+        if (durata > mille) {
+            durata = durata / mille
+            if (durata > secondi) {
+                durata = durata / secondi
+                tempoTxt = LibTesto.formatNum(durata)
+            } else {
+                tempoTxt = 'meno di 1'
+            }// fine del blocco if-else
+        } else {
+            tempoTxt = 'meno di 1'
+        }// fine del blocco if-else
+
+        tempoTxt = tempoTxt + suffix
+
+        return tempoTxt
+    } // fine del metodo
 
 } // fine della classe

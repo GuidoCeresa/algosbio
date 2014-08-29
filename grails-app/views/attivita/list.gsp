@@ -1,17 +1,3 @@
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 <%@ page import="it.algos.algosbio.Attivita" %>
 <!DOCTYPE html>
 <html>
@@ -23,17 +9,18 @@
 
 <body>
 <a href="#list-attivita" class="skip" tabindex="-1"><g:message code="default.link.skip.label"
-                                                                                  default="Skip to content&hellip;"/></a>
+                                                               default="Skip to content&hellip;"/></a>
 
 <div class="nav" role="navigation">
     <ul>
-        <li><a class="home" href="${createLink(uri: '/home')}"><g:message code="default.home.label" default="Home"/></a></li>
-        <g:if test="${!noCreate}">
+        <li><a class="home" href="${createLink(uri: '/home')}"><g:message code="default.home.label"
+                                                                          default="Home"/></a></li>
+        <g:if test="${!noMenuCreate}">
             <li><g:link class="create" action="create"><g:message code="attivita.new.label"
                                                                   args="[entityName]" default="Nuovo"/></g:link></li>
         </g:if>
         <g:if test="${menuExtra}">
-            <algos:menuExtra menuExtra="${menuExtra}"> </algos:menuExtra>
+            <algos:menuExtra menuExtra="${menuExtra}"></algos:menuExtra>
         </g:if>
     </ul>
 </div>
@@ -58,13 +45,13 @@
         </g:if>
         <g:else>
             <tr>
-                
+
                 <g:sortableColumn property="singolare"
                                   title="${message(code: 'attivita.singolare.label', default: 'Singolare')}"/>
-                
+
                 <g:sortableColumn property="plurale"
                                   title="${message(code: 'attivita.plurale.label', default: 'Plurale')}"/>
-                
+
             </tr>
         </g:else>
         </thead>
@@ -79,18 +66,19 @@
         <g:else>
             <g:each in="${attivitaInstanceList}" status="i" var="attivitaInstance">
                 <tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
-                    
+
                     <td><g:link action="show"
                                 id="${attivitaInstance.id}">${fieldValue(bean: attivitaInstance, field: "singolare")}</g:link></td>
-                    
+
                     <td><g:link action="show"
                                 id="${attivitaInstance.id}">${fieldValue(bean: attivitaInstance, field: "plurale")}</g:link></td>
-                    
+
                 </tr>
             </g:each>
         </g:else>
         </tbody>
     </table>
+
     <div class="pagination">
         <g:paginate total="${attivitaInstanceTotal}"/>
     </div>

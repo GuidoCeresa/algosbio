@@ -34,6 +34,10 @@ class AttivitaService {
      * Aggiunge al database i records mancanti
      */
     public download() {
+        long inizio = System.currentTimeMillis()
+        String secondi
+        String records
+
         // Recupera la mappa dalla pagina wiki
         Map mappa = this.getMappa()
 
@@ -44,9 +48,11 @@ class AttivitaService {
             }// fine di each
 
             if (Pref.getBool(LibBio.USA_LOG_INFO, false)) {
-                log.info 'Aggiornati sul DB i records di attività (plurale)'
+                secondi = LibBio.getSec(inizio)
+                records = LibTesto.formatNum(mappa.size())
+                log.info "Aggiornati in ${secondi} i ${records} records di attività (plurale)"
             }// fine del blocco if
-        }// fine del blocco if-else
+        }// fine del blocco if
     } // fine del metodo
 
     /**

@@ -44,7 +44,7 @@ class BioWikiService {
     def logWikiService
 //    BioService bioService = new BioService()
 
-    private static long inizio = System.currentTimeMillis()
+    private long inizio
     private static String tagAvviso = WrapBio.tagAvviso
 
     long ultimaRegistrazione = 0
@@ -85,6 +85,7 @@ class BioWikiService {
     public HashMap aggiungeWiki() {
         // variabili e costanti locali di lavoro
         HashMap mappa = new HashMap()
+        boolean mostraInfo = Pref.getBool(LibBio.USA_LOG_INFO, false)
         ArrayList<Integer> listaNuoviRecordsCreati
         int vociCreate
         int maxDownload
@@ -100,17 +101,15 @@ class BioWikiService {
 
         // messaggio di log
         inizio = System.currentTimeMillis()
-        log.info 'Metodo di aggiunta nuovi records (anche cancellazioni)'
+        if (mostraInfo) {
+            log.info 'Metodo di aggiunta nuovi records (anche cancellazioni)'
+        }// fine del blocco if
 
         //--Recupera dal server la lista completa delle voci esistenti dalla categoria BioBot
         if (continua) {
             listaVociServerWiki = this.getListaVociServerWiki()
             continua = (listaVociServerWiki && listaVociServerWiki.size() > 0)
             tempo()
-        }// fine del blocco if
-
-        if (continua) {
-            log.info 'Nella categoria ci sono ' + LibTesto.formatNum(listaVociServerWiki.size()) + ' pagine'
         }// fine del blocco if
 
         //--Recupera la lista dei records esistenti nel database
@@ -121,7 +120,7 @@ class BioWikiService {
 
         //--Recupera la lista delle voci nuove che non hanno ancora records (da creare)
         if (continua) {
-            listaRecordsMancanti = deltaListe(listaVociServerWiki, listaRecordsDatabase)
+            listaRecordsMancanti = deltaListeVoci(listaVociServerWiki, listaRecordsDatabase)
             tempo()
         }// fine del blocco if-else
 
@@ -150,7 +149,7 @@ class BioWikiService {
 
         //--Recupera la lista dei records che non hanno più una voce sul server wiki (forse da cancellare)
         if (continua) {
-            listaRecordsForseDaCancellare = deltaListe(listaRecordsDatabase, listaVociServerWiki)
+            listaRecordsForseDaCancellare = deltaListeRecords(listaRecordsDatabase, listaVociServerWiki)
             tempo()
         }// fine del blocco if-else
 
@@ -168,7 +167,6 @@ class BioWikiService {
         if (continua) {
             this.cancellazioneEffettivaRecords(listaRecordsDaCancellare)
             mappa.put(LibBio.CANCELLATI, listaRecordsDaCancellare)
-            tempo()
         }// fine del blocco if-else
 
         if (debug) {
@@ -180,7 +178,10 @@ class BioWikiService {
 //            }// fine del blocco if
 
 //            logWikiService.info "Sono state aggiunte ${num} nuove voci dopo l'ultimo check"
-            log.info 'Fine del metodo di aggiunta nuovi records ed eventuali cancellazioni di records esistenti'
+            if (mostraInfo) {
+                log.info 'Fine del metodo di aggiunta nuovi records ed eventuale cancellazioni di records esistenti'
+            }// fine del blocco if
+
         }// fine del blocco if-else
 
         // valore di ritorno
@@ -297,15 +298,15 @@ class BioWikiService {
         // variabili e costanti locali di lavoro
         ArrayList<Integer> lista = null
         boolean continua = true
+        boolean mostraInfo = Pref.getBool(LibBio.USA_LOG_INFO, false)
         String titoloCategoria = TITOLO_CATEGORIA
-        def num = 0
+        def pagine = 0
         Login login = grailsApplication.config.login
         boolean debug = Pref.getBool(LibBio.DEBUG)
         String catDebug = Pref.getStr(LibBio.CAT_DEBUG)
         QueryCatPageid query = null
         long inizio = System.currentTimeMillis()
-        long fine
-        long durata
+        def minuti
 
         if (debug) {
             log.info 'Siamo in modalità debug'
@@ -366,21 +367,25 @@ class BioWikiService {
                     log.error unErrore
                 }// fine del blocco try-catch
             } else {
-                log.info "la lista non conteneva la pagina principale"
+                if (mostraInfo) {
+                    log.info "La lista delle voci in categoria, non conteneva la pagina principale"
+                }// fine del blocco if
             }// fine del blocco if-else
             if (rimossa) {
 //                    logWikiService.warn 'cancellato il pageid della Pagina principale'
-                log.info 'cancellato il pageid della Pagina principale'
+                if (mostraInfo) {
+                    log.info 'Cancellato il pageid della Pagina principale'
+                }// fine del blocco if
+
             }// fine del blocco if
         }// fine del blocco if
 
-        if (lista) {
-            num = lista.size()
-            num = Lib.Text.formatNum(num)
-            fine = System.currentTimeMillis()
-            durata = fine - inizio
-            durata = durata / 1000
-//            log.info "La categoria contiene ${num} voci ed è stata caricata in ${durata} secondi"
+        if (lista && mostraInfo) {
+            pagine = lista.size()
+            pagine = LibTesto.formatNum(pagine)
+            minuti = LibBio.getMin(inizio)
+
+            log.info "Caricate in ${minuti} le ${pagine} pagine della categoria"
         } else {
             logWikiService.warn("La categoria ${titoloCategoria} non contiene nessuna voce")
             log.warn "La categoria non contiene voci"
@@ -400,10 +405,20 @@ class BioWikiService {
     private static ArrayList creaListaRecordsDatabase() {
         // variabili e costanti locali di lavoro
         ArrayList lista
+        boolean mostraInfo = Pref.getBool(LibBio.USA_LOG_INFO, false)
+        long inizio = System.currentTimeMillis()
+        def secondi
+        def records
 
         lista = BioWiki.executeQuery("select pageid from BioWiki order by ultimaLettura asc")
 
-        if (!lista) {
+        if (lista && mostraInfo) {
+            records = lista.size()
+            records = LibTesto.formatNum(records)
+            secondi = LibBio.getSec(inizio)
+
+            log.info "Creata in ${secondi} la lista dei ${records} records (pageids) esistenti nel database"
+        } else {
             log.warn "La lista di pageids e vuota"
         }// fine del blocco if-else
 
@@ -440,25 +455,21 @@ class BioWikiService {
     def ArrayList<Integer> creaNuoviRecords(ArrayList<Integer> listaNuoviRecords) {
         // variabili e costanti locali di lavoro
         ArrayList<Integer> listaNuoviRecordsCreati = null
-        def num = 0
-        String numTxt
-        long inizio
-        long fine
-        long durata
-        long tempoImpiegato
+        boolean mostraInfo = Pref.getBool(LibBio.USA_LOG_INFO, false)
+        long inizio = System.currentTimeMillis()
+        def records
+        def minuti
 
         if (listaNuoviRecords) {
-            num = listaNuoviRecords.size()
-            numTxt = Lib.Text.formatNum(num)
-            log.info "Ci sono ${num} nuovi records da creare"
-
             //--creo le voci nuove che non hanno ancora records
-            inizio = System.currentTimeMillis()
             this.regolaVociNuoveModificate(listaNuoviRecords)
-            fine = System.currentTimeMillis()
-            durata = fine - inizio
-            tempoImpiegato = durata / num
-            log.warn "Fine dei nuovi records - Tempo impiegato = ${tempoImpiegato} millisecondi a voce"
+            if (mostraInfo) {
+                records = listaNuoviRecords.size()
+                records = LibTesto.formatNum(records)
+                minuti = LibBio.getMin(inizio)
+
+                log.info "Creati in ${minuti} ${records} nuovi records nel database"
+            }// fine del blocco if
         } else {
             log.warn "Non ci sono nuovi records da creare"
         }// fine del blocco if-else
@@ -477,7 +488,10 @@ class BioWikiService {
     private static ArrayList<Integer> controlloRecordsDaEliminare(ArrayList<Integer> listaRecordsForseEliminandi) {
         // variabili e costanti locali di lavoro
         ArrayList<Integer> listaRecordsDaCancellare = null
-        def dim
+        boolean mostraInfo = Pref.getBool(LibBio.USA_LOG_INFO, false)
+        long inizio = System.currentTimeMillis()
+        def secondi
+        def records
 
         //Crea la lista dei records che non hanno più una corrispondente voce su wiki (da cancellare)
         if (!listaRecordsForseEliminandi) {
@@ -497,17 +511,15 @@ class BioWikiService {
         }// fine del blocco if
 
         if (listaRecordsDaCancellare) {
-            dim = listaRecordsDaCancellare.size()
-            log.info "Ci sono ${dim} records da cancellare"
         }// fine del blocco if
 
-//        //cancello quelle da cancellare
-//        this.regolaVociNonPiuInCategoria(listaRecordsEliminati)
-//        if (dim > 0) {
-//            log.info "Sono stati cancellati ${dim} records"
-//        } else {
-//            log.info "Non sono stati cancellati records"
-//        }// fine del blocco if-else
+        if (mostraInfo) {
+            records = listaRecordsDaCancellare.size()
+            records = LibTesto.formatNum(records)
+            secondi = LibBio.getSec(inizio)
+
+            log.info "Controllato in ${secondi} che ci sono effettivamente ${records} records da cancellare"
+        }// fine del blocco if
 
         return listaRecordsDaCancellare
     } // fine della closure
@@ -841,17 +853,17 @@ class BioWikiService {
         }// fine del blocco if
     } // fine del metodo
 
-/**
- * Regola i collegamenti (link) alle tavole:
- * Giorno
- * Anno
- * Attivita
- * Nazionalita
- * @todo obsoleto va in libreria
- * @deprecated
- * @param istanza di biografia originale wiki
- * @param istanza di biografia corretta
- */
+    /**
+     * Regola i collegamenti (link) alle tavole:
+     * Giorno
+     * Anno
+     * Attivita
+     * Nazionalita
+     * @todo obsoleto va in libreria
+     * @deprecated
+     * @param istanza di biografia originale wiki
+     * @param istanza di biografia corretta
+     */
     def regolaLink = { biografiaWiki ->
         // variabili e costanti locali di lavoro
         def biografiaTmp
@@ -911,19 +923,19 @@ class BioWikiService {
         }// fine del blocco if
     } // fine della closure
 
-/**
- * Scarica da wikipedia una voce e crea/aggiorna un record sul database
- *
- * carica i parametri del template Bio, leggendolo dalla voce di wikipedia
- * la query legge la pagina col pageid
- * non sono ancora sicuro che la voce corrispondente al pageid sia una biografia
- * In alcuni casi corregge direttamente la pagina e riporta nel log //todo da sviluppare
- * controlla l'integrità dei dati dopo aver registrato
- *
- * @param pageid codice id del server wiki (# dal grailsId)
- * @param esegueUpload - per evitare il loop
- * @return record di biografia
- */
+    /**
+     * Scarica da wikipedia una voce e crea/aggiorna un record sul database
+     *
+     * carica i parametri del template Bio, leggendolo dalla voce di wikipedia
+     * la query legge la pagina col pageid
+     * non sono ancora sicuro che la voce corrispondente al pageid sia una biografia
+     * In alcuni casi corregge direttamente la pagina e riporta nel log //todo da sviluppare
+     * controlla l'integrità dei dati dopo aver registrato
+     *
+     * @param pageid codice id del server wiki (# dal grailsId)
+     * @param esegueUpload - per evitare il loop
+     * @return record di biografia
+     */
     public download(int pageid, boolean esegueUpload) {
         BioWiki biografia = null
         boolean continua = false
@@ -962,30 +974,28 @@ class BioWikiService {
         return biografia
     } // fine della closure
 
-/**
- * Scarica da wikipedia una voce e crea/aggiorna un record sul database
- *
- * carica i parametri del template Bio, leggendolo dalla voce di wikipedia
- * la query legge la pagina col pageid
- * non sono ancora sicuro che la voce corrispondente al pageid sia una biografia
- * In alcuni casi corregge direttamente la pagina e riporta nel log //todo da sviluppare
- * controlla l'integrità dei dati dopo aver registrato
- *
- * @param pageid codice id del server wiki (# dal grailsId)
- * @return record di biografia
- */
+    /**
+     * Scarica da wikipedia una voce e crea/aggiorna un record sul database
+     *
+     * carica i parametri del template Bio, leggendolo dalla voce di wikipedia
+     * la query legge la pagina col pageid
+     * non sono ancora sicuro che la voce corrispondente al pageid sia una biografia
+     * In alcuni casi corregge direttamente la pagina e riporta nel log //todo da sviluppare
+     * controlla l'integrità dei dati dopo aver registrato
+     *
+     * @param pageid codice id del server wiki (# dal grailsId)
+     * @return record di biografia
+     */
     public download(int pageid) {
         return this.download(pageid, false) //@todo provvisorio deve diventare true
     } // fine della closure
 
-/**
- * Differenza tra due liste
- */
+    /**
+     * Differenza tra due liste
+     */
     private static ArrayList<Integer> deltaListe(ArrayList<Integer> primaLista, ArrayList<Integer> secondaLista) {
         // variabili e costanti locali di lavoro
         ArrayList<Integer> listaDiff = null
-
-//        log.info 'Recupera la lista delle voci nuove che non hanno ancora records (da creare)'
 
         if (primaLista) {
             if (secondaLista) {
@@ -1010,15 +1020,70 @@ class BioWikiService {
         return listaDiff
     } // fine della closure
 
-/**
- * Controlla se le voci (su wiki) sono state modificate rispetto alla versione esistente (sul database)
- *
- * Confronta il lastrevid con quello esistente nella voce
- * Crea la lista sicuramente modificate
- *
- * @param listaForseModificate lista parziale (a blocchi) di mappe con pageids=lastrevids
- * @return lista di pageid
- */
+    /**
+     * Differenza tra due liste
+     * Recupera la lista delle voci nuove che non hanno ancora records (da creare)
+     */
+    private static ArrayList<Integer> deltaListeVoci(ArrayList<Integer> primaLista, ArrayList<Integer> secondaLista) {
+        ArrayList<Integer> listaDiff = deltaListe(primaLista, secondaLista)
+        boolean mostraInfo = Pref.getBool(LibBio.USA_LOG_INFO, false)
+        long inizio = System.currentTimeMillis()
+        def secondi
+        def voci
+
+        if (listaDiff && listaDiff.size() > 0) {
+            if (mostraInfo) {
+                voci = listaDiff.size()
+                voci = LibTesto.formatNum(voci)
+                secondi = LibBio.getMin(inizio)
+
+                log.info "Creata in ${secondi} la differenza (${voci} voci) tra le pagine wiki nella categoria ed i records grails esistenti nel database"
+            }// fine del blocco if
+        } else {
+            log.warn "La lista di pageids e vuota"
+        }// fine del blocco if-else
+
+        // valore di ritorno
+        return listaDiff
+    } // fine della closure
+
+    /**
+     * Differenza tra due liste
+     * Recupera la lista dei records che non hanno più una voce sul server wiki (forse da cancellare)
+     */
+    private
+    static ArrayList<Integer> deltaListeRecords(ArrayList<Integer> primaLista, ArrayList<Integer> secondaLista) {
+        ArrayList<Integer> listaDiff = deltaListe(primaLista, secondaLista)
+        boolean mostraInfo = Pref.getBool(LibBio.USA_LOG_INFO, false)
+        long inizio = System.currentTimeMillis()
+        def secondi
+        def voci
+
+        if (listaDiff && listaDiff.size() > 0) {
+            if (mostraInfo) {
+                voci = listaDiff.size()
+                voci = LibTesto.formatNum(voci)
+                secondi = LibBio.getSec(inizio)
+
+                log.info "Creata in ${secondi} la lista (${voci} voci) di records grails esistenti nel database e forse da cancellare"
+            }// fine del blocco if
+        } else {
+            log.warn "La lista di pageids e vuota"
+        }// fine del blocco if-else
+
+        // valore di ritorno
+        return listaDiff
+    } // fine della closure
+
+    /**
+     * Controlla se le voci (su wiki) sono state modificate rispetto alla versione esistente (sul database)
+     *
+     * Confronta il lastrevid con quello esistente nella voce
+     * Crea la lista sicuramente modificate
+     *
+     * @param listaForseModificate lista parziale (a blocchi) di mappe con pageids=lastrevids
+     * @return lista di pageid
+     */
     private static ArrayList chekTimeListaOld(ArrayList listaWrapTime) {
         // variabili e costanti locali di lavoro
         ArrayList listaPageid = null
@@ -1063,16 +1128,16 @@ class BioWikiService {
         return listaPageid
     } // fine della closure
 
-/**
- * Controlla se le voci (su wiki) sono state modificate rispetto alla versione esistente (sul database)
- *
- * Confronta il lastrevid con quello esistente nella voce
- * Crea la lista sicuramente modificate
- *
- * @param mappa
- * @param listaWrapTime
- * @return lista di pageid
- */
+    /**
+     * Controlla se le voci (su wiki) sono state modificate rispetto alla versione esistente (sul database)
+     *
+     * Confronta il lastrevid con quello esistente nella voce
+     * Crea la lista sicuramente modificate
+     *
+     * @param mappa
+     * @param listaWrapTime
+     * @return lista di pageid
+     */
     private static ArrayList chekTimeLista(HashMap mappa, ArrayList listaWrapTime) {
         // variabili e costanti locali di lavoro
         ArrayList listaPageid = null
@@ -1114,10 +1179,10 @@ class BioWikiService {
         return listaPageid
     } // fine della closure
 
-/**
- * Restituisce il valore booleano di un parametro Setting
- * @deprecated
- */
+    /**
+     * Restituisce il valore booleano di un parametro Setting
+     * @deprecated
+     */
     public static boolSetting = { code ->
         // variabili e costanti locali di lavoro
         boolean ritorno = false
@@ -1135,10 +1200,10 @@ class BioWikiService {
         return ritorno
     }// fine della closure
 
-/**
- * Restituisce il contrario del valore booleano di un parametro Setting
- * @deprecated
- */
+    /**
+     * Restituisce il contrario del valore booleano di un parametro Setting
+     * @deprecated
+     */
     public static notBoolSetting = { code ->
         // variabili e costanti locali di lavoro
         boolean ritorno = false
@@ -1157,11 +1222,11 @@ class BioWikiService {
         return ritorno
     }// fine della closure
 
-/**
- * Controlla se il numero passato è un multiplo esatto
- * @todo obsoleto va in libreria
- * @deprecated
- */
+    /**
+     * Controlla se il numero passato è un multiplo esatto
+     * @todo obsoleto va in libreria
+     * @deprecated
+     */
     public isStep = { int numero, int intervallo ->
         // variabili e costanti locali di lavoro
         boolean step = false
@@ -1184,12 +1249,16 @@ class BioWikiService {
         return step
     }// fine della closure
 
-    private static tempo() {
-//       log.info LibBio.deltaMin(inizio) + ' minuti dal via'
+    private tempo() {
+        if (Pref.getBool(LibBio.USA_LOG_INFO, false)) {
+            log.info LibBio.getMin(inizio) + ' dal via'
+        }// fine del blocco if
     }// fine del metodo
 
-    private static tempoSec() {
-//        log.info LibBio.deltaSec(inizio) + ' secondi dal via'
+    private tempoSec() {
+        if (Pref.getBool(LibBio.USA_LOG_INFO, false)) {
+            log.info LibBio.getSec(inizio) + ' dal via'
+        }// fine del blocco if
     }// fine del metodo
 
 

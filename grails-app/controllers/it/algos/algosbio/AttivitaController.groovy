@@ -41,7 +41,7 @@ class AttivitaController {
 
     //--mostra un avviso di spiegazione per l'operazione da compiere
     //--passa al metodo effettivo
-    def create() {
+    def download() {
         params.tipo = TipoDialogo.conferma
         params.avviso = 'Download dalla pagina Modulo:Bio/Plurale attività. Vengono aggiunte nuove attività e aggiornate quelle esistenti.'
         params.returnController = 'attivita'
@@ -122,12 +122,14 @@ class AttivitaController {
         def campoSort
         String titoloLista
         int recordsTotali
+        def noMenuCreate = true
 
         //--selezione dei menu extra
         //--solo azione e di default controller=questo; classe e titolo vengono uguali
         //--mappa con [cont:'controller', action:'metodo', icon:'iconaImmagine', title:'titoloVisibile']
         menuExtra = [
-                [cont: 'attivita', action: 'uploadAttivita', icon: 'frecciasu', title: 'Upload all'],
+                [cont: 'attivita', action: 'download', icon: 'frecciagiu', title: 'Download'],
+                [cont: 'attivita', action: 'uploadAttivita', icon: 'frecciasu', title: 'Upload'],
         ]
         // fine della definizione
 
@@ -174,7 +176,8 @@ class AttivitaController {
                 attivitaInstanceTotal: recordsTotali,
                 menuExtra            : menuExtra,
                 titoloLista          : titoloLista,
-                campiLista           : campiLista],
+                campiLista           : campiLista,
+                noMenuCreate         : noMenuCreate],
                 params: params)
     } // fine del metodo
 

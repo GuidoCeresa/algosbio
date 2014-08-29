@@ -13,6 +13,8 @@
 
 package it.algos.algosbio
 
+import it.algos.algoslib.LibTesto
+import it.algos.algospref.Pref
 import it.algos.algoswiki.WikiService
 
 class ProfessioneService {
@@ -31,18 +33,24 @@ class ProfessioneService {
      * Aggiunge al database i records mancanti
      */
     public download() {
-        // variabili e costanti locali di lavoro
-        Map mappa = null
+        long inizio = System.currentTimeMillis()
+        String secondi
+        String records
 
         // Recupera la mappa dalla pagina wiki
-        mappa = this.getMappa()
+        Map mappa = this.getMappa()
 
         // Aggiunge i records mancanti
         if (mappa) {
             mappa?.each {
                 this.aggiungeRecord(it)
             }// fine di each
-            log.info 'Aggiornati sul DB i records di professione'
+
+            if (Pref.getBool(LibBio.USA_LOG_INFO, false)) {
+                secondi = LibBio.getSec(inizio)
+                records = LibTesto.formatNum(mappa.size())
+                log.info "Aggiornati in ${secondi} i ${records} records di professione (plurale)"
+            }// fine del blocco if
         }// fine del blocco if
     } // fine del metodo
 
