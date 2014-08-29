@@ -96,7 +96,7 @@ environments {
 }// fine di environments
 
 // log4j configuration
-log4j = {
+log4j.main = {
     // Example of changing the log pattern for the default console appender:
     //
     appenders {
