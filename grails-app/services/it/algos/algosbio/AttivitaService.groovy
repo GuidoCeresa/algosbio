@@ -24,6 +24,7 @@ class AttivitaService {
     // il service NON viene iniettato automaticamente (perché è nel plugin)
     WikiService wikiService = new WikiService()
 
+
     private static String TITOLO = 'Modulo:Bio/Plurale attività'
 
     /**
@@ -37,6 +38,7 @@ class AttivitaService {
         long inizio = System.currentTimeMillis()
         String secondi
         String records
+        String info
 
         // Recupera la mappa dalla pagina wiki
         Map mappa = this.getMappa()
@@ -50,7 +52,8 @@ class AttivitaService {
             if (Pref.getBool(LibBio.USA_LOG_INFO, false)) {
                 secondi = LibBio.getSec(inizio)
                 records = LibTesto.formatNum(mappa.size())
-                log.info "Aggiornati in ${secondi} i ${records} records di attività (plurale)"
+                info = "Aggiornati in ${secondi} i ${records} records di attività (plurale)"
+                log.info info
             }// fine del blocco if
         }// fine del blocco if
     } // fine del metodo
