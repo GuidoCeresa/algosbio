@@ -53,7 +53,7 @@ class AttivitaService {
                 secondi = LibBio.getSec(inizio)
                 records = LibTesto.formatNum(mappa.size())
                 info = "Aggiornati in ${secondi} i ${records} records di attività (plurale)"
-                log.info info
+                log.warn info
             }// fine del blocco if
         }// fine del blocco if
     } // fine del metodo

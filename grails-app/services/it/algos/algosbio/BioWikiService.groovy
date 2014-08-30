@@ -58,9 +58,9 @@ class BioWikiService {
     public importaWiki() {
         // cancella tutti i records
         if (!Preferenze.getBool(LibBio.DEBUG)) {
-            log.info 'Inizio cancellazione totale del database'
+            log.warn 'Inizio cancellazione totale del database'
             BioWiki.executeUpdate('delete BioWiki')
-            log.info 'Termine cancellazione del database'
+            log.warn 'Termine cancellazione del database'
         }// fine del blocco if
 
         // Aggiunge nuovi records al database biografia
@@ -102,7 +102,7 @@ class BioWikiService {
         // messaggio di log
         inizio = System.currentTimeMillis()
         if (mostraInfo) {
-            log.info 'Metodo di aggiunta nuovi records (anche cancellazioni)'
+            log.warn 'Metodo di aggiunta nuovi records (anche cancellazioni)'
         }// fine del blocco if
 
         //--Recupera dal server la lista completa delle voci esistenti dalla categoria BioBot
@@ -170,7 +170,7 @@ class BioWikiService {
         }// fine del blocco if-else
 
         if (debug) {
-            log.info 'Fine del metodo di aggiunta nuovi records ed eventuali cancellazioni di records esistenti'
+            log.warn 'Fine del metodo di aggiunta nuovi records ed eventuali cancellazioni di records esistenti'
         } else {
 //            if (listaNuoviRecordsDaCreare) {
 //                num = listaNuoviRecordsDaCreare.size()
@@ -179,7 +179,7 @@ class BioWikiService {
 
 //            logWikiService.info "Sono state aggiunte ${num} nuove voci dopo l'ultimo check"
             if (mostraInfo) {
-                log.info 'Fine del metodo di aggiunta nuovi records ed eventuale cancellazioni di records esistenti'
+                log.warn 'Fine del metodo di aggiunta nuovi records ed eventuale cancellazioni di records esistenti'
             }// fine del blocco if
 
         }// fine del blocco if-else
@@ -232,13 +232,13 @@ class BioWikiService {
         String oldDataTxt
 
         if (debug) {
-            log.info 'Modalita debug'
+            log.warn 'Modalita debug'
             this.download(idDebug)
             return 1
         }// fine del blocco if
 
         // messaggio di log
-        log.info 'Metodo di controllo voci ed aggiornamento records esistenti'
+        log.warn 'Metodo di controllo voci ed aggiornamento records esistenti'
 
         //--Recupera la lista completa dei records presenti nel database
         listaRecordsDatabaseTime = creaListaRecordsDatabaseTime()
@@ -275,9 +275,9 @@ class BioWikiService {
         println('Controllo spot: ' + durata)
         durata = durata / 1000
         durata = durata / 60
-        log.info "BioWiki. Sono state controllate ${vociControllateTxt} voci e aggiornati ${vociAggiornateTxt} records. Tempo ${durata} min "
+        log.warn "BioWiki. Sono state controllate ${vociControllateTxt} voci e aggiornati ${vociAggiornateTxt} records. Tempo ${durata} min "
         oldDataTxt = LibBio.voceAggiornataVecchia()
-        log.info "${oldDataTxt}"
+        log.warn "${oldDataTxt}"
 
         return listaRecordsModificatiWiki
     } // fine del metodo
@@ -309,7 +309,7 @@ class BioWikiService {
         def minuti
 
         if (debug) {
-            log.info 'Siamo in modalità debug'
+            log.warn 'Siamo in modalità debug'
             if (debug) {
                 titoloCategoria = catDebug
             } else {
@@ -323,9 +323,9 @@ class BioWikiService {
 
         // recupera una lista di pageId
         if (debug) {
-            log.info "Caricamento della categoria ${titoloCategoria} - Circa 8 minuti (siamo in debug)"
+            log.warn "Caricamento della categoria ${titoloCategoria} - Circa 8 minuti (siamo in debug)"
         } else {
-//            log.info "Caricamento della categoria ${titoloCategoria} - Circa 6 minuti"
+//            log.warn "Caricamento della categoria ${titoloCategoria} - Circa 6 minuti"
         }// fine del blocco if-else
 
         try { // prova ad eseguire il codice
@@ -361,20 +361,20 @@ class BioWikiService {
                     rimossa = lista.remove(lista.indexOf(pageidPaginaPrincipale))
                     fineLoc = System.currentTimeMillis()
                     differenza = fineLoc - inizioLoc
-                    log.info "tempo di cancellazione di un elemento della lista: " + differenza
+                    log.warn "tempo di cancellazione di un elemento della lista: " + differenza
                 } catch (Exception unErrore) { // intercetta l'errore
-                    log.info "errore nella rimozione di un elemento dalla lista"
+                    log.warn "errore nella rimozione di un elemento dalla lista"
                     log.error unErrore
                 }// fine del blocco try-catch
             } else {
                 if (mostraInfo) {
-                    log.info "La lista delle voci in categoria, non conteneva la pagina principale"
+                    log.warn "La lista delle voci in categoria, non conteneva la pagina principale"
                 }// fine del blocco if
             }// fine del blocco if-else
             if (rimossa) {
 //                    logWikiService.warn 'cancellato il pageid della Pagina principale'
                 if (mostraInfo) {
-                    log.info 'Cancellato il pageid della Pagina principale'
+                    log.warn 'Cancellato il pageid della Pagina principale'
                 }// fine del blocco if
 
             }// fine del blocco if
@@ -385,7 +385,7 @@ class BioWikiService {
             pagine = LibTesto.formatNum(pagine)
             minuti = LibBio.getMin(inizio)
 
-            log.info "Caricate in ${minuti} le ${pagine} pagine della categoria"
+            log.warn "Caricate in ${minuti} le ${pagine} pagine della categoria"
         } else {
             logWikiService.warn("La categoria ${titoloCategoria} non contiene nessuna voce")
             log.warn "La categoria non contiene voci"
@@ -417,7 +417,7 @@ class BioWikiService {
             records = LibTesto.formatNum(records)
             secondi = LibBio.getSec(inizio)
 
-            log.info "Creata in ${secondi} la lista dei ${records} records (pageids) esistenti nel database"
+            log.warn "Creata in ${secondi} la lista dei ${records} records (pageids) esistenti nel database"
         } else {
             log.warn "La lista di pageids e vuota"
         }// fine del blocco if-else
@@ -468,7 +468,7 @@ class BioWikiService {
                 records = LibTesto.formatNum(records)
                 minuti = LibBio.getMin(inizio)
 
-                log.info "Creati in ${minuti} ${records} nuovi records nel database"
+                log.warn "Creati in ${minuti} ${records} nuovi records nel database"
             }// fine del blocco if
         } else {
             log.warn "Non ci sono nuovi records da creare"
@@ -518,7 +518,7 @@ class BioWikiService {
             records = LibTesto.formatNum(records)
             secondi = LibBio.getSec(inizio)
 
-            log.info "Controllato in ${secondi} che ci sono effettivamente ${records} records da cancellare"
+            log.warn "Controllato in ${secondi} che ci sono effettivamente ${records} records da cancellare"
         }// fine del blocco if
 
         return listaRecordsDaCancellare
@@ -678,7 +678,7 @@ class BioWikiService {
 
         if (listaRecordsModificatiWiki) {
             if (usaPagineSingole) {
-                log.info "Controlla la modifica del template bio a singole voci per volta"
+                log.warn "Controlla la modifica del template bio a singole voci per volta"
                 listaRecordsModificatiWiki.each {
                     this.download((int) it, true)
                 }// fine del ciclo each
@@ -723,7 +723,7 @@ class BioWikiService {
 
         if (listaVoci) {
             if (usaPagineSingole) {
-                log.info "Regola le voci nuove o modificate a singole voci per volta"
+                log.warn "Regola le voci nuove o modificate a singole voci per volta"
                 listaVoci.each {
                     this.download((int) it, true)
                     tempo()
@@ -1037,7 +1037,7 @@ class BioWikiService {
                 voci = LibTesto.formatNum(voci)
                 secondi = LibBio.getMin(inizio)
 
-                log.info "Creata in ${secondi} la differenza (${voci} voci) tra le pagine wiki nella categoria ed i records grails esistenti nel database"
+                log.warn "Creata in ${secondi} la differenza (${voci} voci) tra le pagine wiki nella categoria ed i records grails esistenti nel database"
             }// fine del blocco if
         } else {
             log.warn "La lista di pageids e vuota"
@@ -1065,7 +1065,7 @@ class BioWikiService {
                 voci = LibTesto.formatNum(voci)
                 secondi = LibBio.getSec(inizio)
 
-                log.info "Creata in ${secondi} la lista (${voci} voci) di records grails esistenti nel database e forse da cancellare"
+                log.warn "Creata in ${secondi} la lista (${voci} voci) di records grails esistenti nel database e forse da cancellare"
             }// fine del blocco if
         } else {
             log.warn "La lista di pageids e vuota"
@@ -1251,13 +1251,13 @@ class BioWikiService {
 
     private tempo() {
         if (Pref.getBool(LibBio.USA_LOG_INFO, false)) {
-            log.info LibBio.getMin(inizio) + ' dal via'
+            log.warn LibBio.getMin(inizio) + ' dal via'
         }// fine del blocco if
     }// fine del metodo
 
     private tempoSec() {
         if (Pref.getBool(LibBio.USA_LOG_INFO, false)) {
-            log.info LibBio.getSec(inizio) + ' dal via'
+            log.warn LibBio.getSec(inizio) + ' dal via'
         }// fine del blocco if
     }// fine del metodo
 

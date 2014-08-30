@@ -106,7 +106,7 @@ class BioService {
 
         if (listaPageId) {
             totaleVociDaElaborare = listaPageId.size()
-            log.info "Ci sono in totale " + LibTesto.formatNum(totaleVociDaElaborare) + " voci da elaborare"
+            log.warn "Ci sono in totale " + LibTesto.formatNum(totaleVociDaElaborare) + " voci da elaborare"
         }// fine del blocco if
 
         if (Pref.getBool(LibBio.USA_LIMITE_ELABORA)) {
@@ -158,7 +158,7 @@ class BioService {
 
         inizio = System.currentTimeMillis()
         numVociTxt = LibTesto.formatNum(listaRecordsDaElaborare.size().toString())
-        log.info "Inizio del metodo elabora per ${numVociTxt} records"
+        log.warn "Inizio del metodo elabora per ${numVociTxt} records"
 
         listaRecordsDaElaborare?.each {
             pageid = (int) it
@@ -196,7 +196,7 @@ class BioService {
         durata = fine - inizio
         tempo = durata / numVoci
         tempoTxt = LibTesto.formatNum(tempo)
-        log.info "Eseguito il metodo elabora su ${numVoci} records in ${tempoTxt} millisecondi/ciascuno"
+        log.warn "Eseguito il metodo elabora su ${numVoci} records in ${tempoTxt} millisecondi/ciascuno"
 
         return listaRecordsElaborati
     } // fine del metodo
@@ -946,7 +946,7 @@ class BioService {
         if (listaVociForseModificate) {
             dim = listaVociForseModificate.size()
             dim = WikiLib.formatNumero(dim)
-            log.info "Le voci potenzialmente modificate: sono ${dim}"
+            log.warn "Le voci potenzialmente modificate: sono ${dim}"
         } else {
             log.warn "Non ci sono voci da modificare"
         }// fine del blocco if-else
@@ -956,7 +956,7 @@ class BioService {
         if (listaRecordsModificati) {
             dim = listaRecordsModificati.size()
             dim = WikiLib.formatNumero(dim)
-            log.info "Le voci sicuramente modificate: sono ${dim}"
+            log.warn "Le voci sicuramente modificate: sono ${dim}"
         } else {
             log.warn "Non ci sono voci da modificare"
         }// fine del blocco if-else
@@ -1049,7 +1049,7 @@ class BioService {
                 }// fine del blocco if
                 numRec = Bio.count()
                 numero = WikiLib.formatNumero(numRec)
-                log.info "Nel database adesso ci sono ${numero} records"
+                log.warn "Nel database adesso ci sono ${numero} records"
             }// fine del blocco if
         }// fine del blocco if
         def stop
@@ -1336,7 +1336,7 @@ class BioService {
         // info
         //int secFinali = LibBio.deltaSec(inizio)
         //int delta = secFinali - secIniziali
-        //log.info "Lista nati per la voce $giornoAnno.titolo in $delta secondi"
+        //log.warn "Lista nati per la voce $giornoAnno.titolo in $delta secondi"
 
         // valore di ritorno
         return lista
@@ -1635,7 +1635,7 @@ class BioService {
         // variabili e costanti locali di lavoro
         def listaPageId
         //Recupera la lista dei records esistenti nel database
-        log.info 'Recupera tutti i records di Bio da controllare'
+        log.warn 'Recupera tutti i records di Bio da controllare'
 
         listaPageId = Bio.executeQuery('select pageid from Bio where controllato=false')
 
@@ -1665,10 +1665,10 @@ class BioService {
         String query = 'select pageid from Bio where controllato=false order by pageid'
 
         //Recupera la lista dei records esistenti nel database
-        log.info "Nuovo ciclo. Recupera ${pag} pagine"
+        log.warn "Nuovo ciclo. Recupera ${pag} pagine"
         listaPageId = Bio.executeQuery(query, [max: pag, offset: 0])
 
-        log.info 'Recuperate ' + listaPageId.size() + ' pagine'
+        log.warn 'Recuperate ' + listaPageId.size() + ' pagine'
 
         listaPageId?.each {
             downloadAndUpload(it)
@@ -1686,7 +1686,7 @@ class BioService {
         String query
 
         // messaggio di log
-        log.info 'Nuovo ciclo completo di aggiunta ed aggiornamento records esistenti'
+        log.warn 'Nuovo ciclo completo di aggiunta ed aggiornamento records esistenti'
 
         // aggiunge nuovi records ed eliminata quelli cancellati sul server wiki
         this.aggiunge()
@@ -1694,14 +1694,14 @@ class BioService {
         // regolo il flag a false per tutti i record (così li ricontrolla tutti)
         query = "update Bio b set b.allineata=0"
         Bio.executeUpdate(query)
-        log.info 'Regolo il flag allineata=false per tutti i records che sono quindi tutti da controllare'
+        log.warn 'Regolo il flag allineata=false per tutti i records che sono quindi tutti da controllare'
         tempo()
 
         // Esegue la closure cicloNuovoContinua
         this.cicloNuovoContinua(true)
 
         // messaggio di log
-        log.info 'Fine nuovo ciclo completo in ' + LibBio.deltaMin(inizio) + ' minuti dal via)'
+        log.warn 'Fine nuovo ciclo completo in ' + LibBio.deltaMin(inizio) + ' minuti dal via)'
     } // fine della closure
 
     /**
@@ -1741,11 +1741,11 @@ class BioService {
         inizio = System.currentTimeMillis()
 
         // messaggio di log
-        log.info 'Nuovo ciclo di aggiornamento records esistenti. Controllo tutte le voci non allineate'
-        log.info 'Per ogni voce non allineata, controllo se è stata modificata sul server confrontando i rispettivi flag lastrevid'
-        log.info 'Per le voci non modificate regolo comunque il flag allineata=true'
-        log.info 'Per le voci modificate, carico le modifiche nel database e regolo il flag allineata=true'
-        log.info "Eseguo a blocchi di $paginePerOgniBlocco pagine per volta"
+        log.warn 'Nuovo ciclo di aggiornamento records esistenti. Controllo tutte le voci non allineate'
+        log.warn 'Per ogni voce non allineata, controllo se è stata modificata sul server confrontando i rispettivi flag lastrevid'
+        log.warn 'Per le voci non modificate regolo comunque il flag allineata=true'
+        log.warn 'Per le voci modificate, carico le modifiche nel database e regolo il flag allineata=true'
+        log.warn "Eseguo a blocchi di $paginePerOgniBlocco pagine per volta"
 
         //Recupera il totale dei records esistenti nel database
         totaliNum = Bio.count()
@@ -1757,9 +1757,9 @@ class BioService {
         nonAllineateNum = Bio.countByAllineata(false)
         nonAllineateTxt = Lib.Txt.formatNum(nonAllineateNum.toString())
 
-        log.info "Ci sono $allineateTxt voci allineate (da non controllare) su un totale di $totaliTxt voci nel DB. (Già allineate o nuove voci)"
-        log.info "Ci sono $nonAllineateTxt voci non allineate (da controllare) su un totale di $totaliTxt voci nel DB"
-        log.info '-'
+        log.warn "Ci sono $allineateTxt voci allineate (da non controllare) su un totale di $totaliTxt voci nel DB. (Già allineate o nuove voci)"
+        log.warn "Ci sono $nonAllineateTxt voci non allineate (da controllare) su un totale di $totaliTxt voci nel DB"
+        log.warn '-'
 
         //calcolo quanti cicli sono necessari
         numCicliInfo = nonAllineateNum / (paginePerOgniBlocco * blocchiPerOgniStampaInfo)
@@ -1793,7 +1793,7 @@ class BioService {
                     tempoTxt = 'Ciclo di ' + LibBio.deltaSec() + 'sec/' + LibBio.deltaMin(inizio) + ' minuti dal via)'
                 }// fine del blocco if-else
             }// fine del blocco if-else
-            log.info "Controllate $controllateTxt/$nonAllineateTxt. Modificate $modCicloTxt/$modTotTxt. $tempoTxt"
+            log.warn "Controllate $controllateTxt/$nonAllineateTxt. Modificate $modCicloTxt/$modTotTxt. $tempoTxt"
 
         } // fine del ciclo for
     } // fine della closure
@@ -1823,11 +1823,11 @@ class BioService {
         nonAllineate = Bio.countByAllineata(false)
         max = Math.min(max, nonAllineate)
         pageIdNonAllineate = Bio.executeQuery(query, [max: max])
-        //log.info pageIdNonAllineate
+        //log.warn pageIdNonAllineate
 
         // controllo delle pagine sul server per trovare quelle modificate DOPO l'ultima lettura
         pageIdModificate = this.cicloControllo(pageIdNonAllineate)
-        //log.info pageIdModificate
+        //log.warn pageIdModificate
 
         // regola comunque il flag allineata=true, per ogni records corrispondente alle voci non modificate
         this.regolaFlag(pageIdNonAllineate, pageIdModificate)
@@ -2009,12 +2009,12 @@ class BioService {
             nuovo = wrapBio.getTestoTemplateFinale()
             if (!nuovo.equals(old)) {
                 if (wrapBio.registraPaginaWiki()) {
-                    log.info 'Registrata la voce ' + wrapBio.getTitoloVoce()
+                    log.warn 'Registrata la voce ' + wrapBio.getTitoloVoce()
                 } else {
-                    log.info "C'erano delle modifiche alla voce " + wrapBio.getTitoloVoce() + ', ma non sono riuscito a registrarla. Sorry.'
+                    log.warn "C'erano delle modifiche alla voce " + wrapBio.getTitoloVoce() + ', ma non sono riuscito a registrarla. Sorry.'
                 }// fine del blocco if-else
             } else {
-                log.info 'La voce ' + wrapBio.getTitoloVoce() + ' non deve essere modificata'
+                log.warn 'La voce ' + wrapBio.getTitoloVoce() + ' non deve essere modificata'
             }// fine del blocco if-else
             wrapBio.registraRecordDbSql()
 
@@ -2146,9 +2146,9 @@ class BioService {
                     mappaBio = wikiService.getMappaTabBio(testo, ParBio)
                 } catch (Exception unErrore) { // intercetta l'errore
                     if (mappaWiki.title) {
-                        log.info 'CaricaBiografia/getMappaTabBio - titolo: ' + mappaWiki.title
+                        log.warn 'CaricaBiografia/getMappaTabBio - titolo: ' + mappaWiki.title
                     } else {
-                        log.info testo
+                        log.warn testo
                     }// fine del blocco if-else
                 }// fine del blocco try-catch
 
@@ -2173,7 +2173,7 @@ class BioService {
                                 }// fine del blocco if
                             }// fine del blocco if-else
                         } catch (Exception unErrore) { // intercetta l'errore
-                            log.info 'riga 1678: titolo ' + mappaWiki.title + ' ' + "${chiaveNoAccento}"
+                            log.warn 'riga 1678: titolo ' + mappaWiki.title + ' ' + "${chiaveNoAccento}"
                         }// fine del blocco try-catch
                     }// fine del blocco if
                 }// fine del blocco if
@@ -2194,7 +2194,7 @@ class BioService {
             biografia.langlinks = wikiService.getLInksTesto(testo)
             biografia.extra = this.isExtraBiografia(testo)
             if (biografia.extra) {
-                log.info "La pagina ${par.title} ha dei parametri extra"
+                log.warn "La pagina ${par.title} ha dei parametri extra"
             }// fine del blocco if
 
         }// fine del blocco if
@@ -2358,7 +2358,7 @@ class BioService {
                 }// fine del blocco if
 
             } else {
-                log.info "La pagina ${titolo} è stata vuotata"
+                log.warn "La pagina ${titolo} è stata vuotata"
             }// fine del blocco if-else
         }// fine del blocco if
 
@@ -2367,7 +2367,7 @@ class BioService {
             oldLen = wikiTmplBio.length()
             newLen = grailsTmplBio.length()
             if ((oldLen - newLen).abs() > maxDelta) {
-                log.info "La pagina ${titolo} è stata modificata in maniera eccessiva! Controlla"
+                log.warn "La pagina ${titolo} è stata modificata in maniera eccessiva! Controlla"
             }// fine del blocco if
         }// fine del blocco if
 
@@ -3811,7 +3811,7 @@ class BioService {
             } else {
                 continua = false
                 titolo = pagina.getTitolo()
-                log.info "La pagina -${titolo}- ha qualche problema"
+                log.warn "La pagina -${titolo}- ha qualche problema"
             }// fine del blocco if-else
         }// fine del blocco if
 
@@ -3983,11 +3983,11 @@ class BioService {
     }// fine della closure
 
     private tempo() {
-//        log.info LibBio.deltaMin(inizio) + ' minuti dal via'
+//        log.warn LibBio.deltaMin(inizio) + ' minuti dal via'
     }// fine del metodo
 
     private tempoSec() {
-//        log.info LibBio.deltaSec(inizio) + ' secondi dal via'
+//        log.warn LibBio.deltaSec(inizio) + ' secondi dal via'
     }// fine del metodo
 
     private ArrayList getListaSesso() {
