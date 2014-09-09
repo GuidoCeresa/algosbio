@@ -36,7 +36,6 @@ class ProfessioneService {
         long inizio = System.currentTimeMillis()
         String secondi
         String records
-        String info
 
         // Recupera la mappa dalla pagina wiki
         Map mappa = this.getMappa()
@@ -50,8 +49,7 @@ class ProfessioneService {
             if (Pref.getBool(LibBio.USA_LOG_INFO, false)) {
                 secondi = LibBio.getSec(inizio)
                 records = LibTesto.formatNum(mappa.size())
-                info = "Aggiornati in ${secondi} i ${records} records di professione (plurale)"
-                log.warn info
+                log.info "Aggiornati in ${secondi} i ${records} records di professione (plurale)"
             }// fine del blocco if
         }// fine del blocco if
     } // fine del metodo
