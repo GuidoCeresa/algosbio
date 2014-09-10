@@ -36,6 +36,8 @@ class AntroponimoController {
     def logoService
     def eventoService
     def antroponimoService
+    def professioneService
+    def genereService
 
     def index() {
         redirect(action: 'list', params: params)
@@ -139,9 +141,14 @@ class AntroponimoController {
         String vociCreateTxt = ''
         int vociCreate = 0
 
+        //--ricontrolla la lista delle professioni
+        if (professioneService) {
+            professioneService.download()
+        }// fine del blocco if
+
         //--ricontrolla la lista dei plurali per genere
-        if (antroponimoService) {
-            antroponimoService.download()
+        if (genereService) {
+            genereService.download()
         }// fine del blocco if
 
         //--costruisce una lista di nomi (circa 600)

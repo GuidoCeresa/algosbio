@@ -13,6 +13,7 @@ class CicloJob {
     def bioService
     def bioWikiService
     def logWikiService
+    def genereService
 
     //--numero di cicli
     private static int CICLI = 5
@@ -40,6 +41,7 @@ class CicloJob {
 
         //--flag di attivazione
         if (Pref.getBool(LibBio.USA_CRONO_DOWNLOAD)) {
+
             if (attivitaService) {
                 attivitaService.download()
             }// fine del blocco if
@@ -48,6 +50,9 @@ class CicloJob {
             }// fine del blocco if
             if (professioneService) {
                 professioneService.download()
+            }// fine del blocco if
+            if (genereService) {
+                genereService.download()
             }// fine del blocco if
 
             if (bioService && bioWikiService) {

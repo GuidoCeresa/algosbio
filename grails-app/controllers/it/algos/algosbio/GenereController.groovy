@@ -1,5 +1,7 @@
 package it.algos.algosbio
 
+import it.algos.algos.DialogoController
+import it.algos.algos.TipoDialogo
 
 import static org.springframework.http.HttpStatus.*
 import grails.transaction.Transactional
@@ -10,19 +12,57 @@ class GenereController {
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
     private static int MAX = 20
 
+    // utilizzo di un service con la businessLogic per l'elaborazione dei dati
+    // il service viene iniettato automaticamente
+    def genereService
+
+    //--mostra un avviso di spiegazione per l'operazione da compiere
+    //--passa al metodo effettivo
+    def download() {
+        params.tipo = TipoDialogo.conferma
+        params.avviso = 'Download dalla pagina Modulo:Bio/Plurale attività genere. Vengono aggiunti nuovi generi ed aggiornati quelli esistenti.'
+        params.returnController = 'genere'
+        params.returnAction = 'downloadDopoConferma'
+        redirect(controller: 'dialogo', action: 'box', params: params)
+    } // fine del metodo
+
+    //--ritorno dal dialogo di conferma
+    //--a seconda del valore ritornato come parametro, esegue o meno l'operazione
+    //--aggiorna i records leggendoli dalla pagina wiki
+    //--modifica i valori esistenti
+    //--aggiunge nuovi valori
+    def downloadDopoConferma() {
+        String valore
+        flash.message = 'Operazione annullata. Download non eseguito.'
+
+        if (params.valore) {
+            if (params.valore instanceof String) {
+                valore = (String) params.valore
+                if (valore.equals(DialogoController.DIALOGO_CONFERMA)) {
+                    genereService.download()
+                    flash.message = 'Operazione effettuata. Sono stati aggiornati i valori dei generi'
+                }// fine del blocco if
+            }// fine del blocco if
+        }// fine del blocco if
+
+        redirect(action: 'index')
+    } // fine del metodo
+
     def index(Integer max) {
         if (!params.max) params.max = MAX
-        ArrayList menuExtra = null
-        ArrayList campiLista = null
+        ArrayList menuExtra
+        ArrayList campiLista
         def campoSort
         int recordsTotali
         String titoloLista = ''
+        def noMenuCreate = true
 
         //--selezione dei menu extra
         //--solo azione e di default controller=questo; classe e titolo vengono uguali
         //--mappa con [cont:'controller', action:'metodo', icon:'iconaImmagine', title:'titoloVisibile']
-        menuExtra = []
-        params.menuExtra = menuExtra
+        menuExtra = [
+                [cont: 'genere', action: 'download', icon: 'frecciagiu', title: 'Download'],
+        ]
         // fine della definizione
 
         //--selezione delle colonne (campi) visibili nella lista
@@ -60,6 +100,7 @@ class GenereController {
                                              menuExtra         : menuExtra,
                                              campiLista        : campiLista,
                                              provaInstanceCount: recordsTotali,
+                                             noMenuCreate      : noMenuCreate,
                                              params            : params]
     } // fine del metodo
 

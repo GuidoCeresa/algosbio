@@ -39,6 +39,7 @@ class BioWikiController {
     def attivitaService
     def nazionalitaService
     def professioneService
+    def genereService
     SessionFactory sessionFactory
 
     def index() {
@@ -222,6 +223,7 @@ class BioWikiController {
             attivitaService.download()
             nazionalitaService.download()
             professioneService.download()
+            genereService.download()
             mappa = esegueAggiungeWiki()
             if (mappa && mappa.get(LibBio.AGGIUNTI)) {
                 aggiunti = mappa.get(LibBio.AGGIUNTI).size()

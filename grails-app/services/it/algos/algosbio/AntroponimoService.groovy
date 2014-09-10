@@ -29,7 +29,6 @@ class AntroponimoService {
     // il service NON viene iniettato automaticamente (perché è nel plugin)
     WikiService wikiService = new WikiService()
 
-    private static String TITOLO = 'Modulo:Bio/Plurale attività genere'
     private tagTitolo = 'Persone di nome '
     private static String aCapo = '\n'
     private tagPunti = 'Altre...'
@@ -37,47 +36,6 @@ class AntroponimoService {
     private String progetto = 'Progetto:Antroponimi/'
     private String templateIncipit = 'incipit lista nomi'
 
-    /**
-     * Aggiorna i records leggendoli dalla pagina wiki
-     *
-     * Recupera la mappa dalla pagina wiki
-     * Aggiunge al database i records di genere mancanti
-     */
-    public download() {
-        // Recupera la mappa dalla pagina wiki
-        Map mappa = this.getMappa()
-
-        // Aggiunge i records mancanti
-        if (mappa) {
-            mappa?.each {
-                this.aggiungeRecordGenere(it)
-            }// fine di each
-
-            if (Pref.getBool(LibBio.USA_LOG_INFO, false)) {
-                log.info 'Aggiornati sul DB i records di attività plurale maschile e femminile'
-            }// fine del blocco if
-        }// fine del blocco if-else
-    } // fine del metodo
-
-    /**
-     * Recupera la mappa dalla pagina di servizio wiki
-     */
-    private getMappa() {
-        // variabili e costanti locali di lavoro
-        Map mappa = null
-
-        // Legge la pagina di servizio
-        if (wikiService && TITOLO) {
-            mappa = wikiService.leggeModuloMappa(TITOLO)
-        }// fine del blocco if
-
-        if (!mappa) {
-            log.warn 'Non sono riuscito a leggere la pagina plurale attività genere dal server wiki'
-        }// fine del blocco if
-
-        // valore di ritorno
-        return mappa
-    } // fine del metodo
 
     //--recupera una lista 'grezza' di tutti i nomi
     public void costruisce() {
@@ -1143,28 +1101,5 @@ class AntroponimoService {
         return antroponimo
     } // fine del metodo
 
-    /**
-     * Aggiunge il record di genere mancante
-     */
-    def aggiungeRecordGenere(record) {
-        // variabili e costanti locali di lavoro
-        String singolare
-        String plurale
-        Genere genere
-
-        if (record) {
-            singolare = record.key
-            plurale = record.value
-            if (plurale) {
-                genere = Genere.findBySingolare(singolare)
-                if (!genere) {
-                    genere = new Genere()
-                }// fine del blocco if
-                genere.singolare = singolare
-                genere.plurale = plurale
-                genere.save(flush: true)
-            }// fine del blocco if
-        }// fine del blocco if
-    } // fine del metodo
 
 } // fine della service classe
