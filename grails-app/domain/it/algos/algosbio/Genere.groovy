@@ -5,6 +5,7 @@ class Genere {
     /** nomi interni dei campi (ordine non garantito) */
     String singolare
     String plurale
+    String sesso // M o F
 
     /**
      * regolazione delle proprietà di ogni campo
@@ -15,6 +16,7 @@ class Genere {
     static constraints = {
         singolare(blank: false, nullable: false, unique: true)
         plurale(blank: false, nullable: false)
+        sesso(blank: false, nullable: false)
     } // end of static constraints
 
     /**

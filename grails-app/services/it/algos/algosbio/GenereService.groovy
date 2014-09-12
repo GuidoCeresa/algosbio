@@ -75,7 +75,7 @@ class GenereService {
 
         if (record) {
             singolare = record.key
-            plurale = record.value
+            plurale = record.value[0]
             if (plurale) {
                 genere = Genere.findBySingolare(singolare)
                 if (!genere) {
@@ -83,6 +83,7 @@ class GenereService {
                 }// fine del blocco if
                 genere.singolare = singolare
                 genere.plurale = plurale
+                genere.sesso = record.value[1]
                 genere.save(flush: true)
             }// fine del blocco if
         }// fine del blocco if

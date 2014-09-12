@@ -1,4 +1,5 @@
 import groovy.sql.Sql
+import it.algos.algosbio.Genere
 import it.algos.algospref.Pref
 import it.algos.algospref.Preferenze
 import it.algos.algospref.Type
@@ -380,6 +381,18 @@ class VersioneBootStrap {
             pref.bool = false
             pref.save(flush: true)
             versioneService.newVersione('Preferenze', 'USA_MAIL_INFO di default false')
+        }// fine del blocco if
+
+        //--nuovo campo sesso (M o F) in Genere - Valore iniziale per i record esistenti = x
+        if (versioneService && versioneService.installaVersione(56)) {
+            Genere gen
+            def lista = Genere.list()
+            lista?.each {
+                gen = (Genere) it
+                gen.sesso = 'x'
+                gen.save(flush: true)
+            } // fine del ciclo each
+            versioneService.newVersione('Genere', 'Aggiunto campo con valore neutro (da regolare)')
         }// fine del blocco if
     }// fine della closure
 

@@ -41,6 +41,15 @@
 				</li>
 				</g:if>
 			
+				<g:if test="${genereInstance?.sesso}">
+				<li class="fieldcontain">
+					<span id="sesso-label" class="property-label"><g:message code="genere.sesso.label" default="Sesso" /></span>
+					
+						<span class="property-value" aria-labelledby="sesso-label"><g:fieldValue bean="${genereInstance}" field="sesso"/></span>
+					
+				</li>
+				</g:if>
+			
 			</ol>
 			<g:form url="[resource:genereInstance, action:'delete']" method="DELETE">
 				<fieldset class="buttons">

@@ -15,10 +15,8 @@
 <div class="nav" role="navigation">
     <ul>
         <li><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
-        <g:if test="${!noMenuCreate}">
-            <li><g:link class="create" action="create"><g:message code="attivita.new.label"
-                                                                  args="[entityName]" default="Nuovo"/></g:link></li>
-        </g:if>
+        <li><g:link class="create" action="create"><g:message code="default.new.label"
+                                                              args="[entityName]"/></g:link></li>
         <g:if test="${menuExtra}">
             <algos:menuExtra menuExtra="${menuExtra}"></algos:menuExtra>
         </g:if>
@@ -59,6 +57,9 @@
                 <g:sortableColumn property="plurale"
                                   title="${message(code: 'genere.plurale.label', default: 'Plurale')}"/>
                 
+                <g:sortableColumn property="sesso"
+                                  title="${message(code: 'genere.sesso.label', default: 'Sesso')}"/>
+                
             </tr>
         </g:else>
         </thead>
@@ -79,6 +80,9 @@
                     
                     <td><g:link action="show"
                                 id="${genereInstance.id}">${fieldValue(bean: genereInstance, field: "plurale")}</g:link></td>
+                    
+                    <td><g:link action="show"
+                                id="${genereInstance.id}">${fieldValue(bean: genereInstance, field: "sesso")}</g:link></td>
                     
                 </tr>
             </g:each>

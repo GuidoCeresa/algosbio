@@ -6,11 +6,11 @@ import it.algos.algos.TipoDialogo
 import static org.springframework.http.HttpStatus.*
 import grails.transaction.Transactional
 
-@Transactional(readOnly = true)
+@Transactional(readOnly = false)
 class GenereController {
 
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
-    private static int MAX = 20
+    private static int MAX = 100
 
     // utilizzo di un service con la businessLogic per l'elaborazione dei dati
     // il service viene iniettato automaticamente
@@ -99,7 +99,7 @@ class GenereController {
         respond Genere.list(params), model: [titoloLista       : titoloLista,
                                              menuExtra         : menuExtra,
                                              campiLista        : campiLista,
-                                             provaInstanceCount: recordsTotali,
+                                             genereInstanceCount: recordsTotali,
                                              noMenuCreate      : noMenuCreate,
                                              params            : params]
     } // fine del metodo

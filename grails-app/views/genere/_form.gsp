@@ -20,3 +20,12 @@
 
 </div>
 
+<div class="fieldcontain ${hasErrors(bean: genereInstance, field: 'sesso', 'error')} required">
+	<label for="sesso">
+		<g:message code="genere.sesso.label" default="Sesso" />
+		<span class="required-indicator">*</span>
+	</label>
+	<g:textField name="sesso" required="" value="${genereInstance?.sesso}"/>
+
+</div>
+
