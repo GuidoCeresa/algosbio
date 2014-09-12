@@ -99,7 +99,7 @@ class AntroponimoController {
     //--crea/aggiorna le pagine antroponimi
     def elaboraDopoConferma() {
         String valore
-        boolean debug = Pref.getBool((String) grailsApplication.config.debug)
+        boolean debug = Pref.getBool(LibBio.DEBUG, false)
         flash.message = 'Operazione annullata. Pagine antroponimi non modificate.'
 
         if (params.valore) {

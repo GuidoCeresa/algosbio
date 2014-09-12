@@ -110,7 +110,7 @@
         <li class="controller"><g:link controller="Versione">Versioni</g:link></li>
         <li class="controller"><g:link controller="Setup">Setup</g:link></li>
         <br>
-        <li class="controller"><g:link controller="Pref">Preferenze</g:link></li>
+        <li class="controller"><g:link controller="Pref">Pref</g:link></li>
         <li class="controller"><g:link controller="LoginWiki">Login</g:link></li>
         <br>
         <li class="controller"><g:link controller="Localita">Localita</g:link></li>
@@ -121,7 +121,7 @@
         <li class="controller"><g:link controller="Anno">Anni</g:link></li>
         <li class="controller"><g:link controller="Attivita">Attività</g:link></li>
         <li class="controller"><g:link controller="Nazionalita">Nazionalità</g:link></li>
-        <li class="controller"><g:link controller="Antroponimo">Antroponimi</g:link></li>
+        <li class="controller"><g:link controller="Antroponimo">Nomi</g:link></li>
         <br>
         <li class="controller"><g:link controller="Bio">Bio</g:link></li>
         <li class="controller"><g:link controller="BioWiki">BioWiki</g:link></li>

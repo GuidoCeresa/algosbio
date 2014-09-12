@@ -11,7 +11,7 @@
           <root url="file://$MODULE_DIR$/target/work/plugins/algosvers-0.36/grails-app/views" relative="/" />
           <root url="file://$MODULE_DIR$/target/work/plugins/algospref-0.73/grails-app/views" relative="/" />
           <root url="file://$MODULE_DIR$/target/work/plugins/algos-1.42/grails-app/views" relative="/" />
-          <root url="file://$MODULE_DIR$/target/work/plugins/algoswiki-0.92/grails-app/views" relative="/" />
+          <root url="file://$MODULE_DIR$/target/work/plugins/algoswiki-0.93/grails-app/views" relative="/" />
         </webroots>
         <sourceRoots />
       </configuration>
@@ -59,11 +59,11 @@
       <sourceFolder url="file://$MODULE_DIR$/target/work/plugins/algosvers-0.36/grails-app/domain" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/target/work/plugins/algosvers-0.36/grails-app/services" isTestSource="false" />
     </content>
-    <content url="file://$MODULE_DIR$/target/work/plugins/algoswiki-0.92">
-      <sourceFolder url="file://$MODULE_DIR$/target/work/plugins/algoswiki-0.92/src/groovy" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/target/work/plugins/algoswiki-0.92/grails-app/i18n" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/target/work/plugins/algoswiki-0.92/grails-app/controllers" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/target/work/plugins/algoswiki-0.92/grails-app/services" isTestSource="false" />
+    <content url="file://$MODULE_DIR$/target/work/plugins/algoswiki-0.93">
+      <sourceFolder url="file://$MODULE_DIR$/target/work/plugins/algoswiki-0.93/src/groovy" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/target/work/plugins/algoswiki-0.93/grails-app/i18n" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/target/work/plugins/algoswiki-0.93/grails-app/controllers" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/target/work/plugins/algoswiki-0.93/grails-app/services" isTestSource="false" />
     </content>
     <content url="file://$MODULE_DIR$/target/work/plugins/asset-pipeline-1.8.11">
       <sourceFolder url="file://$MODULE_DIR$/target/work/plugins/asset-pipeline-1.8.11/src/groovy" isTestSource="false" />

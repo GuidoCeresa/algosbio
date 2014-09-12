@@ -14,7 +14,7 @@ class Genere {
      * la possibilità di avere valori nulli, di default è false
      */
     static constraints = {
-        singolare(blank: false, nullable: false, unique: true)
+        singolare(blank: false, nullable: false, unique: false)
         plurale(blank: false, nullable: false)
         sesso(blank: false, nullable: false)
     } // end of static constraints

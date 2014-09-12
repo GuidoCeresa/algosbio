@@ -394,6 +394,17 @@ class VersioneBootStrap {
             } // fine del ciclo each
             versioneService.newVersione('Genere', 'Aggiunto campo con valore neutro (da regolare)')
         }// fine del blocco if
+
+        //--nuovo campo sesso (M o F) in Genere - Valore iniziale per i record esistenti = x
+        if (versioneService && versioneService.installaVersione(57)) {
+            Genere gen
+            def lista = Genere.list()
+            lista?.each {
+                gen = (Genere) it
+                gen.delete(flush: true)
+            } // fine del ciclo each
+            versioneService.newVersione('Genere', 'Reset della tavola')
+        }// fine del blocco if
     }// fine della closure
 
 

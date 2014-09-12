@@ -71,21 +71,44 @@ class GenereService {
         // variabili e costanti locali di lavoro
         String singolare
         String plurale
-        Genere genere
+        String sesso
+        def valore
 
         if (record) {
             singolare = record.key
-            plurale = record.value[0]
-            if (plurale) {
-                genere = Genere.findBySingolare(singolare)
-                if (!genere) {
-                    genere = new Genere()
-                }// fine del blocco if
-                genere.singolare = singolare
-                genere.plurale = plurale
-                genere.sesso = record.value[1]
-                genere.save(flush: true)
+            valore = record.value
+
+            if (valore.size() >= 2) {
+                plurale = valore[0]
+                sesso = valore[1]
+                aggiungeRecordEffettivo(plurale, singolare, sesso)
             }// fine del blocco if
+
+            if (valore.size() == 4) {
+                plurale = valore[2]
+                sesso = valore[3]
+                aggiungeRecordEffettivo(plurale, singolare, sesso)
+            }// fine del blocco if
+
+        }// fine del blocco if
+    } // fine del metodo
+
+    /**
+     * Aggiunge il record di genere mancante
+     */
+    def aggiungeRecordEffettivo(String plurale, String singolare, String sesso) {
+        // variabili e costanti locali di lavoro
+        Genere genere
+
+        if (plurale) {
+            genere = Genere.findBySingolareAndSesso(singolare, sesso)
+            if (!genere) {
+                genere = new Genere()
+            }// fine del blocco if
+            genere.singolare = singolare
+            genere.plurale = plurale
+            genere.sesso = sesso
+            genere.save(flush: true)
         }// fine del blocco if
     } // fine del metodo
 

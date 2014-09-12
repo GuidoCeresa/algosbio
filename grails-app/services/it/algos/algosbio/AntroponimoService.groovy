@@ -36,7 +36,6 @@ class AntroponimoService {
     private String progetto = 'Progetto:Antroponimi/'
     private String templateIncipit = 'incipit lista nomi'
 
-
     //--recupera una lista 'grezza' di tutti i nomi
     public void costruisce() {
         ArrayList<String> listaNomiParziale
@@ -385,6 +384,7 @@ class AntroponimoService {
         String testo = ''
         String summary = LibBio.getSummary()
         ArrayList<BioGrails> listaBiografie
+        boolean debug = Pref.getBool(LibBio.DEBUG, false)
 
         titolo = tagTitolo + nome
         listaBiografie = getListaBiografie(nome)
@@ -398,8 +398,13 @@ class AntroponimoService {
         //footer
         testo += this.getNomeFooter(nome)
 
+        testo = testo.trim()
+
         //registra la pagina
-        new EditBio(titolo, testo, summary)
+        if (!debug) {
+            new EditBio(titolo, testo, summary)
+        }// fine del blocco if
+
     }// fine del metodo
 
     //--costruisce una lista di nomi
@@ -676,38 +681,75 @@ class AntroponimoService {
         String plurale
         Attivita attivitaRecord
         boolean link = this.titoloParagrafoConLink
+        String genere
+        Professione professione
 
         if (bio) {
             singolare = bio.attivita
+            genere = bio.sesso
             if (singolare) {
-                attivitaRecord = Attivita.findBySingolare(singolare)
-                if (attivitaRecord) {
-                    plurale = attivitaRecord.plurale
-                    if (plurale) {
-                        attivita = LibTesto.primaMaiuscola(plurale)
-                        if (attivita) {
-                            attivita = attivita.trim()
-                            if (link) {
-                                def professione = Professione.findBySingolare(singolare)
-                                attivitaLinkata = '[['
-                                if (professione) {
-                                    attivitaLinkata += LibTesto.primaMaiuscola(professione.voce)
-                                } else {
-                                    attivitaLinkata += LibTesto.primaMaiuscola(singolare)
-                                }// fine del blocco if-else
-                                attivitaLinkata += '|'
-                                attivitaLinkata += attivita
-                                attivitaLinkata += ']]'
-                            } else {
-                                attivitaLinkata = attivita
-                            }// fine del blocco if-else
-                        }// fine del blocco if
-                    }// fine del blocco if
+                attivita = attivitaPluralePerGenere(singolare, genere)
+                if (attivita) {
+                    if (link) {
+                        professione = Professione.findBySingolare(singolare)
+                        attivitaLinkata = '[['
+                        if (professione) {
+                            attivitaLinkata += LibTesto.primaMaiuscola(professione.voce)
+                        } else {
+                            attivitaLinkata += LibTesto.primaMaiuscola(singolare)
+                        }// fine del blocco if-else
+                        attivitaLinkata += '|'
+                        attivitaLinkata += attivita
+                        attivitaLinkata += ']]'
+                    } else {
+                        attivitaLinkata = attivita
+                    }// fine del blocco if-else
                 }// fine del blocco if
+
+//                attivitaRecord = Attivita.findBySingolare(singolare)
+//                if (attivitaRecord) {
+//                    plurale = attivitaRecord.plurale
+//                    if (plurale) {
+//                        attivita = LibTesto.primaMaiuscola(plurale)
+//                        if (attivita) {
+//                            attivita = attivita.trim()
+//                            if (link) {
+//                                def professione = Professione.findBySingolare(singolare)
+//                                attivitaLinkata = '[['
+//                                if (professione) {
+//                                    attivitaLinkata += LibTesto.primaMaiuscola(professione.voce)
+//                                } else {
+//                                    attivitaLinkata += LibTesto.primaMaiuscola(singolare)
+//                                }// fine del blocco if-else
+//                                attivitaLinkata += '|'
+//                                attivitaLinkata += attivita
+//                                attivitaLinkata += ']]'
+//                            } else {
+//                                attivitaLinkata = attivita
+//                            }// fine del blocco if-else
+//                        }// fine del blocco if
+//                    }// fine del blocco if
+//                }// fine del blocco if
             }// fine del blocco if
         }// fine del blocco if
 
         return attivitaLinkata
+    }// fine del metodo
+
+    public String attivitaPluralePerGenere(String singolare, String sesso) {
+        String plurale
+        Genere genere = Genere.findBySingolareAndSesso(singolare, sesso)
+
+        if (genere) {
+            plurale = genere.plurale
+        }// fine del blocco if
+
+        if (plurale) {
+            plurale = LibTesto.primaMaiuscola(plurale)
+            plurale = plurale.trim()
+        }// fine del blocco if
+
+        return plurale
     }// fine del metodo
 
     /**
