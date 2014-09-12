@@ -386,6 +386,10 @@ class AntroponimoService {
         ArrayList<BioGrails> listaBiografie
         boolean debug = Pref.getBool(LibBio.DEBUG, false)
 
+        if (debug) {
+            nome = 'Adriana'
+        }// fine del blocco if
+
         titolo = tagTitolo + nome
         listaBiografie = getListaBiografie(nome)
 
@@ -634,6 +638,8 @@ class AntroponimoService {
                     chiave = tagPunti
                 }// fine del blocco if-else
 
+                chiave = chiaveUnica(mappa, chiave)
+
                 if (chiave.equals(chiaveOld)) {
                     lista = mappa.get(chiave)
                     lista.add(didascalia)
@@ -652,6 +658,24 @@ class AntroponimoService {
         }// fine del blocco if
 
         return mappa
+    }// fine del metodo
+
+    public String chiaveUnica(Map mappa, String chiaveIn) {
+        String chiaveOut = chiaveIn
+        String chiaveAttivita = chiaveIn.substring(chiaveIn.indexOf('|') + 1, chiaveIn.length())
+        ArrayList<String> listaChiaviGiaUsate = mappa.keySet()
+        String chiaveGiaUsata
+        String chiaveRidotta
+
+        listaChiaviGiaUsate?.each {
+            chiaveGiaUsata = it
+            chiaveRidotta = chiaveGiaUsata.substring(chiaveGiaUsata.indexOf('|') + 1, chiaveGiaUsata.length())
+            if (chiaveRidotta.equals(chiaveAttivita)) {
+                chiaveOut = chiaveGiaUsata
+            }// fine del blocco if
+        }// fine del blocco if
+
+        return chiaveOut
     }// fine del metodo
 
     // se manca la didascalia, la crea al volo
@@ -676,11 +700,9 @@ class AntroponimoService {
     // aggiunge un link alla voce di riferimento
     public String getAttivita(BioGrails bio) {
         String attivitaLinkata = ''
-        String attivita = ''
         String singolare
-        String plurale
-        Attivita attivitaRecord
         boolean link = this.titoloParagrafoConLink
+        String attivita
         String genere
         Professione professione
 
@@ -705,31 +727,6 @@ class AntroponimoService {
                         attivitaLinkata = attivita
                     }// fine del blocco if-else
                 }// fine del blocco if
-
-//                attivitaRecord = Attivita.findBySingolare(singolare)
-//                if (attivitaRecord) {
-//                    plurale = attivitaRecord.plurale
-//                    if (plurale) {
-//                        attivita = LibTesto.primaMaiuscola(plurale)
-//                        if (attivita) {
-//                            attivita = attivita.trim()
-//                            if (link) {
-//                                def professione = Professione.findBySingolare(singolare)
-//                                attivitaLinkata = '[['
-//                                if (professione) {
-//                                    attivitaLinkata += LibTesto.primaMaiuscola(professione.voce)
-//                                } else {
-//                                    attivitaLinkata += LibTesto.primaMaiuscola(singolare)
-//                                }// fine del blocco if-else
-//                                attivitaLinkata += '|'
-//                                attivitaLinkata += attivita
-//                                attivitaLinkata += ']]'
-//                            } else {
-//                                attivitaLinkata = attivita
-//                            }// fine del blocco if-else
-//                        }// fine del blocco if
-//                    }// fine del blocco if
-//                }// fine del blocco if
             }// fine del blocco if
         }// fine del blocco if
 
@@ -768,7 +765,7 @@ class AntroponimoService {
         if (mappaIn && mappaIn.size() > 1) {
             listaChiavi = mappaIn.keySet()
             listaChiavi.remove(tagPunti) //elimino l'asterisco (per metterlo in fondo)
-            listaChiavi.sort()
+            listaChiavi = ordinaChiavi(listaChiavi)
             if (listaChiavi) {
                 mappaOut = new LinkedHashMap()
                 listaChiavi?.each {
@@ -787,6 +784,51 @@ class AntroponimoService {
 
         // valore di ritorno
         return mappaOut
+    }// fine della closure
+
+    /**
+     * Ordina una mappa
+     *
+     * @param mappa non ordinata
+     * @return mappa ordinata
+     */
+    public ArrayList<String> ordinaChiavi(ArrayList<String> listaChiaviIn) {
+        ArrayList<String> listaChiaviOut = listaChiaviIn.sort()
+//        LinkedHashMap<String, String> mappa = new LinkedHashMap<String, String>()
+        String chiaveCompleta
+        String chiaveRidotta
+        String chiaveDoppia
+        ArrayList<String> listaChiavi
+        String chiave
+        String valore
+        ArrayList<String> lista = new ArrayList<String>()
+        String tag = 'x3x7x4x'
+
+        if (true) {
+            listaChiaviOut?.each {
+                chiaveCompleta = it
+                chiaveRidotta = chiaveCompleta.substring(chiaveCompleta.indexOf('|') + 1, chiaveCompleta.length())
+                lista.add(chiaveRidotta + tag + chiaveCompleta)
+//                mappa.put(chiaveRidotta, chiaveCompleta)
+            } // fine del ciclo each
+
+//            listaChiavi = mappa.keySet()
+//            listaChiavi.sort()
+            lista.sort()
+
+            if (lista) {
+                listaChiaviOut = new ArrayList<String>()
+                lista?.each {
+                    chiaveDoppia = it
+                    chiaveCompleta = chiaveDoppia.substring(chiaveDoppia.indexOf(tag) + tag.length(), chiaveDoppia.length())
+                    listaChiaviOut.add(chiaveCompleta)
+                }// fine del blocco if
+            }// fine del blocco if
+
+        }// fine del blocco if
+
+        // valore di ritorno
+        return listaChiaviOut
     }// fine della closure
 
     public String getParagrafoDidascalia(ArrayList<String> nomi) {
