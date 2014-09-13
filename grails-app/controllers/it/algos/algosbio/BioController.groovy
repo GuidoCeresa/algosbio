@@ -163,7 +163,7 @@ class BioController {
         boolean continua = false
         def numVoci
         String avviso
-        boolean debug = Preferenze.getBool((String) grailsApplication.config.debug)
+        boolean debug = Pref.getBool(LibBio.DEBUG, false)
         flash.message = 'Operazione annullata. Le voci non sono state modificate.'
 
         if (params.valore) {
@@ -273,7 +273,7 @@ class BioController {
         boolean continua = false
         def numVoci
         String avviso
-        boolean debug = Preferenze.getBool((String) grailsApplication.config.debug)
+        boolean debug = Pref.getBool(LibBio.DEBUG, false)
         flash.message = 'Operazione annullata. Le voci non sono state modificate.'
 
         if (params.valore) {
@@ -321,8 +321,8 @@ class BioController {
         int recordsTotaliVuoti
         int vociBiograficheTotali
 
-        if (Pref.getBool(LibBio.USA_LIMITE_ELABORA)) {
-            params.max = Pref.getInt(LibBio.MAX_ELABORA)
+        if (Pref.getBool(LibBio.USA_LIMITE_ELABORA, true)) {
+            params.max = Pref.getInt(LibBio.MAX_ELABORA, 500)
         }// fine del blocco if
 
         //--selezione dei menu extra
@@ -403,8 +403,8 @@ class BioController {
         int recordsTotaliPieni
         int vociBiograficheTotali
 
-        if (LibPref.getBool(LibBio.USA_LIMITE_ELABORA)) {
-            params.max = LibPref.getInt(LibBio.MAX_ELABORA)
+        if (Pref.getBool(LibBio.USA_LIMITE_ELABORA, true)) {
+            params.max = Pref.getInt(LibBio.MAX_ELABORA, 500)
         }// fine del blocco if
 
         //--selezione dei menu extra
@@ -483,8 +483,8 @@ class BioController {
         String titoloLista
         int recordsTotali
 
-        if (LibPref.getBool(LibBio.USA_LIMITE_ELABORA)) {
-            params.max = LibPref.getInt(LibBio.MAX_ELABORA)
+        if (Pref.getBool(LibBio.USA_LIMITE_ELABORA, true)) {
+            params.max = Pref.getInt(LibBio.MAX_ELABORA, 500)
         }// fine del blocco if
 
         //--selezione dei menu extra
@@ -554,8 +554,8 @@ class BioController {
     //--mostra un dialogo di conferma per l'operazione da compiere
     //--passa al metodo effettivo
     def fixOrdinamento() {
-        boolean usaLimiteElabora = LibPref.getBool(LibBio.USA_LIMITE_ELABORA)
-        int maxElabora = LibPref.getInt(LibBio.MAX_ELABORA)
+        boolean usaLimiteElabora = Pref.getBool(LibBio.USA_LIMITE_ELABORA, true)
+        int maxElabora = Pref.getInt(LibBio.MAX_ELABORA, 500)
         String maxElaboraTxt
         params.tipo = TipoDialogo.conferma
         params.titolo = 'FixOrdinamento'
@@ -744,11 +744,11 @@ class BioController {
     } // fine del metodo
 
     def biowiki() {
-        redirect(controller: 'bioWiki', action: 'show',params: params)
+        redirect(controller: 'bioWiki', action: 'show', params: params)
     } // fine del metodo
 
     def biograils() {
-        redirect(controller: 'bioGrails', action: 'show',params: params)
+        redirect(controller: 'bioGrails', action: 'show', params: params)
     } // fine del metodo
 
 
