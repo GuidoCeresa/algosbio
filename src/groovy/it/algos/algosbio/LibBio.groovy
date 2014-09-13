@@ -1230,4 +1230,29 @@ class LibBio {
         return tempoTxt
     } // fine del metodo
 
+    /**
+     * Aggiunge il pipe ed il link visibile
+     */
+    public static String addPipe(String nomeIn) {
+        String nomeOut = nomeIn
+        String tagPar = '('
+        String tagPipe = '|'
+        String prima
+
+        if (nomeOut) {
+            nomeOut = nomeOut.trim()
+
+            if (nomeOut.contains(tagPar)) {
+                if (!nomeOut.endsWith(tagPipe)) {
+                    nomeOut += tagPipe
+                }// fine del blocco if
+                prima = nomeOut.substring(0, nomeOut.indexOf(tagPar))
+                prima = prima.trim()
+                nomeOut += prima
+            }// fine del blocco if
+        }// fine del blocco if
+
+        return nomeOut
+    } // fine del metodo
+
 } // fine della classe

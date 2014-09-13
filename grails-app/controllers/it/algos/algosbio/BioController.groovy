@@ -743,6 +743,15 @@ class BioController {
                 params: params)
     } // fine del metodo
 
+    def biowiki() {
+        redirect(controller: 'bioWiki', action: 'show',params: params)
+    } // fine del metodo
+
+    def biograils() {
+        redirect(controller: 'bioGrails', action: 'show',params: params)
+    } // fine del metodo
+
+
     def show(Long id) {
         def bioWikiInstance = BioWiki.get(id)
 

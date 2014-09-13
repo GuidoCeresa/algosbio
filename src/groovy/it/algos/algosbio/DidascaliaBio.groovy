@@ -921,9 +921,7 @@ class DidascaliaBio {
                     if (luogoNascitaLink) {
                         testo += LibWiki.setQuadre(luogoNascitaLink + "|" + luogoNascita)
                     } else {
-                        if (luogoNascita.contains(')')) {
-                            luogoNascita += '|'
-                        }// fine del blocco if
+                        luogoNascita = LibBio.addPipe(luogoNascita)
                         testo += LibWiki.setQuadre(luogoNascita)
                     }// fine del blocco if-else
                 }// fine del blocco if
@@ -944,9 +942,7 @@ class DidascaliaBio {
                     if (luogoMorteLink) {
                         testo += LibWiki.setQuadre(luogoMorteLink + "|" + luogoMorte)
                     } else {
-                        if (luogoMorte.contains(')')) {
-                            luogoMorte += '|'
-                        }// fine del blocco if
+                        luogoMorte = LibBio.addPipe(luogoMorte)
                         testo += LibWiki.setQuadre(luogoMorte)
                     }// fine del blocco if-else
                 }// fine del blocco if
