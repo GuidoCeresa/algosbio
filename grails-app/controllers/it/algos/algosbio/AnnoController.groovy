@@ -16,6 +16,7 @@ package it.algos.algosbio
 import it.algos.algos.DialogoController
 import it.algos.algos.TipoDialogo
 import it.algos.algoslib.Lib
+import it.algos.algospref.Pref
 import org.codehaus.groovy.grails.commons.DefaultGrailsDomainClass
 import org.springframework.dao.DataIntegrityViolationException
 
@@ -171,12 +172,20 @@ class AnnoController {
     //--elabora e crea tutti gli anni modificati
     //--passa al metodo effettivo senza nessun dialogo di conferma
     def uploadAllAnni() {
+        boolean debug = Pref.getBool(LibBio.DEBUG, false)
+
         if (grailsApplication && grailsApplication.config.login) {
             bioGrailsService.uploadAnniNascita()
             bioGrailsService.uploadAnniMorte()
         } else {
-            flash.error = 'Devi essere loggato per effettuare un upload di pagine sul server wiki'
+            if (debug) {
+                bioGrailsService.uploadAnniNascita()
+                bioGrailsService.uploadAnniMorte()
+            } else {
+                flash.error = 'Devi essere loggato per effettuare un upload di pagine sul server wiki'
+            }// fine del blocco if-else
         }// fine del blocco if-else
+
         redirect(action: 'list')
     } // fine del metodo
 
@@ -199,9 +208,9 @@ class AnnoController {
                 [action: 'pulisce',
                         icon: 'list',
                         title: 'Pulisce tutto'],
-                [cont: 'bioGrails', action: 'uploadAnniNascita', icon: 'frecciasu', title: 'Upload nascita'],
-                [cont: 'bioGrails', action: 'uploadAnniMorte', icon: 'frecciasu', title: 'Upload morte'],
-                [cont: 'bioGrails', action: 'uploadAllAnni', icon: 'frecciasu', title: 'Upload all anni']
+                [cont: 'anno', action: 'uploadAnniNascita', icon: 'frecciasu', title: 'Upload nascita'],
+                [cont: 'anno', action: 'uploadAnniMorte', icon: 'frecciasu', title: 'Upload morte'],
+                [cont: 'anno', action: 'uploadAllAnni', icon: 'frecciasu', title: 'Upload all anni']
         ]
         // fine della definizione
 

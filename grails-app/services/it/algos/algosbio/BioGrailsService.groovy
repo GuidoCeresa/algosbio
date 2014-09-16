@@ -230,16 +230,25 @@ class BioGrailsService {
     //--elabora e crea tutti gli anni di nascita modificati
     def int uploadAnniNascita() {
         int anniiModificati = 0
+        boolean debug = Pref.getBool(LibBio.DEBUG, false)
         boolean registrata = false
         ArrayList listaAnniModificati
+        String titolo
+        Anno anno
 
-        listaAnniModificati = Anno.findAllBySporcoNato(true)
-        listaAnniModificati?.each {
-            registrata = uploadAnnoNascita((Anno) it)
-            if (registrata) {
-                anniiModificati++
-            }// fine del blocco if
-        } // fine del ciclo each
+        if (debug) {
+            titolo = Pref.getStr(LibBio.ANNO_DEBUG, '1901')
+            anno = Anno.findByTitolo(titolo)
+            uploadAnnoNascita(anno)
+        } else {
+            listaAnniModificati = Anno.findAllBySporcoNato(true)
+            listaAnniModificati?.each {
+                registrata = uploadAnnoNascita((Anno) it)
+                if (registrata) {
+                    anniiModificati++
+                }// fine del blocco if
+            } // fine del ciclo each
+        }// fine del blocco if-else
 
         return anniiModificati
     } // fine del metodo
@@ -279,7 +288,7 @@ class BioGrailsService {
             } // fine del ciclo each
             if (listaPersone) {
                 numPersone = listaPersone.size()
-                registrata = this.caricaPagina(anno, listaPersone, numPersone, tagNatiMorti, tagNateMorte)
+                registrata = caricaPagina(anno, listaPersone, numPersone, tagNatiMorti, tagNateMorte)
             }// fine del blocco if
         }// fine del blocco if
 
@@ -406,7 +415,8 @@ class BioGrailsService {
     /**
      * Carica su wiki la pagina
      */
-    private boolean caricaPagina(Anno anno, ArrayList lista, int numPersone, String tagNatiMorti, String tagNateMorte) {
+    private
+    static boolean caricaPagina(Anno anno, ArrayList lista, int numPersone, String tagNatiMorti, String tagNateMorte) {
         // variabili e costanti locali di lavoro
         boolean registrata = false
         String titolo = ''
@@ -414,7 +424,7 @@ class BioGrailsService {
         String summary = LibBio.getSummary()
         EditBio paginaModificata
         Risultato risultato
-        boolean debug = Preferenze.getBool((String) grailsApplication.config.debug)
+        boolean debug = Pref.getBool(LibBio.DEBUG, false)
 
         // controllo di congruità
         if (anno && lista && numPersone) {
@@ -504,6 +514,7 @@ class BioGrailsService {
 
         if (giorno && lista && numPersone) {
             testo = getTestoTop(giorno, numPersone)
+            testo += aCapo
             testo += getTestoBodyGiorno(lista, tagNateMorte)
             testo += aCapo
             testo += getTestoBottom(giorno, tagNatiMorti)
@@ -695,7 +706,8 @@ class BioGrailsService {
                 nateMorte = nateMorte.substring(0, nateMorte.length() - 1).trim()
                 nateMorte += 'e'
                 titolo = "Lista di persone $nateMorte in questo anno"
-                testoOut = WikiLib.cassettoInclude(testoIn, titolo)
+//                testoOut = WikiLib.cassettoInclude(testoIn, titolo)
+                testoOut = cassettoListe(testoIn)
             } else {
                 testoOut = testoIn
             }// fine del blocco if-else
@@ -703,6 +715,24 @@ class BioGrailsService {
 
         // valore di ritorno
         return testoOut.trim()
+    }// fine del metodo
+
+
+    private static String cassettoListe(String testoIn) {
+        String testoOut = testoIn
+
+        if (testoIn) {
+            testoOut = '{{Lista persone per anno'
+            testoOut += aCapo
+            testoOut += '|testo='
+            testoOut += aCapo
+            testoOut += testoIn
+            testoOut +=
+                    testoOut += aCapo
+            testoOut += '}}'
+        }// fine del blocco if
+
+        return testoOut
     }// fine del metodo
 
     /**
