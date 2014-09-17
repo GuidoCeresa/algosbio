@@ -214,9 +214,9 @@ class GiornoController {
                 [action: 'pulisce',
                  icon  : 'list',
                  title : 'Pulisce tutto'],
-                [cont: 'bioGrails', action: 'uploadGiorniNascita', icon: 'frecciasu', title: 'Upload nascita'],
-                [cont: 'bioGrails', action: 'uploadGiorniMorte', icon: 'frecciasu', title: 'Upload morte'],
-                [cont: 'bioGrails', action: 'uploadAllGiorni', icon: 'frecciasu', title: 'Upload all giorni']
+                [cont: 'giorno', action: 'uploadGiorniNascita', icon: 'frecciasu', title: 'Upload nascita'],
+                [cont: 'giorno', action: 'uploadGiorniMorte', icon: 'frecciasu', title: 'Upload morte'],
+                [cont: 'giorno', action: 'uploadAllGiorni', icon: 'frecciasu', title: 'Upload all giorni']
         ]
         // fine della definizione
 
