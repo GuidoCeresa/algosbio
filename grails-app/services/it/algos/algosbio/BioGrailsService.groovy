@@ -534,7 +534,6 @@ class BioGrailsService {
 
         if (giorno && lista && numPersone) {
             testo = getTestoTop(giorno, numPersone)
-//            testo += aCapo
             testo += getTestoBodyGiorno(lista, tagNateMorte)
             testo += aCapo
             testo += getTestoBottom(giorno, tagNatiMorti)
@@ -639,7 +638,7 @@ class BioGrailsService {
      * @param lista degli elementi
      * @return testo con un ritorno a capo iniziale ed uno finale
      */
-    private static String getTestoBody(ArrayList lista, String tagNateMorte, boolean usaSempreCassetto) {
+    private static String getTestoBody(ArrayList lista, String tagNateMorte, boolean usaSempreCassetto, String tag) {
         // variabili e costanti locali di lavoro
         String testoBody = ''
         boolean usaDueColonne = true
@@ -661,7 +660,7 @@ class BioGrailsService {
         testoBody = fixTestoColonne(testoBody, numPersone)
 
         // eventuale cassetto
-        testoBody = fixTestoCassetto(testoBody, numPersone, tagNateMorte, usaSempreCassetto)
+        testoBody = fixTestoCassetto(testoBody, numPersone, tagNateMorte, usaSempreCassetto, tag)
 
         // valore di ritorno
         return testoBody.trim()
@@ -676,7 +675,7 @@ class BioGrailsService {
      * @return testo con un ritorno a capo iniziale ed uno finale
      */
     private static String getTestoBodyGiorno(ArrayList lista, String tagNateMorte) {
-        return getTestoBody(lista, tagNateMorte, true)
+        return getTestoBody(lista, tagNateMorte, true, 'giorno')
     }// fine del metodo
 
     /**
@@ -688,7 +687,7 @@ class BioGrailsService {
      * @return testo con un ritorno a capo iniziale ed uno finale
      */
     private static String getTestoBodyAnno(ArrayList lista, String tagNateMorte) {
-        return getTestoBody(lista, tagNateMorte, false)
+        return getTestoBody(lista, tagNateMorte, false, 'anno')
     }// fine del metodo
 
 
@@ -709,7 +708,7 @@ class BioGrailsService {
      * Inserisce l'eventuale cassetto
      */
     private
-    static String fixTestoCassetto(String testoIn, int numPersone, String tagNateMorte, boolean usaSempreCassetto) {
+    static String fixTestoCassetto(String testoIn, int numPersone, String tagNateMorte, boolean usaSempreCassetto, String tag) {
         // variabili e costanti locali di lavoro
         String testoOut = testoIn
         String titolo
@@ -717,17 +716,18 @@ class BioGrailsService {
         int maxRigheCassetto = Pref.getInt(LibBio.MAX_RIGHE_CASSETTO)
         String nateMorte
 
+        nateMorte = tagNateMorte.toLowerCase()
+        nateMorte = nateMorte.substring(0, nateMorte.length() - 1).trim()
+        nateMorte += 'e'
+        titolo = "Lista di persone $tagNateMorte in questo $tag"
+
         if (usaSempreCassetto) {
-            titolo = "Lista di persone $tagNateMorte in questo giorno"
-            testoOut = WikiLib.cassettoInclude(testoIn, titolo)
+//            testoOut = WikiLib.cassettoInclude(testoIn, titolo)
+            testoOut = cassettoListe(testoIn, tag)
         } else {
             if (usaCassetto && (numPersone > maxRigheCassetto)) {
-                nateMorte = tagNateMorte.toLowerCase()
-                nateMorte = nateMorte.substring(0, nateMorte.length() - 1).trim()
-                nateMorte += 'e'
-                titolo = "Lista di persone $nateMorte in questo anno"
-                testoOut = WikiLib.cassettoInclude(testoIn, titolo)
-//                testoOut = cassettoListe(testoIn)
+//                testoOut = WikiLib.cassettoInclude(testoIn, titolo)
+                testoOut = cassettoListe(testoIn, tag)
             } else {
                 testoOut = testoIn
             }// fine del blocco if-else
@@ -738,17 +738,16 @@ class BioGrailsService {
     }// fine del metodo
 
 
-    private static String cassettoListe(String testoIn) {
+    private static String cassettoListe(String testoIn, String tag) {
         String testoOut = testoIn
 
         if (testoIn) {
-            testoOut = '{{Lista persone per anno'
+            testoOut = "{{Lista persone per $tag"
             testoOut += aCapo
             testoOut += '|testo='
             testoOut += aCapo
             testoOut += testoIn
-            testoOut +=
-                    testoOut += aCapo
+            testoOut += aCapo
             testoOut += '}}'
         }// fine del blocco if
 
