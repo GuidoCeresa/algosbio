@@ -82,6 +82,20 @@ class NazionalitaController {
         redirect(action: 'list')
     } // fine del metodo
 
+    //--elabora e crea le liste della nazionalita indicato e lo uploada sul server wiki
+    //--passa al metodo effettivo senza nessun dialogo di conferma
+    def uploadSingolaNazionalita(Long id) {
+        def nazionalita = Nazionalita.get(id)
+        String plurale = nazionalita.plurale
+
+        if (grailsApplication && grailsApplication.config.login) {
+            new BioNazionalita(plurale).registraPagina()
+            flash.info = "Eseguito upload delle liste della nazionalita sul server wiki"
+        } else {
+            flash.error = 'Devi essere loggato per effettuare un upload di pagine sul server wiki'
+        }// fine del blocco if-else
+        redirect(action: 'list')
+    } // fine del metodo
 
     def list(Integer max) {
         params.max = Math.min(max ?: 100, 100)
@@ -197,6 +211,8 @@ class NazionalitaController {
 
     def show(Long id) {
         def nazionalitaInstance = Nazionalita.get(id)
+        ArrayList menuExtra
+        def noMenuCreate = true
 
         if (!nazionalitaInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'nazionalita.label', default: 'Nazionalita'), id])
@@ -204,7 +220,21 @@ class NazionalitaController {
             return
         }// fine del blocco if e fine anticipata del metodo
 
-        [nazionalitaInstance: nazionalitaInstance]
+        //--selezione dei menu extra
+        //--solo azione e di default controller=questo; classe e titolo vengono uguali
+        //--mappa con [cont:'controller', action:'metodo', icon:'iconaImmagine', title:'titoloVisibile']
+        menuExtra = [
+                [cont: 'nazionalita', action: "uploadSingolaNazionalita/${id}", icon: 'database', title: 'UploadSingolaNazionalita'],
+        ]
+        // fine della definizione
+
+        //--presentazione della view (show), secondo il modello
+        //--menuExtra può essere nullo o vuoto
+        render(view: 'show', model: [
+                nazionalitaInstance: nazionalitaInstance,
+                menuExtra       : menuExtra,
+                noMenuCreate    : noMenuCreate],
+                params: params)
     } // fine del metodo
 
     def edit(Long id) {

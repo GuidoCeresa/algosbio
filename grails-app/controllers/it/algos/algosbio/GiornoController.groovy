@@ -180,6 +180,21 @@ class GiornoController {
         redirect(action: 'list')
     } // fine del metodo
 
+    //--elabora e crea le liste del giorno indicato (nascita e morte) e lo uploada sul server wiki
+    //--passa al metodo effettivo senza nessun dialogo di conferma
+    def uploadSingoloGiorno(Long id) {
+        def giorno = Giorno.get(id)
+
+        if (grailsApplication && grailsApplication.config.login) {
+            bioGrailsService.uploadGiornoNascita(giorno)
+            bioGrailsService.uploadGiornoMorte(giorno)
+            flash.info = "Eseguito upload delle liste del giorno sul server wiki"
+        } else {
+            flash.error = 'Devi essere loggato per effettuare un upload di pagine sul server wiki'
+        }// fine del blocco if-else
+        redirect(action: 'list')
+    } // fine del metodo
+
     def list(Integer max) {
         params.max = Math.min(max ?: 100, 100)
         ArrayList menuExtra
@@ -194,11 +209,11 @@ class GiornoController {
         //--mappa con [cont:'controller', action:'metodo', icon:'iconaImmagine', title:'titoloVisibile']
         menuExtra = [
                 [action: 'sporca',
-                        icon: 'list',
-                        title: 'Sporca tutto'],
+                 icon  : 'list',
+                 title : 'Sporca tutto'],
                 [action: 'pulisce',
-                        icon: 'list',
-                        title: 'Pulisce tutto'],
+                 icon  : 'list',
+                 title : 'Pulisce tutto'],
                 [cont: 'bioGrails', action: 'uploadGiorniNascita', icon: 'frecciasu', title: 'Upload nascita'],
                 [cont: 'bioGrails', action: 'uploadGiorniMorte', icon: 'frecciasu', title: 'Upload morte'],
                 [cont: 'bioGrails', action: 'uploadAllGiorni', icon: 'frecciasu', title: 'Upload all giorni']
@@ -244,11 +259,11 @@ class GiornoController {
         //--menuExtra e campiLista possono essere nulli o vuoti
         //--se campiLista è vuoto, mostra tutti i campi (primi 8)
         render(view: 'list', model: [
-                giornoInstanceList: lista,
+                giornoInstanceList : lista,
                 giornoInstanceTotal: recordsTotali,
-                menuExtra: menuExtra,
-                titoloLista: titoloLista,
-                campiLista: campiLista],
+                menuExtra          : menuExtra,
+                titoloLista        : titoloLista,
+                campiLista         : campiLista],
                 params: params)
     } // fine del metodo
 
@@ -299,6 +314,8 @@ class GiornoController {
 
     def show(Long id) {
         def giornoInstance = Giorno.get(id)
+        ArrayList menuExtra
+        def noMenuCreate = true
 
         if (!giornoInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'giorno.label', default: 'Giorno'), id])
@@ -306,7 +323,21 @@ class GiornoController {
             return
         }// fine del blocco if e fine anticipata del metodo
 
-        [giornoInstance: giornoInstance]
+        //--selezione dei menu extra
+        //--solo azione e di default controller=questo; classe e titolo vengono uguali
+        //--mappa con [cont:'controller', action:'metodo', icon:'iconaImmagine', title:'titoloVisibile']
+        menuExtra = [
+                [cont: 'giorno', action: "uploadSingoloGiorno/${id}", icon: 'database', title: 'UploadSingoloGiorno'],
+        ]
+        // fine della definizione
+
+        //--presentazione della view (show), secondo il modello
+        //--menuExtra può essere nullo o vuoto
+        render(view: 'show', model: [
+                giornoInstance: giornoInstance,
+                menuExtra     : menuExtra,
+                noMenuCreate  : noMenuCreate],
+                params: params)
     } // fine del metodo
 
     def edit(Long id) {

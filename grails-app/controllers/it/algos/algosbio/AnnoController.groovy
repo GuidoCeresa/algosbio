@@ -148,10 +148,16 @@ class AnnoController {
     //--elabora e crea tutti gli anni modificati (solo nascita)
     //--passa al metodo effettivo senza nessun dialogo di conferma
     def uploadAnniNascita() {
+        boolean debug = Pref.getBool(LibBio.DEBUG, false)
+
         if (grailsApplication && grailsApplication.config.login) {
             bioGrailsService.uploadAnniNascita()
         } else {
-            flash.error = 'Devi essere loggato per effettuare un upload di pagine sul server wiki'
+            if (debug) {
+                bioGrailsService.uploadAnniNascita()
+            } else {
+                flash.error = 'Devi essere loggato per effettuare un upload di pagine sul server wiki'
+            }// fine del blocco if-else
         }// fine del blocco if-else
         redirect(action: 'list')
     } // fine del metodo
@@ -160,10 +166,16 @@ class AnnoController {
     //--elabora e crea tutti gli anni modificati (solo morte)
     //--passa al metodo effettivo senza nessun dialogo di conferma
     def uploadAnniMorte() {
+        boolean debug = Pref.getBool(LibBio.DEBUG, false)
+
         if (grailsApplication && grailsApplication.config.login) {
             bioGrailsService.uploadAnniMorte()
         } else {
-            flash.error = 'Devi essere loggato per effettuare un upload di pagine sul server wiki'
+            if (debug) {
+                bioGrailsService.uploadAnniMorte()
+            } else {
+                flash.error = 'Devi essere loggato per effettuare un upload di pagine sul server wiki'
+            }// fine del blocco if-else
         }// fine del blocco if-else
         redirect(action: 'list')
     } // fine del metodo
@@ -189,6 +201,21 @@ class AnnoController {
         redirect(action: 'list')
     } // fine del metodo
 
+    //--elabora e crea le liste dell'anno indicato (nascita e morte) e lo uploada sul server wiki
+    //--passa al metodo effettivo senza nessun dialogo di conferma
+    def uploadSingoloAnno(Long id) {
+        def anno = Anno.get(id)
+
+        if (grailsApplication && grailsApplication.config.login) {
+            bioGrailsService.uploadAnnoNascita(anno)
+            bioGrailsService.uploadAnnoMorte(anno)
+            flash.info = "Eseguito upload delle liste dell'anno sul server wiki"
+        } else {
+            flash.error = 'Devi essere loggato per effettuare un upload di pagine sul server wiki'
+        }// fine del blocco if-else
+        redirect(action: 'list')
+    } // fine del metodo
+
     def list(Integer max) {
         params.max = Math.min(max ?: 100, 100)
         ArrayList menuExtra
@@ -203,11 +230,11 @@ class AnnoController {
         //--mappa con [cont:'controller', action:'metodo', icon:'iconaImmagine', title:'titoloVisibile']
         menuExtra = [
                 [action: 'sporca',
-                        icon: 'list',
-                        title: 'Sporca tutto'],
+                 icon  : 'list',
+                 title : 'Sporca tutto'],
                 [action: 'pulisce',
-                        icon: 'list',
-                        title: 'Pulisce tutto'],
+                 icon  : 'list',
+                 title : 'Pulisce tutto'],
                 [cont: 'anno', action: 'uploadAnniNascita', icon: 'frecciasu', title: 'Upload nascita'],
                 [cont: 'anno', action: 'uploadAnniMorte', icon: 'frecciasu', title: 'Upload morte'],
                 [cont: 'anno', action: 'uploadAllAnni', icon: 'frecciasu', title: 'Upload all anni']
@@ -253,11 +280,11 @@ class AnnoController {
         //--menuExtra e campiLista possono essere nulli o vuoti
         //--se campiLista è vuoto, mostra tutti i campi (primi 8)
         render(view: 'list', model: [
-                annoInstanceList: lista,
+                annoInstanceList : lista,
                 annoInstanceTotal: recordsTotali,
-                menuExtra: menuExtra,
-                titoloLista: titoloLista,
-                campiLista: campiLista],
+                menuExtra        : menuExtra,
+                titoloLista      : titoloLista,
+                campiLista       : campiLista],
                 params: params)
     } // fine del metodo
 
@@ -308,6 +335,8 @@ class AnnoController {
 
     def show(Long id) {
         def annoInstance = Anno.get(id)
+        ArrayList menuExtra
+        def noMenuCreate = true
 
         if (!annoInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'anno.label', default: 'Anno'), id])
@@ -315,8 +344,23 @@ class AnnoController {
             return
         }// fine del blocco if e fine anticipata del metodo
 
-        [annoInstance: annoInstance]
+        //--selezione dei menu extra
+        //--solo azione e di default controller=questo; classe e titolo vengono uguali
+        //--mappa con [cont:'controller', action:'metodo', icon:'iconaImmagine', title:'titoloVisibile']
+        menuExtra = [
+                [cont: 'anno', action: "uploadSingoloAnno/${id}", icon: 'database', title: 'UploadSingoloAnno'],
+        ]
+        // fine della definizione
+
+        //--presentazione della view (show), secondo il modello
+        //--menuExtra può essere nullo o vuoto
+        render(view: 'show', model: [
+                annoInstance: annoInstance,
+                menuExtra   : menuExtra,
+                noMenuCreate: noMenuCreate],
+                params: params)
     } // fine del metodo
+
 
     def edit(Long id) {
         def annoInstance = Anno.get(id)

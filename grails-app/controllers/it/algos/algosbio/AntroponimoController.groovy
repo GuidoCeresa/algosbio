@@ -185,6 +185,21 @@ class AntroponimoController {
         }// fine del blocco if
     } // fine del metodo
 
+    //--elabora e crea le liste del nome indicato e le uploada sul server wiki
+    //--passa al metodo effettivo senza nessun dialogo di conferma
+    def uploadSingoloNome(Long id) {
+        def antroponimo = Antroponimo.get(id)
+        String nome = antroponimo.nome
+
+        if (grailsApplication && grailsApplication.config.login) {
+            antroponimoService.elaboraSingoloNome(nome)
+            flash.info = "Eseguito upload delle liste del nome sul server wiki"
+        } else {
+            flash.error = 'Devi essere loggato per effettuare un upload di pagine sul server wiki'
+        }// fine del blocco if-else
+        redirect(action: 'list')
+    } // fine del metodo
+
     def list(Integer max) {
         params.max = Math.min(max ?: 1000, 1000)
         ArrayList menuExtra
@@ -301,6 +316,8 @@ class AntroponimoController {
 
     def show(Long id) {
         def antroponimoInstance = Antroponimo.get(id)
+        ArrayList menuExtra
+        def noMenuCreate = true
 
         if (!antroponimoInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'antroponimo.label', default: 'Antroponimo'), id])
@@ -308,7 +325,21 @@ class AntroponimoController {
             return
         }// fine del blocco if e fine anticipata del metodo
 
-        [antroponimoInstance: antroponimoInstance]
+        //--selezione dei menu extra
+        //--solo azione e di default controller=questo; classe e titolo vengono uguali
+        //--mappa con [cont:'controller', action:'metodo', icon:'iconaImmagine', title:'titoloVisibile']
+        menuExtra = [
+                [cont: 'antroponimo', action: "uploadSingoloNome/${id}", icon: 'database', title: 'UploadSingoloNome'],
+        ]
+        // fine della definizione
+
+        //--presentazione della view (show), secondo il modello
+        //--menuExtra può essere nullo o vuoto
+        render(view: 'show', model: [
+                antroponimoInstance: antroponimoInstance,
+                menuExtra          : menuExtra,
+                noMenuCreate       : noMenuCreate],
+                params: params)
     } // fine del metodo
 
     def edit(Long id) {

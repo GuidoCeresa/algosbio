@@ -131,12 +131,12 @@ class BioGrailsService {
             listaPersoneConAnno = BioGrails.executeQuery(queryAnno)
 
             listaPersoneSenzaAnno?.each {
-                if (it) {
+                if (it && checkNameSpace(it)) {
                     listaPersone.add(it)
                 }// fine del blocco if
             } // fine del ciclo each
             listaPersoneConAnno?.each {
-                if (it) {
+                if (it && checkNameSpace(it)) {
                     listaPersone.add(it)
                 }// fine del blocco if
             } // fine del ciclo each
@@ -196,12 +196,12 @@ class BioGrailsService {
             listaPersoneSenzaAnno = BioGrails.executeQuery(querySenza)
             listaPersoneConAnno = BioGrails.executeQuery(queryAnno)
             listaPersoneSenzaAnno?.each {
-                if (it) {
+                if (it && checkNameSpace(it)) {
                     listaPersone.add(it)
                 }// fine del blocco if
             } // fine del ciclo each
             listaPersoneConAnno?.each {
-                if (it) {
+                if (it && checkNameSpace(it)) {
                     listaPersone.add(it)
                 }// fine del blocco if
             } // fine del ciclo each
@@ -277,12 +277,12 @@ class BioGrailsService {
             listaPersoneSenzaGiorno = BioGrails.executeQuery(querySenza)
             listaPersoneConGiorno = BioGrails.executeQuery(queryGiorno)
             listaPersoneSenzaGiorno?.each {
-                if (it) {
+                if (it && checkNameSpace(it)) {
                     listaPersone.add(it)
                 }// fine del blocco if
             } // fine del ciclo each
             listaPersoneConGiorno?.each {
-                if (it) {
+                if (it && checkNameSpace(it)) {
                     listaPersone.add(it)
                 }// fine del blocco if
             } // fine del ciclo each
@@ -304,16 +304,25 @@ class BioGrailsService {
     //--elabora e crea tutti gli anni di morte modificati
     def int uploadAnniMorte() {
         int anniiModificati = 0
+        boolean debug = Pref.getBool(LibBio.DEBUG, false)
         boolean registrata = false
         ArrayList listaAnniModificati
+        String titolo
+        Anno anno
 
-        listaAnniModificati = Anno.findAllBySporcoMorto(true)
-        listaAnniModificati?.each {
-            registrata = uploadAnnoMorte((Anno) it)
-            if (registrata) {
-                anniiModificati++
-            }// fine del blocco if
-        } // fine del ciclo each
+        if (debug) {
+            titolo = Pref.getStr(LibBio.ANNO_DEBUG, '1952')
+            anno = Anno.findByTitolo(titolo)
+            uploadAnnoMorte(anno)
+        } else {
+            listaAnniModificati = Anno.findAllBySporcoMorto(true)
+            listaAnniModificati?.each {
+                registrata = uploadAnnoMorte((Anno) it)
+                if (registrata) {
+                    anniiModificati++
+                }// fine del blocco if
+            } // fine del ciclo each
+        }// fine del blocco if-else
 
         return anniiModificati
     } // fine del metodo
@@ -342,12 +351,12 @@ class BioGrailsService {
             listaPersoneSenzaGiorno = BioGrails.executeQuery(querySenza)
             listaPersoneConGiorno = BioGrails.executeQuery(queryGiorno)
             listaPersoneSenzaGiorno?.each {
-                if (it) {
+                if (it && checkNameSpace(it)) {
                     listaPersone.add(it)
                 }// fine del blocco if
             } // fine del ciclo each
             listaPersoneConGiorno?.each {
-                if (it) {
+                if (it && checkNameSpace(it)) {
                     listaPersone.add(it)
                 }// fine del blocco if
             } // fine del ciclo each
@@ -363,6 +372,17 @@ class BioGrailsService {
         }// fine del blocco if
 
         return registrata
+    } // fine del metodo
+
+    private boolean checkNameSpace(String didascalia) {
+        boolean valida = true
+        String tagUtente = '- [[Utente:'
+
+        if (didascalia.contains(tagUtente)) {
+            valida = false
+        }// fine del blocco if
+
+        return valida
     } // fine del metodo
 
     //--creazione delle liste partendo da BioGrails
@@ -514,7 +534,7 @@ class BioGrailsService {
 
         if (giorno && lista && numPersone) {
             testo = getTestoTop(giorno, numPersone)
-            testo += aCapo
+//            testo += aCapo
             testo += getTestoBodyGiorno(lista, tagNateMorte)
             testo += aCapo
             testo += getTestoBottom(giorno, tagNatiMorti)
@@ -706,8 +726,8 @@ class BioGrailsService {
                 nateMorte = nateMorte.substring(0, nateMorte.length() - 1).trim()
                 nateMorte += 'e'
                 titolo = "Lista di persone $nateMorte in questo anno"
-//                testoOut = WikiLib.cassettoInclude(testoIn, titolo)
-                testoOut = cassettoListe(testoIn)
+                testoOut = WikiLib.cassettoInclude(testoIn, titolo)
+//                testoOut = cassettoListe(testoIn)
             } else {
                 testoOut = testoIn
             }// fine del blocco if-else

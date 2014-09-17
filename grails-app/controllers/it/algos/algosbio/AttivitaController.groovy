@@ -114,6 +114,21 @@ class AttivitaController {
         redirect(action: 'list')
     } // fine del metodo
 
+    //--elabora e crea le liste dell'attivita indicato e lo uploada sul server wiki
+    //--passa al metodo effettivo senza nessun dialogo di conferma
+    def uploadSingolaAttivita(Long id) {
+        def attivita = Attivita.get(id)
+        String plurale = attivita.plurale
+
+        if (grailsApplication && grailsApplication.config.login) {
+            new BioAttivita(plurale).registraPagina()
+            flash.info = "Eseguito upload delle liste dell'attivita sul server wiki"
+        } else {
+            flash.error = 'Devi essere loggato per effettuare un upload di pagine sul server wiki'
+        }// fine del blocco if-else
+        redirect(action: 'list')
+    } // fine del metodo
+
     def list(Integer max) {
         params.max = Math.min(max ?: 100, 100)
         ArrayList menuExtra
@@ -228,6 +243,8 @@ class AttivitaController {
 
     def show(Long id) {
         def attivitaInstance = Attivita.get(id)
+        ArrayList menuExtra
+        def noMenuCreate = true
 
         if (!attivitaInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'attivita.label', default: 'Attivita'), id])
@@ -235,7 +252,21 @@ class AttivitaController {
             return
         }// fine del blocco if e fine anticipata del metodo
 
-        [attivitaInstance: attivitaInstance]
+        //--selezione dei menu extra
+        //--solo azione e di default controller=questo; classe e titolo vengono uguali
+        //--mappa con [cont:'controller', action:'metodo', icon:'iconaImmagine', title:'titoloVisibile']
+        menuExtra = [
+                [cont: 'attivita', action: "uploadSingolaAttivita/${id}", icon: 'database', title: 'UploadSingolaAttivita'],
+        ]
+        // fine della definizione
+
+        //--presentazione della view (show), secondo il modello
+        //--menuExtra può essere nullo o vuoto
+        render(view: 'show', model: [
+                attivitaInstance: attivitaInstance,
+                menuExtra       : menuExtra,
+                noMenuCreate    : noMenuCreate],
+                params: params)
     } // fine del metodo
 
     def edit(Long id) {
