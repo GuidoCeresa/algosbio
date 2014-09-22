@@ -26,7 +26,7 @@ class LocalitaService {
      * Ritorna la località dal link alla voce
      * Se non esiste, la crea
      */
-    private static Localita getLocalita(String luogo, String luogoLink, NatoMorto natoMorto) {
+    private  static Localita getLocalita(String luogo, String luogoLink, NatoMorto natoMorto) {
         Localita localita = null
 
         if (luogo || luogoLink) {
@@ -56,7 +56,11 @@ class LocalitaService {
                         break
                 } // fine del blocco switch
 
-                localita.save(flush: true)
+                try { // prova ad eseguire il codice
+                    localita.save(flush: true)
+                } catch (Exception unErrore) { // intercetta l'errore
+                   def a= unErrore
+                }// fine del blocco try-catch
             }// fine del blocco if
         }// fine del blocco if
 
