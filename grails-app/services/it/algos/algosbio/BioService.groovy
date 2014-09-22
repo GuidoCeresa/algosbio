@@ -375,10 +375,12 @@ class BioService {
         // variabili e costanti locali di lavoro
         DidascaliaBio didascalia
         long grailsid
+        String titoloVoce
 
         if (bioWiki && bioGrails) {
             if (bioGrails.id && bioGrails.id instanceof Long) {
                 grailsid = bioGrails.id
+                titoloVoce = bioWiki.title;
                 didascalia = new DidascaliaBio(grailsid)
                 didascalia.setInizializza()
                 bioGrails.didascaliaBase = didascalia.getTestoSemplice()
@@ -387,6 +389,12 @@ class BioService {
                 bioGrails.didascaliaGiornoMorto = didascalia.getTestoMortiGiorno()
                 bioGrails.didascaliaAnnoMorto = didascalia.getTestoMortiAnno()
                 bioGrails.didascaliaListe = didascalia.getTestoEstesaSimboli()
+
+                if (bioGrails.didascaliaListe.length() > 250) {
+                    bioGrails.didascaliaListe = bioGrails.didascaliaBase + '...'
+                    log.warn "Didascalia troppo lunga per $titoloVoce"
+                }// fine del blocco if
+
             }// fine del blocco if
         }// fine del blocco if
 
