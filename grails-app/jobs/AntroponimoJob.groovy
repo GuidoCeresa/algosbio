@@ -44,7 +44,7 @@ class AntroponimoJob {
         int vociCreate = 0
 
         //--flag di attivazione
-        if (Preferenze.getBool(LibBio.USA_CRONO_ANTROPONIMI)) {
+        if (Pref.getBool(LibBio.USA_CRONO_ANTROPONIMI)) {
             //--ricontrolla la lista delle professioni
             if (professioneService) {
                 professioneService.download()
