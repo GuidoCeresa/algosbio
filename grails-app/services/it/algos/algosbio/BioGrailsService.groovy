@@ -182,7 +182,6 @@ class BioGrailsService {
         String querySenza
         String queryAnno
         long giornoId
-        int numPersone
         String tagNatiMorti = 'Morti'
         String tagNateMorte = 'morte'
 
@@ -206,8 +205,7 @@ class BioGrailsService {
                 }// fine del blocco if
             } // fine del ciclo each
             if (listaPersone) {
-                numPersone = listaPersone.size()
-                registrata = this.caricaPagina(giorno, listaPersone, numPersone, tagNatiMorti, tagNateMorte)
+                registrata = this.caricaPagina(giorno, listaPersone, tagNatiMorti, tagNateMorte)
             }// fine del blocco if
         }// fine del blocco if
 
@@ -263,7 +261,6 @@ class BioGrailsService {
         String querySenza
         String queryGiorno
         long annoId
-        int numPersone
         String tagNatiMorti = 'Nati'
         String tagNateMorte = 'nate'
 
@@ -287,8 +284,7 @@ class BioGrailsService {
                 }// fine del blocco if
             } // fine del ciclo each
             if (listaPersone) {
-                numPersone = listaPersone.size()
-                registrata = caricaPagina(anno, listaPersone, numPersone, tagNatiMorti, tagNateMorte)
+                registrata = caricaPagina(anno, listaPersone, tagNatiMorti, tagNateMorte)
             }// fine del blocco if
         }// fine del blocco if
 
@@ -362,7 +358,7 @@ class BioGrailsService {
             } // fine del ciclo each
             if (listaPersone) {
                 numPersone = listaPersone.size()
-                registrata = this.caricaPagina(anno, listaPersone, numPersone, tagNatiMorti, tagNateMorte)
+                registrata = caricaPagina(anno, listaPersone, tagNatiMorti, tagNateMorte)
             }// fine del blocco if
         }// fine del blocco if
 
@@ -374,7 +370,7 @@ class BioGrailsService {
         return registrata
     } // fine del metodo
 
-    private boolean checkNameSpace(String didascalia) {
+    private static boolean checkNameSpace(String didascalia) {
         boolean valida = true
         String tagUtente = '- [[Utente:'
 
@@ -398,7 +394,7 @@ class BioGrailsService {
     /**
      * Carica su wiki la pagina
      */
-    private boolean caricaPagina(Giorno giorno, ArrayList lista, int numPersone, String tagNatiMorti, String tagNateMorte) {
+    private boolean caricaPagina(Giorno giorno, ArrayList lista, String tagNatiMorti, String tagNateMorte) {
         // variabili e costanti locali di lavoro
         boolean registrata = false
         String titolo = ''
@@ -409,9 +405,9 @@ class BioGrailsService {
         boolean debug = Preferenze.getBool((String) grailsApplication.config.debug)
 
         // controllo di congruità
-        if (giorno && lista && numPersone) {
+        if (giorno && lista) {
             titolo = getTitolo(giorno, tagNatiMorti)
-            testo = getTesto(giorno, lista, numPersone, tagNatiMorti, tagNateMorte)
+            testo = getTesto(titolo, giorno, lista, tagNatiMorti, tagNateMorte)
         }// fine del blocco if
 
         if (titolo && testo) {
@@ -436,7 +432,7 @@ class BioGrailsService {
      * Carica su wiki la pagina
      */
     private
-    static boolean caricaPagina(Anno anno, ArrayList lista, int numPersone, String tagNatiMorti, String tagNateMorte) {
+    static boolean caricaPagina(Anno anno, ArrayList lista, String tagNatiMorti, String tagNateMorte) {
         // variabili e costanti locali di lavoro
         boolean registrata = false
         String titolo = ''
@@ -447,9 +443,9 @@ class BioGrailsService {
         boolean debug = Pref.getBool(LibBio.DEBUG, false)
 
         // controllo di congruità
-        if (anno && lista && numPersone) {
+        if (anno && lista) {
             titolo = getTitolo(anno, tagNatiMorti)
-            testo = getTesto(anno, lista, numPersone, tagNatiMorti, tagNateMorte)
+            testo = getTesto(titolo, anno, lista, tagNatiMorti, tagNateMorte)
         }// fine del blocco if
 
         if (titolo && testo) {
@@ -528,13 +524,13 @@ class BioGrailsService {
      * Costruisce il testo della pagina
      */
     private
-    static String getTesto(Giorno giorno, ArrayList lista, int numPersone, String tagNatiMorti, String tagNateMorte) {
+    static String getTesto(String titolo, Giorno giorno, ArrayList lista, String tagNatiMorti, String tagNateMorte) {
         // variabili e costanti locali di lavoro
         String testo = ''
 
-        if (giorno && lista && numPersone) {
-            testo = getTestoTop(giorno, numPersone)
-            testo += getTestoBodyGiorno(lista, tagNateMorte)
+        if (giorno && lista) {
+            testo = getTestoTop(giorno, lista.size())
+            testo += getTestoBodyGiorno(titolo, lista, tagNateMorte)
             testo += aCapo
             testo += getTestoBottom(giorno, tagNatiMorti)
         }// fine del blocco if
@@ -547,13 +543,13 @@ class BioGrailsService {
      * Costruisce il testo della pagina
      */
     private
-    static String getTesto(Anno anno, ArrayList lista, int numPersone, String tagNatiMorti, String tagNateMorte) {
+    static String getTesto(String titolo, Anno anno, ArrayList lista, String tagNatiMorti, String tagNateMorte) {
         // variabili e costanti locali di lavoro
         String testo = ''
 
-        if (anno && lista && numPersone) {
-            testo = getTestoTop(anno, numPersone)
-            testo += getTestoBodyAnno(lista, tagNateMorte)
+        if (anno && lista) {
+            testo = getTestoTop(anno, lista.size())
+            testo += getTestoBodyAnno(titolo, lista, tagNateMorte)
             testo += aCapo
             testo += getTestoBottom(anno, tagNatiMorti)
         }// fine del blocco if
@@ -638,7 +634,8 @@ class BioGrailsService {
      * @param lista degli elementi
      * @return testo con un ritorno a capo iniziale ed uno finale
      */
-    private static String getTestoBody(ArrayList lista, String tagNateMorte, boolean usaSempreCassetto, String tag) {
+    private
+    static String getTestoBody(String titolo, ArrayList lista, String tagNateMorte, boolean usaSempreCassetto, String tag) {
         // variabili e costanti locali di lavoro
         String testoBody = ''
         boolean usaDueColonne = true
@@ -660,7 +657,7 @@ class BioGrailsService {
         testoBody = fixTestoColonne(testoBody, numPersone)
 
         // eventuale cassetto
-        testoBody = fixTestoCassetto(testoBody, numPersone, tagNateMorte, usaSempreCassetto, tag)
+        testoBody = fixTestoCassetto(titolo, testoBody, numPersone, tagNateMorte, usaSempreCassetto, tag)
 
         // valore di ritorno
         return testoBody.trim()
@@ -674,8 +671,8 @@ class BioGrailsService {
      * @param lista degli elementi
      * @return testo con un ritorno a capo iniziale ed uno finale
      */
-    private static String getTestoBodyGiorno(ArrayList lista, String tagNateMorte) {
-        return getTestoBody(lista, tagNateMorte, true, 'giorno')
+    private static String getTestoBodyGiorno(String titolo, ArrayList lista, String tagNateMorte) {
+        return getTestoBody(titolo, lista, tagNateMorte, true, 'giorno')
     }// fine del metodo
 
     /**
@@ -686,8 +683,8 @@ class BioGrailsService {
      * @param lista degli elementi
      * @return testo con un ritorno a capo iniziale ed uno finale
      */
-    private static String getTestoBodyAnno(ArrayList lista, String tagNateMorte) {
-        return getTestoBody(lista, tagNateMorte, false, 'anno')
+    private static String getTestoBodyAnno(String titolo, ArrayList lista, String tagNateMorte) {
+        return getTestoBody(titolo, lista, tagNateMorte, false, 'anno')
     }// fine del metodo
 
 
@@ -708,10 +705,10 @@ class BioGrailsService {
      * Inserisce l'eventuale cassetto
      */
     private
-    static String fixTestoCassetto(String testoIn, int numPersone, String tagNateMorte, boolean usaSempreCassetto, String tag) {
+    static String fixTestoCassetto(String titolo, String testoIn, int numPersone, String tagNateMorte, boolean usaSempreCassetto, String tag) {
         // variabili e costanti locali di lavoro
         String testoOut = testoIn
-        String titolo
+        String titoloCassetto
         boolean usaCassetto = Pref.getBool(LibBio.USA_CASSETTO)
         int maxRigheCassetto = Pref.getInt(LibBio.MAX_RIGHE_CASSETTO)
         String nateMorte
@@ -719,15 +716,15 @@ class BioGrailsService {
         nateMorte = tagNateMorte.toLowerCase()
         nateMorte = nateMorte.substring(0, nateMorte.length() - 1).trim()
         nateMorte += 'e'
-        titolo = "Lista di persone $tagNateMorte in questo $tag"
+        titoloCassetto = "Lista di persone $tagNateMorte in questo $tag"
 
         if (usaSempreCassetto) {
 //            testoOut = WikiLib.cassettoInclude(testoIn, titolo)
-            testoOut = cassettoListe(testoIn, tag)
+            testoOut = cassettoListe(titolo, testoIn, tag)
         } else {
             if (usaCassetto && (numPersone > maxRigheCassetto)) {
 //                testoOut = WikiLib.cassettoInclude(testoIn, titolo)
-                testoOut = cassettoListe(testoIn, tag)
+                testoOut = cassettoListe(titolo, numPersone, testoIn, tag)
             } else {
                 testoOut = testoIn
             }// fine del blocco if-else
@@ -738,11 +735,17 @@ class BioGrailsService {
     }// fine del metodo
 
 
-    private static String cassettoListe(String testoIn, String tag) {
+    private static String cassettoListe(String titolo, int numPersone, String testoIn, String tag) {
         String testoOut = testoIn
 
         if (testoIn) {
             testoOut = "{{Lista persone per $tag"
+            testoOut += aCapo
+            testoOut += '|titolo='
+            testoOut += titolo
+            testoOut += aCapo
+            testoOut += '|voci='
+            testoOut += numPersone
             testoOut += aCapo
             testoOut += '|testo='
             testoOut += aCapo
