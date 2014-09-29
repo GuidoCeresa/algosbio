@@ -142,7 +142,7 @@ class BioGrailsService {
             } // fine del ciclo each
             if (listaPersone) {
                 numPersone = listaPersone.size()
-                registrata = this.caricaPagina(giorno, listaPersone, numPersone, tagNatiMorti, tagNateMorte)
+                registrata = this.caricaPagina(giorno, listaPersone, tagNatiMorti, tagNateMorte)
             }// fine del blocco if
         }// fine del blocco if
 
