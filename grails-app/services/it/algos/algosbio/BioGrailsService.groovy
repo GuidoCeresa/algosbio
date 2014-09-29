@@ -720,7 +720,7 @@ class BioGrailsService {
 
         if (usaSempreCassetto) {
 //            testoOut = WikiLib.cassettoInclude(testoIn, titolo)
-            testoOut = cassettoListe(titolo, testoIn, tag)
+            testoOut = cassettoListe(titolo, numPersone, testoIn, tag)
         } else {
             if (usaCassetto && (numPersone > maxRigheCassetto)) {
 //                testoOut = WikiLib.cassettoInclude(testoIn, titolo)
