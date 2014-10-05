@@ -682,7 +682,7 @@ class BioGrailsService {
      * @return testo con un ritorno a capo iniziale ed uno finale
      */
     private static String getTestoBodyAnno(String titolo, ArrayList lista, String tagNateMorte) {
-        return getTestoBody(titolo, lista, tagNateMorte, false, 'anno')
+        return getTestoBody(titolo, lista, tagNateMorte, true, 'anno')
     }// fine del metodo
 
 
