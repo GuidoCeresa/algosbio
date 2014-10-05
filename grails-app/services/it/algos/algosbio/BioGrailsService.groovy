@@ -531,7 +531,6 @@ class BioGrailsService {
         if (giorno && lista) {
             testo = getTestoTop(giorno, lista.size())
             testo += getTestoBodyGiorno(titolo, lista, tagNateMorte)
-            testo += aCapo
             testo += getTestoBottom(giorno, tagNatiMorti)
         }// fine del blocco if
 
@@ -550,7 +549,6 @@ class BioGrailsService {
         if (anno && lista) {
             testo = getTestoTop(anno, lista.size())
             testo += getTestoBodyAnno(titolo, lista, tagNateMorte)
-            testo += aCapo
             testo += getTestoBottom(anno, tagNatiMorti)
         }// fine del blocco if
 
