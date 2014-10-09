@@ -31,7 +31,8 @@ class LocalitaController {
         //--selezione dei menu extra
         //--solo azione e di default controller=questo; classe e titolo vengono uguali
         //--mappa con [cont:'controller', action:'metodo', icon:'iconaImmagine', title:'titoloVisibile']
-        menuExtra = ['elabora']
+        menuExtra =
+                [cont: 'antroponimo', action: 'elabora', icon: 'frecciasu', title: 'Upload antroponimi']
         params.menuExtra = menuExtra
         // fine della definizione
 
@@ -66,11 +67,11 @@ class LocalitaController {
         //--presentazione della view (index), secondo il modello
         //--menuExtra e campiLista possono essere nulli o vuoti
         //--se campiLista è vuoto, mostra tutti i campi (primi 12)
-        respond Localita.list(params), model: [titoloLista       : titoloLista,
-                                               menuExtra         : menuExtra,
-                                               campiLista        : campiLista,
+        respond Localita.list(params), model: [titoloLista          : titoloLista,
+                                               menuExtra            : menuExtra,
+                                               campiLista           : campiLista,
                                                localitaInstanceCount: recordsTotali,
-                                               params            : params]
+                                               params               : params]
     } // fine del metodo
 
     def show(Localita localitaInstance) {

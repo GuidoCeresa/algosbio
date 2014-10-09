@@ -12,7 +12,7 @@ class ElaboraJob {
     //--codifica dell'orario di attivazione
     //--MON, TUE, WED, THU, FRI, SAT, SUN
     //--lunedì, mercoledì, venerdì e domenica dalle 10 alle 11 di sera
-    private static String cronExpressionElabora = "0 0 10-23 ? * MON,WED,FRI,SUN" //--alle 8 lunedì, mercoledì e venerdì
+    private static String cronExpressionElabora = "0 0 11-23 ? * MON,WED,THU,FRI,SAT,SUN" //--alle 8 lunedì, mercoledì e venerdì
     static triggers = {
         cron name: 'elabora', cronExpression: cronExpressionElabora
     }// fine del metodo statico
