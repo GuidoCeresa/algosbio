@@ -380,14 +380,14 @@ class AntroponimoService {
      * Elabora la pagina per un singolo nome
      */
     public void elaboraSingoloNome(String nome) {
+        boolean debug = Pref.getBool(LibBio.DEBUG, false)
         String titolo
         String testo = ''
         String summary = LibBio.getSummary()
         ArrayList<BioGrails> listaBiografie
-        boolean debug = Pref.getBool(LibBio.DEBUG, false)
 
         if (debug) {
-            nome = 'Adriana'
+            nome = 'Andrea'
         }// fine del blocco if
 
         titolo = tagTitolo + nome
@@ -397,7 +397,7 @@ class AntroponimoService {
         testo += this.getNomeHead(nome, listaBiografie.size())
 
         //body
-        testo += this.getNomeBody(listaBiografie, nome)
+        testo += this.getNomeBody(nome, listaBiografie)
 
         //footer
         testo += this.getNomeFooter(nome)
@@ -409,6 +409,7 @@ class AntroponimoService {
             new EditBio(titolo, testo, summary)
         }// fine del blocco if
 
+        def stop
     }// fine del metodo
 
     //--costruisce una lista di nomi
@@ -484,9 +485,9 @@ class AntroponimoService {
 
     public String getNomeHead(String nome, int num) {
         String testo = ''
+        boolean usaTavolaContenuti = Pref.getBool(LibBio.USA_TAVOLA_CONTENUTI)
         String dataCorrente = LibTime.getGioMeseAnnoLungo(new Date())
         String numero = ''
-        boolean usaTavolaContenuti = Pref.getBool(LibBio.USA_TAVOLA_CONTENUTI)
         String template = templateIncipit
         String tagIndice = '__FORCETOC__'
         String tagNoIndice = '__NOTOC__'
@@ -519,66 +520,163 @@ class AntroponimoService {
     }// fine del metodo
 
 
-    public String getNomeBody(ArrayList listaVoci, String nome) {
+    public String getNomeBody(String nome, ArrayList listaVoci) {
         String testo = ''
+        boolean dividePerGenere = Pref.getBool(LibBio.USA_SUDDIVISIONE_UOMO_DONNA, false)
+        int maxVoci = Pref.getInt(LibBio.MAX_VOCI_PARAGRAFO_ANTROPONIMI, 100)
         String tagMaschio = 'M'
         String tagFemmina = 'F'
         ArrayList listaVociMaschili
         ArrayList listaVociFemminili
-        boolean usaTerzoLivello = false
 
-        listaVociMaschili = this.selezionaGenere(listaVoci, tagMaschio)
-        listaVociFemminili = this.selezionaGenere(listaVoci, tagFemmina)
+        if (dividePerGenere) {
+            listaVociMaschili = this.selezionaGenere(listaVoci, tagMaschio)
+            listaVociFemminili = this.selezionaGenere(listaVoci, tagFemmina)
 
-        if (listaVociMaschili && listaVociFemminili) {
-            usaTerzoLivello = true
-            testo += '\n==Uomini==\n'
-            testo += this.getNomeBodyBase(listaVociMaschili, usaTerzoLivello)
-            testo += '\n==Donne==\n'
-            testo += this.getNomeBodyBase(listaVociFemminili, usaTerzoLivello)
+            if (listaVociMaschili && listaVociFemminili) {
+                testo += '\n==Uomini==\n'
+                testo += this.getNomeBodyBase(nome, listaVociMaschili, maxVoci)
+                testo += '\n==Donne==\n'
+                testo += this.getNomeBodyBase(nome, listaVociFemminili, maxVoci)
+            } else {
+                if (listaVociMaschili) {
+                    testo += this.getNomeBodyBase(nome, listaVociMaschili, maxVoci)
+                }// fine del blocco if
+                if (listaVociFemminili) {
+                    testo += this.getNomeBodyBase(nome, listaVociFemminili, maxVoci)
+                }// fine del blocco if
+            }// fine del blocco if-else
         } else {
-            if (listaVociMaschili) {
-                testo += this.getNomeBodyBase(listaVociMaschili, usaTerzoLivello)
-            }// fine del blocco if
-            if (listaVociFemminili) {
-                testo += this.getNomeBodyBase(listaVociFemminili, usaTerzoLivello)
-            }// fine del blocco if
+            testo = this.getNomeBodyBase(nome, listaVoci, maxVoci)
         }// fine del blocco if-else
 
         return testo
     }// fine del metodo
 
-    public String getNomeBodyBase(ArrayList listaVoci, boolean usaTerzoLivello) {
+    public String getNomeBodyBase(String nome, ArrayList listaVoci, int maxVoci) {
         String testo = ''
         Map mappa
-        String aCapo = '\n'
         String chiave
-        ArrayList<String> lista
+        ArrayList<String> listaDidascalie
         int num = 0
-        String tagIni = '=='
-        String tagEnd = '=='
-
-        if (usaTerzoLivello) {
-            tagIni = '==='
-            tagEnd = '===\n----\n'
-        }// fine del blocco if-else
 
         mappa = this.getMappaAttività(listaVoci)
         mappa = this.ordinaMappa(mappa)
         if (mappa) {
             mappa?.each {
                 chiave = it.key
-                lista = (ArrayList<String>) mappa.get(chiave)
-                num += lista.size()
-                testo += tagIni
-                testo += chiave
-                testo += tagEnd
-                testo += aCapo
-                testo += getParagrafoDidascalia(lista)
-                testo += aCapo
-                testo += aCapo
+                listaDidascalie = (ArrayList<String>) mappa.get(chiave)
+                num = listaDidascalie.size()
+
+                if (chiave.startsWith(tagPunti)) {
+                    testo += getNomeBodyBasePagina(chiave, listaDidascalie)
+                } else {
+                    if (num >= maxVoci) {
+                        testo += getNomeBodyBaseSottoPagina(nome, chiave, listaDidascalie)
+                    } else {
+                        testo += getNomeBodyBasePagina(chiave, listaDidascalie)
+                    }// fine del blocco if-else
+                }// fine del blocco if-else
+
             }// fine del ciclo each
         }// fine del blocco if
+
+        return testo
+    }// fine del metodo
+
+    public String getNomeBodyBasePagina(String chiave, ArrayList listaDidascalie) {
+        String testo = ''
+        String tag = '=='
+
+        testo += tag
+        testo += chiave
+        testo += tag
+        testo += aCapo
+        testo += getParagrafoDidascalia(listaDidascalie)
+        testo += aCapo
+        testo += aCapo
+
+        return testo
+    }// fine del metodo
+
+    public String getNomeHeadSottoPagina(String titoloRitorno, int num) {
+        String testo = ''
+        boolean usaTavolaContenuti = Pref.getBool(LibBio.USA_TAVOLA_CONTENUTI)
+        String dataCorrente = LibTime.getGioMeseAnnoLungo(new Date())
+        String numero = ''
+        String tagIndice = '__FORCETOC__'
+        String tagNoIndice = '__NOTOC__'
+
+        if (num) {
+            numero = LibTesto.formatNum(num)
+        }// fine del blocco if
+
+        if (usaTavolaContenuti) {
+            testo += tagIndice
+        } else {
+            testo += tagNoIndice
+        }// fine del blocco if-else
+        testo += aCapo
+
+        testo += "{{torna a|${titoloRitorno}}}"
+        testo += aCapo
+
+        testo += '<noinclude>'
+        testo += aCapo
+        testo += "{{StatBio"
+        if (numero) {
+            testo += "|bio=$numero"
+        }// fine del blocco if
+        testo += "|data=$dataCorrente}}"
+        testo += aCapo
+        testo += aCapo
+
+        return testo
+    }// fine del metodo
+
+    public String getNomeBodyBaseSottoPagina(String nome, String chiave, ArrayList listaDidascalie) {
+        String testo = ''
+        boolean debug = Pref.getBool(LibBio.DEBUG, false)
+        boolean usaCategoriaNellaSottopagina = false
+        String summary = LibBio.getSummary()
+        String sottoTitolo
+        String sottoChiave
+        String tag = '=='
+        String torna
+
+        sottoChiave = chiave.substring(chiave.indexOf('|') + 1, chiave.indexOf(']]'))
+
+        torna = tagTitolo + nome
+        sottoTitolo = torna + '/' + sottoChiave
+
+        //header
+        testo += this.getNomeHeadSottoPagina(torna, listaDidascalie.size())
+
+        //body
+        testo += aCapo
+        testo += this.getParagrafoDidascalia(listaDidascalie)
+        testo += aCapo
+        testo += aCapo
+
+        //footer
+        if (usaCategoriaNellaSottopagina) {
+            testo += this.getNomeFooter(nome)
+        }// fine del blocco if
+
+        testo = testo.trim()
+
+        //registra la pagina
+        if (!debug) {
+            new EditBio(sottoTitolo, testo, summary)
+        }// fine del blocco if
+
+        testo = tag
+        testo += chiave
+        testo += tag
+        testo += aCapo
+        testo += "*{{Vedi anche|${sottoTitolo}}}"
+
+        testo += aCapo
 
         return testo
     }// fine del metodo

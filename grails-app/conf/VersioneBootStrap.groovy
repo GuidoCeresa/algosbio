@@ -1,5 +1,6 @@
 import groovy.sql.Sql
 import it.algos.algosbio.Genere
+import it.algos.algosbio.Localita
 import it.algos.algospref.Pref
 import it.algos.algospref.Preferenze
 import it.algos.algospref.Type
@@ -405,6 +406,77 @@ class VersioneBootStrap {
             } // fine del ciclo each
             versioneService.newVersione('Genere', 'Reset della tavola')
         }// fine del blocco if
+
+        //--creata una nuova preferenza
+        if (versioneService && versioneService.installaVersione(58)) {
+            Pref pref = new Pref()
+            pref.ordine = Pref.list().size() + 1
+            pref.code = LibBio.TAGLIO_LOCALITA
+            pref.descrizione = 'Numero di voci necessario per creare una pagina della località'
+            pref.type = Type.intero
+            pref.intero = 100
+            pref.save(flush: true)
+            versioneService.newVersione('Preferenze', 'TAGLIO_LOCALITA di default 100')
+        }// fine del blocco if
+
+        //--creata una nuova preferenza
+        if (versioneService && versioneService.installaVersione(59)) {
+            Pref pref = new Pref()
+            pref.ordine = Pref.list().size() + 1
+            pref.code = LibBio.MAX_VOCI_PARAGRAFO_ANTROPONIMI
+            pref.descrizione = 'Numero di voci del paragrafo di antroponimi per creare una sotto-pagina'
+            pref.type = Type.intero
+            pref.intero = 50
+            pref.save(flush: true)
+            versioneService.newVersione('Preferenze', 'MAX_VOCI_PARAGRAFO_ANTROPONIMI di default 50')
+        }// fine del blocco if
+
+        //--creata una nuova preferenza
+        if (versioneService && versioneService.installaVersione(60)) {
+            Pref pref = new Pref()
+            pref.ordine = Pref.list().size() + 1
+            pref.code = LibBio.MAX_VOCI_PARAGRAFO_LOCALITA
+            pref.descrizione = 'Numero di voci del paragrafo di località per creare una sotto-pagina'
+            pref.type = Type.intero
+            pref.intero = 50
+            pref.save(flush: true)
+            versioneService.newVersione('Preferenze', 'MAX_VOCI_PARAGRAFO_LOCALITA di default 50')
+        }// fine del blocco if
+
+        //--sdoppiamento campi nome e titolo di Localita
+        if (versioneService && versioneService.installaVersione(61)) {
+            ArrayList lista = Localita.findAll()
+            Localita loc
+            String nome
+            String tag = '('
+
+            lista?.each {
+                loc = (Localita) it
+                nome = loc.nome
+                if (nome.contains(tag)) {
+                    nome = nome.substring(0, nome.indexOf(tag))
+                    nome = nome.trim()
+                    loc.nomeDiverso = true
+                }// fine del blocco if
+                loc.titolo = nome
+                loc.save(flush: true)
+            } // fine del ciclo each
+
+            versioneService.newVersione('Localita', 'Sdoppiati campi nome e titolo')
+        }// fine del blocco if
+
+        //--creata una nuova preferenza
+        if (versioneService && versioneService.installaVersione(62)) {
+            Pref pref = new Pref()
+            pref.ordine = Pref.list().size() + 1
+            pref.code = LibBio.USA_SUDDIVISIONE_UOMO_DONNA
+            pref.descrizione = 'Suddivide in uomini e donne le liste dei nomi (antroponimi)'
+            pref.type = Type.booleano
+            pref.bool = false
+            pref.save(flush: true)
+            versioneService.newVersione('Preferenze', 'USA_SUDDIVISIONE_UOMO_DONNA di default false')
+        }// fine del blocco if
+
     }// fine della closure
 
 

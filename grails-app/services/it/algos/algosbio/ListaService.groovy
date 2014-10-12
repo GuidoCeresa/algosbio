@@ -99,7 +99,7 @@ class ListaService {
      * Crea la pagina e la registra su wiki
      */
     public int uploadAttivitaSecondaMeta() {
-        int posInizio = Pref.getInt(LibBio.TAGLIO_META_ATTIVITA, 225)
+        int posInizio = Pref.getInt(LibBio.TAGLIO_META_ATTIVITA, 300)
         int posFine = attivitaService.getNumPlurali()
         return this.uploadAttivita(posInizio, posFine)
     } // fine del metodo
@@ -138,10 +138,15 @@ class ListaService {
         for (int k = posInizio; k < posFine; k++) {
             attivita = listaAttivitaPlurali.get(k)
             wrapAttivita = new BioAttivita(attivita)
-            registrata = wrapAttivita.registraPagina()
+
+            if (!Pref.getBool(LibBio.DEBUG)) {
+                registrata = wrapAttivita.registraPagina()
+            }// fine del blocco if
+
             if (registrata) {
                 attivitaModificate++
             }// fine del blocco if
+
             attivita = LibTesto.primaMaiuscola(attivita)
             parziale = System.currentTimeMillis()
             durataProgressiva = parziale - inizio

@@ -27,12 +27,14 @@ class LocalitaController {
         def campoSort
         int recordsTotali
         String titoloLista = ''
+        def noMenuCreate = true
 
         //--selezione dei menu extra
         //--solo azione e di default controller=questo; classe e titolo vengono uguali
         //--mappa con [cont:'controller', action:'metodo', icon:'iconaImmagine', title:'titoloVisibile']
-        menuExtra =
-                [cont: 'antroponimo', action: 'elabora', icon: 'frecciasu', title: 'Upload antroponimi']
+        menuExtra = [
+                [cont: 'localita', action: 'elabora', icon: 'frecciasu', title: 'Upload località']
+        ]
         params.menuExtra = menuExtra
         // fine della definizione
 
@@ -71,6 +73,7 @@ class LocalitaController {
                                                menuExtra            : menuExtra,
                                                campiLista           : campiLista,
                                                localitaInstanceCount: recordsTotali,
+                                               noMenuCreate         : noMenuCreate,
                                                params               : params]
     } // fine del metodo
 

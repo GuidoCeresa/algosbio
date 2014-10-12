@@ -3,7 +3,9 @@ package it.algos.algosbio
 class Localita {
 
     /** nomi interni dei campi (ordine non garantito) */
-    String nome
+    String nome //della pagina su wikipedia
+    String titolo //da mostrare nelle liste
+    boolean nomeDiverso = false
     int nati
     int morti
 
@@ -15,6 +17,8 @@ class Localita {
      */
     static constraints = {
         nome(blank: false, nullable: false, unique: true)
+        titolo(blank: true, nullable: true)
+        nomeDiverso()
         nati()
         morti()
     } // end of static constraints

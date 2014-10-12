@@ -101,7 +101,7 @@ class BioAttivita extends BioAttNaz {
         String sottoTitolo
         ArrayList<Long> listaSingolariID
         ArrayList<String> listaNazionalitaSingolari
-        ArrayList<String> listaNazionalitaPlurali
+        ArrayList<String> listaNazionalitaPlurali = null
         String pathTitolo = BioListaAttNaz.PATH + 'Nazionalità/'
         String pathSottoTitolo = BioListaAttNaz.PATH + 'Attività/'
         ArrayList<Map> listaDidascalie
@@ -111,10 +111,14 @@ class BioAttivita extends BioAttNaz {
         listaSingolariID = this.getListaID()
 
         // recupera la lista delle nazionalita singolari
-        listaNazionalitaSingolari = creaNazionalitaSingolari(listaSingolariID)
+        if (listaSingolariID) {
+            listaNazionalitaSingolari = creaNazionalitaSingolari(listaSingolariID)
+        }// fine del blocco if
 
         // recupera la lista delle nazionalita plurali
-        listaNazionalitaPlurali = creaNazionalitaPlurali(listaNazionalitaSingolari)
+        if (listaNazionalitaSingolari) {
+            listaNazionalitaPlurali = creaNazionalitaPlurali(listaNazionalitaSingolari)
+        }// fine del blocco if
 
         // ciclo
         if (listaSingolariID) {

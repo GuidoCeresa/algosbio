@@ -136,22 +136,24 @@ class BioLista {
         EditBio paginaModificata
         Risultato risultato
 
-        // registra la pagina solo se ci sono differenze significative
-        // al di la della prima riga con il richiamo al template e che contiene la data
-        if (titolo && testo && this.listaWrapper && this.listaWrapper.size() > 0) {
-            try { // prova ad eseguire il codice
-                paginaModificata = new EditBio(titolo, testo, summary)
-                risultato = paginaModificata.getRisultato()
+        if (!Pref.getBool(LibBio.DEBUG)) {
+            // registra la pagina solo se ci sono differenze significative
+            // al di la della prima riga con il richiamo al template e che contiene la data
+            if (titolo && testo && this.listaWrapper && this.listaWrapper.size() > 0) {
+                try { // prova ad eseguire il codice
+                    paginaModificata = new EditBio(titolo, testo, summary)
+                    risultato = paginaModificata.getRisultato()
 
-                if ((risultato == Risultato.modificaRegistrata) || (risultato == Risultato.allineata)) {
-                    registrata = true
-                } else {
+                    if ((risultato == Risultato.modificaRegistrata) || (risultato == Risultato.allineata)) {
+                        registrata = true
+                    } else {
 //                log.warn "La pagina $titolo è $risultato"
-                }// fine del blocco if-else
+                    }// fine del blocco if-else
 
-            } catch (Exception unErrore) { // intercetta l'errore
-                log.error titolo + ' - ' + unErrore
-            }// fine del blocco try-catch
+                } catch (Exception unErrore) { // intercetta l'errore
+                    log.error titolo + ' - ' + unErrore
+                }// fine del blocco try-catch
+            }// fine del blocco if
         }// fine del blocco if
 
         return registrata

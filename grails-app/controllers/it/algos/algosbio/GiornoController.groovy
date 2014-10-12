@@ -203,6 +203,7 @@ class GiornoController {
         def campoSort
         String titoloLista
         int recordsTotali
+        def noMenuCreate = true
 
         //--selezione dei menu extra
         //--solo azione e di default controller=questo; classe e titolo vengono uguali
@@ -263,7 +264,8 @@ class GiornoController {
                 giornoInstanceTotal: recordsTotali,
                 menuExtra          : menuExtra,
                 titoloLista        : titoloLista,
-                campiLista         : campiLista],
+                campiLista         : campiLista,
+                noMenuCreate         : noMenuCreate],
                 params: params)
     } // fine del metodo
 

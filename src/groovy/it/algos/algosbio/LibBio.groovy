@@ -65,6 +65,10 @@ class LibBio {
     public static final String TAGLIO_META_ATTIVITA = 'taglioMetaAttivita'
     public static final String USA_LOG_INFO = 'usaLogInfo'
     public static final String USA_MAIL_INFO = 'usaMailInfo'
+    public static final String TAGLIO_LOCALITA = 'taglioLocalita'
+    public static final String MAX_VOCI_PARAGRAFO_ANTROPONIMI = 'maxVociParagrafoAntroponimi'
+    public static final String MAX_VOCI_PARAGRAFO_LOCALITA = 'maxVociParagrafoLocalita'
+    public static final String USA_SUDDIVISIONE_UOMO_DONNA = 'usaSuddivisioneUomoDonna'
 
     // campi di una mappa
     public static final String MAPPA_TITOLO_PARAGRAFO = 'titoloParagrafo'

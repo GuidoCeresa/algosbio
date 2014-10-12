@@ -144,7 +144,7 @@ class AttivitaController {
         //--mappa con [cont:'controller', action:'metodo', icon:'iconaImmagine', title:'titoloVisibile']
         menuExtra = [
                 [cont: 'attivita', action: 'download', icon: 'frecciagiu', title: 'Download'],
-                [cont: 'attivita', action: 'uploadAttivita', icon: 'frecciasu', title: 'Upload'],
+                [cont: 'attivita', action: 'uploadAttivita', icon: 'frecciasu', title: 'Upload All'],
         ]
         // fine della definizione
 
