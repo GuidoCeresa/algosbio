@@ -116,6 +116,7 @@
         <li class="controller"><g:link controller="Localita">Localita</g:link></li>
         <li class="controller"><g:link controller="Professione">Professioni</g:link></li>
         <li class="controller"><g:link controller="Genere">Genere</g:link></li>
+        <li class="controller"><g:link controller="Cognome">Cognomi</g:link></li>
         <br>
         <li class="controller"><g:link controller="Giorno">Giorni</g:link></li>
         <li class="controller"><g:link controller="Anno">Anni</g:link></li>

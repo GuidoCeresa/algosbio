@@ -69,6 +69,9 @@ class LibBio {
     public static final String MAX_VOCI_PARAGRAFO_ANTROPONIMI = 'maxVociParagrafoAntroponimi'
     public static final String MAX_VOCI_PARAGRAFO_LOCALITA = 'maxVociParagrafoLocalita'
     public static final String USA_SUDDIVISIONE_UOMO_DONNA = 'usaSuddivisioneUomoDonna'
+    public static final String MAX_CICLI_ELABORA_COGNOMI = 'maxCicliElaboraCognomi'
+    public static final String TAGLIO_COGNOMI = 'tagloCognomi'
+    public static final String USA_CATEGORIA_SOTTOPAGINE_ANTROPONIMI = 'usaCategoriaSottopagineAntroponimi'
 
     // campi di una mappa
     public static final String MAPPA_TITOLO_PARAGRAFO = 'titoloParagrafo'
@@ -1258,5 +1261,19 @@ class LibBio {
 
         return nomeOut
     } // fine del metodo
+
+    // elimina subito nomi strani
+    public static boolean checkNome(String cognome) {
+        boolean accettato = true
+        ArrayList<String> listaIniziale = ['!', '&nbsp', '.', '(', '<!--', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '?', '[', '"', '<', "'", '-']
+
+        listaIniziale?.each {
+            if (cognome.startsWith(it)) {
+                accettato = false
+            }// fine del blocco if
+        } // fine del ciclo each
+
+        return accettato
+    }// fine del metodo
 
 } // fine della classe

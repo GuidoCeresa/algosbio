@@ -637,7 +637,7 @@ class AntroponimoService {
     public String getNomeBodyBaseSottoPagina(String nome, String chiave, ArrayList listaDidascalie) {
         String testo = ''
         boolean debug = Pref.getBool(LibBio.DEBUG, false)
-        boolean usaCategoriaNellaSottopagina = false
+        boolean usaCategoriaNellaSottopagina = Pref.getBool(LibBio.USA_CATEGORIA_SOTTOPAGINE_ANTROPONIMI, false)
         String summary = LibBio.getSummary()
         String sottoTitolo
         String sottoChiave

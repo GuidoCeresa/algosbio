@@ -27,7 +27,7 @@ class LocalitaService {
         listaLocalita?.each {
             localita = (Localita) it
             nome = localita.nome
-            if (checkNome(nome)) {
+            if (LibBio.checkNome(nome)) {
                 elaboraSingolaLocalita(it)
             }// fine del blocco if
         }// fine del ciclo each
@@ -36,19 +36,6 @@ class LocalitaService {
         def stop
     }// fine del metodo
 
-    // elimina subito nomi strani
-    private static boolean checkNome(String nome) {
-        boolean accettato = true
-        ArrayList<String> lista = ['!', '&nbsp', '.', '(', '<!--', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '?', '[']
-
-        lista?.each {
-            if (nome.startsWith(it)) {
-                accettato = false
-            }// fine del blocco if
-        } // fine del ciclo each
-
-        return accettato
-    }// fine del metodo
 
     /**
      * Elabora la pagina per una singola localita
@@ -421,4 +408,5 @@ class LocalitaService {
     private static enum NatoMorto {
         nato, morto
     } // fine della Enumeration
+
 } // fine della service classe

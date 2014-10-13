@@ -477,6 +477,42 @@ class VersioneBootStrap {
             versioneService.newVersione('Preferenze', 'USA_SUDDIVISIONE_UOMO_DONNA di default false')
         }// fine del blocco if
 
+        //--creata una nuova preferenza
+        if (versioneService && versioneService.installaVersione(63)) {
+            Pref pref = new Pref()
+            pref.ordine = Pref.list().size() + 1
+            pref.code = LibBio.MAX_CICLI_ELABORA_COGNOMI
+            pref.descrizione = 'Numero di cicli massimi di elaborazione dei cognomi'
+            pref.type = Type.intero
+            pref.intero = 13000
+            pref.save(flush: true)
+            versioneService.newVersione('Preferenze', 'MAX_CICLI_ELABORA_COGNOMI di default 13000')
+        }// fine del blocco if
+
+        //--creata una nuova preferenza
+        if (versioneService && versioneService.installaVersione(64)) {
+            Pref pref = new Pref()
+            pref.ordine = Pref.list().size() + 1
+            pref.code = LibBio.TAGLIO_COGNOMI
+            pref.descrizione = 'Numero di voci necessario per creare una pagina dei cognomi'
+            pref.type = Type.intero
+            pref.intero = 50
+            pref.save(flush: true)
+            versioneService.newVersione('Preferenze', 'TAGLIO_COGNOMI di default 50')
+        }// fine del blocco if
+
+        //--creata una nuova preferenza
+        if (versioneService && versioneService.installaVersione(65)) {
+            Pref pref = new Pref()
+            pref.ordine = Pref.list().size() + 1
+            pref.code = LibBio.USA_CATEGORIA_SOTTOPAGINE_ANTROPONIMI
+            pref.descrizione = 'Inserisce la categorizzazione nel footer delle sottopagine di antroponimi'
+            pref.type = Type.booleano
+            pref.bool = true
+            pref.save(flush: true)
+            versioneService.newVersione('Preferenze', 'USA_CATEGORIA_SOTTOPAGINE_ANTROPONIMI di default true')
+        }// fine del blocco if
+
     }// fine della closure
 
 
