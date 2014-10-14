@@ -13,7 +13,7 @@ class CognomeService {
     // il service NON viene iniettato automaticamente (perché è nel plugin)
     AntroponimoService antroponimoService = new AntroponimoService()
 
-    public static String PATH = 'Progetto:Biografie/Persone di cognome '
+    public static String PATH = 'Progetto:Biografie/Cognomi/Persone di cognome '
     private static String aCapo = '\n'
 
     // Elabora tutte le pagine
@@ -94,7 +94,7 @@ class CognomeService {
         testo += this.getBody(listaBiografie, true)
 
         //footer
-//        testo += this.getFooter(localita)
+        testo += this.getFooter(cognome)
 
         testo = testo.trim()
 
@@ -185,15 +185,12 @@ class CognomeService {
         return testo
     }// fine del metodo
 
-    public String getFooter(Localita localita) {
+    public String getFooter(Cognome cognome) {
         String testo = ''
-        String aCapo = '\n'
-        String nome = localita.nome
-        String loc = ''
-
+        String cognomeTxt = cognome.testo
 
         testo += '<noinclude>'
-        testo += "[[Categoria:Liste di persone per cognome|${nome}]]"
+        testo += "[[Categoria:Bio cognomi|${cognomeTxt}]]"
         testo += '</noinclude>'
         testo += aCapo
 

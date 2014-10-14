@@ -442,13 +442,13 @@ class AntroponimoService {
                     like("nome", "${nome}")
                     like("nome", "${nome} %")
                 }
-                order("title", "asc")
+                order("cognome", "asc")
             }
         } else {
             def criterio = BioGrails.createCriteria()
             listaGrezza = criterio.list() {
                 like("nome", "${nome}")
-                order("title", "asc")
+                order("cognome", "asc")
             }
             //--i nomi sono differenziati in base all'accento
             listaGrezza?.each {
@@ -711,6 +711,7 @@ class AntroponimoService {
         ArrayList<String> lista
         BioGrails bio
         String attivita
+        boolean usaParagrafiLettera = true
 
         if (listaVoci) {
             mappa = new LinkedHashMap<String, ArrayList<String>>()
