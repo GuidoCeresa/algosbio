@@ -660,7 +660,7 @@ class AntroponimoService {
 
         //footer
         if (usaCategoriaNellaSottopagina) {
-            testo += this.getNomeFooter(nome)
+            testo += this.getNomeFooter(nome + '/' + sottoChiave)
         }// fine del blocco if
 
         testo = testo.trim()
