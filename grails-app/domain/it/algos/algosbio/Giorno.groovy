@@ -13,6 +13,8 @@
 
 package it.algos.algosbio
 
+import it.algos.algoslib.Mese
+
 class Giorno {
 
     /** nomi interni dei campi (ordine non garantito) */
@@ -20,6 +22,7 @@ class Giorno {
     int bisestile
     String nome
     String titolo
+    String mese
     boolean sporcoNato
     boolean sporcoMorto
 
@@ -34,6 +37,7 @@ class Giorno {
         bisestile(unique: true)
         nome(unique: true)
         titolo(unique: true)
+        mese(nullable: true, blank: true)
         sporcoNato()
         sporcoMorto()
     } // end of static constraints

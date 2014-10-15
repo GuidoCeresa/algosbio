@@ -1,6 +1,9 @@
 import groovy.sql.Sql
+import it.algos.algosbio.Anno
 import it.algos.algosbio.Genere
+import it.algos.algosbio.Giorno
 import it.algos.algosbio.Localita
+import it.algos.algoslib.Mese
 import it.algos.algospref.Pref
 import it.algos.algospref.Preferenze
 import it.algos.algospref.Type
@@ -511,6 +514,86 @@ class VersioneBootStrap {
             pref.bool = true
             pref.save(flush: true)
             versioneService.newVersione('Preferenze', 'USA_CATEGORIA_SOTTOPAGINE_ANTROPONIMI di default true')
+        }// fine del blocco if
+
+        //--nuovo campo mese in Giorno - Valori iniziali per i record esistenti = x
+        if (versioneService && versioneService.installaVersione(66)) {
+            ArrayList giorni = Giorno.list()
+            Giorno giorno
+            String nome
+            String tagSpazio = ' '
+
+            giorni?.each {
+                giorno = (Giorno) it
+                nome = giorno.nome
+
+                if (nome) {
+                    if (nome.contains(tagSpazio)) {
+                        nome = nome.substring(nome.indexOf(tagSpazio))
+                    }// fine del blocco if
+                    nome = nome.trim()
+                    giorno.mese = nome
+                    giorno.save(failOnError: true)
+                }// fine del blocco if
+            } // fine del ciclo each
+
+            versioneService.newVersione('Giorno', 'Aggiunto campo \'mese\'')
+        }// fine del blocco if
+
+        //--nuovo campo secolo in Anno - Valori iniziali per i record esistenti = x
+        if (versioneService && versioneService.installaVersione(67)) {
+            ArrayList anni = Anno.list()
+            Anno anno
+            String titolo
+            int num = 0
+            String secolo
+
+            anni?.each {
+                anno = (Anno) it
+                titolo = anno.titolo
+                secolo = ''
+
+                try { // prova ad eseguire il codice
+                    num = Integer.decode(titolo)
+                } catch (Exception unErrore) { // intercetta l'errore
+                }// fine del blocco try-catch
+
+                if (num >= 1401 && num <= 1500) {
+                    secolo = 'XV'
+                }// fine del blocco if
+
+                if (num >= 1501 && num <= 1600) {
+                    secolo = 'XVI'
+                }// fine del blocco if
+
+                if (num >= 1601 && num <= 1700) {
+                    secolo = 'XVII'
+                }// fine del blocco if
+
+                if (num >= 1701 && num <= 1800) {
+                    secolo = 'XVIII'
+                }// fine del blocco if
+
+                if (num >= 1801 && num <= 1900) {
+                    secolo = 'XIX'
+                }// fine del blocco if
+
+                if (num >= 1901 && num <= 2000) {
+                    secolo = 'XX'
+                }// fine del blocco if
+
+                if (num >= 2001 && num <= 2100) {
+                    secolo = 'XXI'
+                }// fine del blocco if
+
+                if (secolo) {
+                    secolo += ' secolo'
+                    anno.secolo = secolo
+                    anno.save(failOnError: true)
+                }// fine del blocco if
+            } // fine del ciclo each
+
+//            versioneService.newVersione('Anno', 'Aggiunto campo \'anno\'')
         }// fine del blocco if
 
     }// fine della closure

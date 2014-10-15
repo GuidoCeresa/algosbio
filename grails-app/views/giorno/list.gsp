@@ -70,7 +70,10 @@
                 
                 <g:sortableColumn property="titolo"
                                   title="${message(code: 'giorno.titolo.label', default: 'Titolo')}"/>
-                
+
+                <g:sortableColumn property="mese"
+                                  title="${message(code: 'giorno.mese.label', default: 'Mese')}"/>
+
                 <g:sortableColumn property="sporcoNato"
                                   title="${message(code: 'giorno.sporcoNato.label', default: 'Sporco Nato')}"/>
                 
@@ -103,7 +106,10 @@
                     
                     <td><g:link action="show"
                                 id="${giornoInstance.id}">${fieldValue(bean: giornoInstance, field: "titolo")}</g:link></td>
-                    
+
+                    <td><g:link action="show"
+                                id="${giornoInstance.id}">${fieldValue(bean: giornoInstance, field: "mese")}</g:link></td>
+
                     <td><g:formatBoolean boolean="${giornoInstance.sporcoNato}"/></td>
                     
                     <td><g:formatBoolean boolean="${giornoInstance.sporcoMorto}"/></td>

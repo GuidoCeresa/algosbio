@@ -644,32 +644,53 @@ class DidascaliaBio {
         // variabili e costanti locali di lavoro
         String nomeCognome = ''
         boolean continua = false
-        String titoloVoce = ''
+        String titoloVoce
         String tagPar = '('
         String tagPipe = '|'
-        String nomePersona
-
-        // controllo di congruità
+        String nomePrimaDellaParentesi
         titoloVoce = this.titolo
-        if (titoloVoce) {
-            continua = true
-        }// fine del blocco if
+        boolean usaTitoloPerNomeCognome = false
 
-        if (continua) {
+        switch (tipoDidascalia) {
+            case DidascaliaTipo.base:
+            case DidascaliaTipo.crono:
+            case DidascaliaTipo.cronoSimboli:
+            case DidascaliaTipo.semplice:
+            case DidascaliaTipo.completa:
+            case DidascaliaTipo.completaLista:
+            case DidascaliaTipo.completaSimboli:
+            case DidascaliaTipo.estesa:
+            case DidascaliaTipo.natiGiorno:
+            case DidascaliaTipo.natiAnno:
+            case DidascaliaTipo.mortiGiorno:
+            case DidascaliaTipo.mortiAnno:
+                usaTitoloPerNomeCognome = true
+                break
+            case DidascaliaTipo.estesaSimboli:
+                usaTitoloPerNomeCognome = false
+                break
+            default: // caso non definito
+                usaTitoloPerNomeCognome = true
+                break
+        } // fine del blocco switch
+
+        if (usaTitoloPerNomeCognome) {
             // se il titolo NON contiene la parentesi, il nome non va messo perché coincide col titolo della voce
             if (titoloVoce.contains(tagPar)) {
-                nomePersona = titoloVoce.substring(0, titoloVoce.indexOf(tagPar))
-                nomeCognome = titoloVoce + tagPipe + nomePersona
+                nomePrimaDellaParentesi = titoloVoce.substring(0, titoloVoce.indexOf(tagPar))
+                nomeCognome = titoloVoce + tagPipe + nomePrimaDellaParentesi
             } else {
                 nomeCognome = titoloVoce
             }// fine del blocco if-else
-            continua == (nomeCognome)
-        }// fine del blocco if
+        } else {
+            nomeCognome = this.nome + ' ' + this.cognome
+            if (!nomeCognome.equals(titoloVoce)) {
+                nomeCognome = titoloVoce + tagPipe + nomeCognome
+            }// fine del blocco if
+        }// fine del blocco if-else
 
-        if (continua) {
-            nomeCognome = nomeCognome.trim()
-            nomeCognome = LibWiki.setQuadre(nomeCognome)
-        }// fine del blocco if
+        nomeCognome = nomeCognome.trim()
+        nomeCognome = LibWiki.setQuadre(nomeCognome)
 
         // valore di ritorno
         return nomeCognome

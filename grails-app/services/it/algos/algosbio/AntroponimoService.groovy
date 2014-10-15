@@ -254,6 +254,7 @@ class AntroponimoService {
         listaNomi?.each {
             elaboraSingoloNome((String) it)
         }// fine del ciclo each
+        def stop
     }// fine del metodo
 
     public creaPagineControllo() {
@@ -520,7 +521,7 @@ class AntroponimoService {
     }// fine del metodo
 
 
-    public String getNomeBody(String nome, ArrayList listaVoci) {
+    public String getNomeBody(String nome, ArrayList<BioGrails> listaBiografie) {
         String testo = ''
         boolean dividePerGenere = Pref.getBool(LibBio.USA_SUDDIVISIONE_UOMO_DONNA, false)
         int maxVoci = Pref.getInt(LibBio.MAX_VOCI_PARAGRAFO_ANTROPONIMI, 100)
@@ -530,8 +531,8 @@ class AntroponimoService {
         ArrayList listaVociFemminili
 
         if (dividePerGenere) {
-            listaVociMaschili = this.selezionaGenere(listaVoci, tagMaschio)
-            listaVociFemminili = this.selezionaGenere(listaVoci, tagFemmina)
+            listaVociMaschili = this.selezionaGenere(listaBiografie, tagMaschio)
+            listaVociFemminili = this.selezionaGenere(listaBiografie, tagFemmina)
 
             if (listaVociMaschili && listaVociFemminili) {
                 testo += '\n==Uomini==\n'
@@ -547,39 +548,35 @@ class AntroponimoService {
                 }// fine del blocco if
             }// fine del blocco if-else
         } else {
-            testo = this.getNomeBodyBase(nome, listaVoci, maxVoci)
+            testo = this.getNomeBodyBase(nome, listaBiografie, maxVoci)
         }// fine del blocco if-else
 
         return testo
     }// fine del metodo
 
-    public String getNomeBodyBase(String nome, ArrayList listaVoci, int maxVoci) {
+    public String getNomeBodyBase(String nome, ArrayList<BioGrails> listaBiografie, int maxVoci) {
         String testo = ''
         Map mappa
         String chiave
+        ArrayList valore
         ArrayList<String> listaDidascalie
-        int num = 0
 
-        mappa = this.getMappaAttività(listaVoci)
-        mappa = this.ordinaMappa(mappa)
-        if (mappa) {
-            mappa?.each {
-                chiave = it.key
-                listaDidascalie = (ArrayList<String>) mappa.get(chiave)
-                num = listaDidascalie.size()
+        mappa = BioLista.getMappaAttività(listaBiografie)
+        mappa?.each {
+            chiave = it.key
+            valore = (ArrayList) mappa.get(chiave)
+            listaDidascalie = BioLista.getListaDidascalie((ArrayList<BioGrails>) valore)
 
-                if (chiave.startsWith(tagPunti)) {
-                    testo += getNomeBodyBasePagina(chiave, listaDidascalie)
+            if (chiave.startsWith(tagPunti)) {
+                testo += getNomeBodyBasePagina(chiave, listaDidascalie)
+            } else {
+                if (listaDidascalie.size() >= maxVoci) {
+                    testo += getNomeBodyBaseSottoPagina(nome, chiave, valore)
                 } else {
-                    if (num >= maxVoci) {
-                        testo += getNomeBodyBaseSottoPagina(nome, chiave, listaDidascalie)
-                    } else {
-                        testo += getNomeBodyBasePagina(chiave, listaDidascalie)
-                    }// fine del blocco if-else
+                    testo += getNomeBodyBasePagina(chiave, listaDidascalie)
                 }// fine del blocco if-else
-
-            }// fine del ciclo each
-        }// fine del blocco if
+            }// fine del blocco if-else
+        }// fine del ciclo each
 
         return testo
     }// fine del metodo
@@ -601,7 +598,7 @@ class AntroponimoService {
 
     public String getNomeHeadSottoPagina(String titoloRitorno, int num) {
         String testo = ''
-        boolean usaTavolaContenuti = Pref.getBool(LibBio.USA_TAVOLA_CONTENUTI)
+        boolean usaTavolaContenuti = false
         String dataCorrente = LibTime.getGioMeseAnnoLungo(new Date())
         String numero = ''
         String tagIndice = '__FORCETOC__'
@@ -629,12 +626,11 @@ class AntroponimoService {
         }// fine del blocco if
         testo += "|data=$dataCorrente}}"
         testo += aCapo
-        testo += aCapo
 
         return testo
     }// fine del metodo
 
-    public String getNomeBodyBaseSottoPagina(String nome, String chiave, ArrayList listaDidascalie) {
+    public String getNomeBodyBaseSottoPagina(String nome, String chiave, ArrayList<BioGrails> listaBiografie) {
         String testo = ''
         boolean debug = Pref.getBool(LibBio.DEBUG, false)
         boolean usaCategoriaNellaSottopagina = Pref.getBool(LibBio.USA_CATEGORIA_SOTTOPAGINE_ANTROPONIMI, false)
@@ -643,6 +639,9 @@ class AntroponimoService {
         String sottoChiave
         String tag = '=='
         String torna
+        Map mappa
+        ArrayList<String> listaDidascalie
+        ArrayList valore
 
         sottoChiave = chiave.substring(chiave.indexOf('|') + 1, chiave.indexOf(']]'))
 
@@ -650,13 +649,16 @@ class AntroponimoService {
         sottoTitolo = torna + '/' + sottoChiave
 
         //header
-        testo += this.getNomeHeadSottoPagina(torna, listaDidascalie.size())
+        testo += this.getNomeHeadSottoPagina(torna, listaBiografie.size())
 
         //body
-        testo += aCapo
-        testo += this.getParagrafoDidascalia(listaDidascalie)
-        testo += aCapo
-        testo += aCapo
+        mappa = BioLista.getMappaLetteraIniziale(listaBiografie)
+        mappa?.each {
+            chiave = it.key
+            valore = (ArrayList) mappa.get(chiave)
+            listaDidascalie = BioLista.getListaDidascalie((ArrayList<BioGrails>) valore)
+            testo += getNomeBodyBasePagina(chiave, listaDidascalie)
+        }// fine del ciclo each
 
         //footer
         if (usaCategoriaNellaSottopagina) {
@@ -726,7 +728,6 @@ class AntroponimoService {
                 } catch (Exception unErrore) { // intercetta l'errore
                     didascalia = creaDidascaliaAlVolo(bio)
                 }// fine del blocco try-catch
-//                didascalia = bio.didascaliaBase
                 attivita = bio.attivita
                 if (attivita) {
                     chiave = this.getAttivita(bio)
@@ -800,7 +801,7 @@ class AntroponimoService {
     public String getAttivita(BioGrails bio) {
         String attivitaLinkata = ''
         String singolare
-        boolean link = this.titoloParagrafoConLink
+        boolean link = titoloParagrafoConLink
         String attivita
         String genere
         Professione professione
@@ -893,7 +894,6 @@ class AntroponimoService {
      */
     public ArrayList<String> ordinaChiavi(ArrayList<String> listaChiaviIn) {
         ArrayList<String> listaChiaviOut = listaChiaviIn.sort()
-//        LinkedHashMap<String, String> mappa = new LinkedHashMap<String, String>()
         String chiaveCompleta
         String chiaveRidotta
         String chiaveDoppia
@@ -908,11 +908,8 @@ class AntroponimoService {
                 chiaveCompleta = it
                 chiaveRidotta = chiaveCompleta.substring(chiaveCompleta.indexOf('|') + 1, chiaveCompleta.length())
                 lista.add(chiaveRidotta + tag + chiaveCompleta)
-//                mappa.put(chiaveRidotta, chiaveCompleta)
             } // fine del ciclo each
 
-//            listaChiavi = mappa.keySet()
-//            listaChiavi.sort()
             lista.sort()
 
             if (lista) {
@@ -921,7 +918,7 @@ class AntroponimoService {
                     chiaveDoppia = it
                     chiaveCompleta = chiaveDoppia.substring(chiaveDoppia.indexOf(tag) + tag.length(), chiaveDoppia.length())
                     listaChiaviOut.add(chiaveCompleta)
-                }// fine del blocco if
+                } // fine del ciclo each
             }// fine del blocco if
 
         }// fine del blocco if

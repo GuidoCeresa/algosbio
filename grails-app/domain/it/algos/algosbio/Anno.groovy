@@ -18,6 +18,7 @@ class Anno {
     /** nomi interni dei campi (ordine non garantito) */
     int progressivoCategoria
     String titolo
+    String secolo
     boolean sporcoNato
     boolean sporcoMorto
 
@@ -30,7 +31,7 @@ class Anno {
     static constraints = {
         progressivoCategoria(unique: true)
         titolo(unique: true)
-        sporcoNato()
+        secolo(nullable: true, blank: true)
         sporcoMorto()
     } // end of static constraints
 

@@ -206,6 +206,7 @@ class AntroponimoController {
         ArrayList campiLista
         def lista
         def campoSort
+        int recordsTotali
         String titoloLista
 
         //--selezione dei menu extra
@@ -222,7 +223,7 @@ class AntroponimoController {
         //--mappa con [campo:'nomeDelCampo', title:'titoloVisibile', sort:'ordinamento']
         //--se vuoto, mostra i primi n (stabilito nel templates:scaffoldinf:list)
         //--    nell'ordine stabilito nella constraints della DomainClass
-        campiLista = []
+        campiLista = ['nome', 'voci', 'lunghezza']
         // fine della definizione
 
         //--regolazione dei campo di ordinamento
@@ -249,6 +250,7 @@ class AntroponimoController {
         //--per una lista filtrata (parziale), modificare i parametri
         //--oppure modificare il findAllByInteroGreaterThan()...
         lista = Antroponimo.list(params)
+        recordsTotali = Antroponimo.count()
 
         //--calcola il numero di record
         titoloLista = 'Elenco di ' + lista.size() + ' records di antroponimi'
@@ -258,7 +260,7 @@ class AntroponimoController {
         //--se campiLista è vuoto, mostra tutti i campi (primi 8)
         render(view: 'list', model: [
                 antroponimoInstanceList : lista,
-                antroponimoInstanceTotal: lista.size(),
+                antroponimoInstanceTotal: recordsTotali,
                 menuExtra               : menuExtra,
                 titoloLista             : titoloLista,
                 campiLista              : campiLista],
