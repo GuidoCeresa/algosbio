@@ -765,6 +765,21 @@ class BioController {
     } // fine del metodo
 
     def test() {
+        def nonServe
+        nonServe = new ListaGiornoNato('20 gennaio')
+        nonServe = new ListaGiornoMorto('20 gennaio')
+        nonServe = new ListaAnnoNato('1942')
+        nonServe = new ListaAnnoMorto('1250')
+        nonServe = new ListaAttivita('accademici')
+        nonServe = new ListaNazionalita('venezuelani')
+        nonServe = new ListaNome('Adriana')
+        nonServe = new ListaCognome('Amato')
+        nonServe = new ListaLuogoNato('Bergamo')
+        nonServe = new ListaLuogoMorto('Vercelli')
+
+    } // fine del metodo
+
+    def testOld() {
         String titoloA
         String titoloB
         String titoloC

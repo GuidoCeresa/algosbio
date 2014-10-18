@@ -3,6 +3,7 @@ import it.algos.algosbio.Anno
 import it.algos.algosbio.Genere
 import it.algos.algosbio.Giorno
 import it.algos.algosbio.Localita
+import it.algos.algosbio.Secolo
 import it.algos.algoslib.Mese
 import it.algos.algospref.Pref
 import it.algos.algospref.Preferenze
@@ -545,55 +546,19 @@ class VersioneBootStrap {
             ArrayList anni = Anno.list()
             Anno anno
             String titolo
-            int num = 0
             String secolo
 
             anni?.each {
                 anno = (Anno) it
                 titolo = anno.titolo
-                secolo = ''
-
-                try { // prova ad eseguire il codice
-                    num = Integer.decode(titolo)
-                } catch (Exception unErrore) { // intercetta l'errore
-                }// fine del blocco try-catch
-
-                if (num >= 1401 && num <= 1500) {
-                    secolo = 'XV'
-                }// fine del blocco if
-
-                if (num >= 1501 && num <= 1600) {
-                    secolo = 'XVI'
-                }// fine del blocco if
-
-                if (num >= 1601 && num <= 1700) {
-                    secolo = 'XVII'
-                }// fine del blocco if
-
-                if (num >= 1701 && num <= 1800) {
-                    secolo = 'XVIII'
-                }// fine del blocco if
-
-                if (num >= 1801 && num <= 1900) {
-                    secolo = 'XIX'
-                }// fine del blocco if
-
-                if (num >= 1901 && num <= 2000) {
-                    secolo = 'XX'
-                }// fine del blocco if
-
-                if (num >= 2001 && num <= 2100) {
-                    secolo = 'XXI'
-                }// fine del blocco if
-
+                secolo = Secolo.getSecolo(titolo)
                 if (secolo) {
-                    secolo += ' secolo'
                     anno.secolo = secolo
                     anno.save(failOnError: true)
                 }// fine del blocco if
             } // fine del ciclo each
 
-//            versioneService.newVersione('Anno', 'Aggiunto campo \'anno\'')
+            versioneService.newVersione('Anno', 'Aggiunto campo \'anno\'')
         }// fine del blocco if
 
     }// fine della closure

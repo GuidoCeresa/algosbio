@@ -111,7 +111,7 @@ public enum Secolo {
             if (secolo.dopoCristo) {
                 inizio = secolo.inizio
                 fine = secolo.fine
-                if (anno > inizio && anno < fine) {
+                if (anno >= inizio && anno <= fine) {
                     nome = secolo.titolo
                 }// fine del blocco if
             }// fine del blocco if

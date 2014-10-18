@@ -74,6 +74,21 @@ class SecoloTest extends GroovyTestCase {
         ottenuto = Secolo.getSecolo(annoTxt)
         assert ottenuto == richiesto
 
+        annoTxt = '1599'
+        richiesto = 'XVI secolo'
+        ottenuto = Secolo.getSecolo(annoTxt)
+        assert ottenuto == richiesto
+
+        annoTxt = '1600'
+        richiesto = 'XVI secolo'
+        ottenuto = Secolo.getSecolo(annoTxt)
+        assert ottenuto == richiesto
+
+        annoTxt = '1601'
+        richiesto = 'XVII secolo'
+        ottenuto = Secolo.getSecolo(annoTxt)
+        assert ottenuto == richiesto
+
     } // fine del test
 
 } // fine della classe test unit

@@ -64,7 +64,10 @@
                 
                 <g:sortableColumn property="titolo"
                                   title="${message(code: 'anno.titolo.label', default: 'Titolo')}"/>
-                
+
+                <g:sortableColumn property="secolo"
+                                  title="${message(code: 'anno.secolo.label', default: 'Secolo')}"/>
+
                 <g:sortableColumn property="sporcoNato"
                                   title="${message(code: 'anno.sporcoNato.label', default: 'Sporco Nato')}"/>
                 
@@ -91,7 +94,10 @@
                     
                     <td><g:link action="show"
                                 id="${annoInstance.id}">${fieldValue(bean: annoInstance, field: "titolo")}</g:link></td>
-                    
+
+                    <td><g:link action="show"
+                                id="${annoInstance.id}">${fieldValue(bean: annoInstance, field: "secolo")}</g:link></td>
+
                     <td><g:formatBoolean boolean="${annoInstance.sporcoNato}"/></td>
                     
                     <td><g:formatBoolean boolean="${annoInstance.sporcoMorto}"/></td>

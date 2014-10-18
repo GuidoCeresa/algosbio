@@ -97,7 +97,8 @@ class BioGrailsService {
 
         listaGiorniModificati = Giorno.findAllBySporcoNato(true)
         listaGiorniModificati?.each {
-            registrata = uploadGiornoNascita((Giorno) it)
+            registrata = uploadGiornoNascitaNew((Giorno) it)
+//            registrata = uploadGiornoNascita((Giorno) it)
             if (registrata) {
                 giorniModificati++
             }// fine del blocco if
@@ -105,6 +106,64 @@ class BioGrailsService {
 
         return giorniModificati
     } // fine del metodo
+
+    //--creazione delle liste partendo da BioGrails
+    //--elabora e crea la lista del giorno di nascita
+    def boolean uploadGiornoNascitaNew(Giorno giorno) {
+        boolean registrata = false
+        ArrayList listaPersone = new ArrayList()
+        ArrayList listaPersoneSenzaAnno
+        ArrayList listaPersoneConAnno
+        String querySenza
+        String queryAnno
+        long giornoId
+        int numPersone
+        String tagNatiMorti = 'Nati'
+        String tagNateMorte = 'nate'
+        ArrayList<BioGrails> listaBiografie = getListaBiografie(giorno)
+
+        if (giorno) {
+            giornoId = giorno.id
+        }// fine del blocco if
+
+        if (giornoId) {
+            querySenza = "select didascaliaGiornoNato from BioGrails where (giornoMeseNascitaLink=${giornoId} and annoNascitaLink is null) order by cognome asc"
+            queryAnno = "select didascaliaGiornoNato from BioGrails where (giornoMeseNascitaLink=${giornoId} and annoNascitaLink>0) order by annoNascitaLink,cognome asc"
+            listaPersoneSenzaAnno = BioGrails.executeQuery(querySenza)
+            listaPersoneConAnno = BioGrails.executeQuery(queryAnno)
+
+            listaPersoneSenzaAnno?.each {
+                if (it && checkNameSpace(it)) {
+                    listaPersone.add(it)
+                }// fine del blocco if
+            } // fine del ciclo each
+            listaPersoneConAnno?.each {
+                if (it && checkNameSpace(it)) {
+                    listaPersone.add(it)
+                }// fine del blocco if
+            } // fine del ciclo each
+            if (listaPersone) {
+                numPersone = listaPersone.size()
+                registrata = this.caricaPagina(giorno, listaPersone, tagNatiMorti, tagNateMorte)
+            }// fine del blocco if
+        }// fine del blocco if
+
+        if (giorno) {
+            giorno.sporcoNato = false
+            giorno.save(flush: true)
+        }// fine del blocco if
+
+        return registrata
+    } // fine del metodo
+
+    //--costruisce una lista di biografie che 'usano' il giorno
+    private static ArrayList<BioGrails> getListaBiografie(Giorno giorno) {
+        ArrayList<BioGrails> listaBiografie = null
+
+            listaBiografie = BioGrails.findAllByGiornoMeseNascitaLink(giorno, [sort: 'annoNascitaLink'])
+
+        return listaBiografie
+    }// fine del metodo
 
     //--creazione delle liste partendo da BioGrails
     //--elabora e crea la lista del giorno di nascita

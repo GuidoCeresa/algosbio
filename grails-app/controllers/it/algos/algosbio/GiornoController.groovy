@@ -13,12 +13,18 @@
 
 package it.algos.algosbio
 
+import grails.transaction.Transactional
 import it.algos.algos.DialogoController
 import it.algos.algos.TipoDialogo
 import it.algos.algoslib.Lib
+import it.algos.algospref.Pref
 import org.codehaus.groovy.grails.commons.DefaultGrailsDomainClass
 import org.springframework.dao.DataIntegrityViolationException
 
+import static org.springframework.http.HttpStatus.NOT_FOUND
+import static org.springframework.http.HttpStatus.OK
+
+@Transactional(readOnly = true)
 class GiornoController {
 
     static allowedMethods = [save: 'POST', update: 'POST', delete: 'POST']
@@ -183,12 +189,17 @@ class GiornoController {
     //--elabora e crea le liste del giorno indicato (nascita e morte) e lo uploada sul server wiki
     //--passa al metodo effettivo senza nessun dialogo di conferma
     def uploadSingoloGiorno(Long id) {
-        def giorno = Giorno.get(id)
+        Giorno giorno = Giorno.get(id)
 
-        if (grailsApplication && grailsApplication.config.login) {
-            bioGrailsService.uploadGiornoNascita(giorno)
-            bioGrailsService.uploadGiornoMorte(giorno)
-            flash.info = "Eseguito upload delle liste del giorno sul server wiki"
+        if (grailsApplication.config.login || Pref.getBool(LibBio.DEBUG, false)) {
+            if (giorno) {
+                def nonServe
+                nonServe = new ListaGiornoNato(giorno.titolo)
+                nonServe = new ListaGiornoMorto(giorno.titolo)
+                flash.message = "Eseguito upload sul server wiki della pagina con la lista delle voci per il giorno ${giorno.titolo}"
+            } else {
+                flash.error = 'Non ho trovato il giorno indicato'
+            }// fine del blocco if-else
         } else {
             flash.error = 'Devi essere loggato per effettuare un upload di pagine sul server wiki'
         }// fine del blocco if-else
@@ -196,7 +207,7 @@ class GiornoController {
     } // fine del metodo
 
     def list(Integer max) {
-        params.max = Math.min(max ?: 100, 100)
+        params.max = 30
         ArrayList menuExtra
         ArrayList campiLista
         def lista
@@ -209,12 +220,8 @@ class GiornoController {
         //--solo azione e di default controller=questo; classe e titolo vengono uguali
         //--mappa con [cont:'controller', action:'metodo', icon:'iconaImmagine', title:'titoloVisibile']
         menuExtra = [
-                [action: 'sporca',
-                 icon  : 'list',
-                 title : 'Sporca tutto'],
-                [action: 'pulisce',
-                 icon  : 'list',
-                 title : 'Pulisce tutto'],
+                [action: 'sporca', icon: 'list', title: 'Sporca tutti'],
+                [action: 'pulisce', icon: 'list', title: 'Pulisce tutti'],
                 [cont: 'giorno', action: 'uploadGiorniNascita', icon: 'frecciasu', title: 'Upload nascita'],
                 [cont: 'giorno', action: 'uploadGiorniMorte', icon: 'frecciasu', title: 'Upload morte'],
                 [cont: 'giorno', action: 'uploadAllGiorni', icon: 'frecciasu', title: 'Upload all giorni']
@@ -265,7 +272,7 @@ class GiornoController {
                 menuExtra          : menuExtra,
                 titoloLista        : titoloLista,
                 campiLista         : campiLista,
-                noMenuCreate         : noMenuCreate],
+                noMenuCreate       : noMenuCreate],
                 params: params)
     } // fine del metodo
 
@@ -321,7 +328,7 @@ class GiornoController {
 
         if (!giornoInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'giorno.label', default: 'Giorno'), id])
-            redirect(action: 'list')
+            redirect(action: 'index')
             return
         }// fine del blocco if e fine anticipata del metodo
 
@@ -329,11 +336,12 @@ class GiornoController {
         //--solo azione e di default controller=questo; classe e titolo vengono uguali
         //--mappa con [cont:'controller', action:'metodo', icon:'iconaImmagine', title:'titoloVisibile']
         menuExtra = [
-                [cont: 'giorno', action: "uploadSingoloGiorno/${id}", icon: 'database', title: 'UploadSingoloGiorno'],
+                [cont: 'giorno', action: "uploadSingoloGiorno/${id}", icon: 'database', title: 'Upload singolo giorno'],
         ]
         // fine della definizione
 
         //--presentazione della view (show), secondo il modello
+        //--noMenuCreate può esserci: true o false
         //--menuExtra può essere nullo o vuoto
         render(view: 'show', model: [
                 giornoInstance: giornoInstance,
@@ -344,44 +352,56 @@ class GiornoController {
 
     def edit(Long id) {
         def giornoInstance = Giorno.get(id)
+        def noMenuCreate = true
 
         if (!giornoInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'giorno.label', default: 'Giorno'), id])
-            redirect(action: 'list')
+            redirect(action: 'index')
             return
         }// fine del blocco if e fine anticipata del metodo
 
-        [giornoInstance: giornoInstance]
+        //--presentazione della view (edit), secondo il modello
+        //--noMenuCreate può esserci: true o false
+        //--menuExtra può essere nullo o vuoto
+        render(view: 'edit', model: [
+                giornoInstance: giornoInstance,
+                noMenuCreate  : noMenuCreate],
+                params: params)
     } // fine del metodo
+//    def update(Long id) {
+//        def stop
+//    } // fine del metodo
 
-    def update(Long id, Long version) {
-        def giornoInstance = Giorno.get(id)
-
-        if (!giornoInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'giorno.label', default: 'Giorno'), id])
-            redirect(action: 'list')
+    @Transactional
+    def updateNew(Giorno giornoInstance) {
+//        def giornoInstance = Giorno.get(id)
+        if (giornoInstance == null) {
+            notFound()
             return
-        }// fine del blocco if e fine anticipata del metodo
+        }// fine del blocco if
 
-        if (version != null) {
-            if (giornoInstance.version > version) {
-                giornoInstance.errors.rejectValue("version", "default.optimistic.locking.failure",
-                        [message(code: 'giorno.label', default: 'Giorno')] as Object[],
-                        "Another user has updated this Giorno while you were editing")
-                render(view: 'edit', model: [giornoInstance: giornoInstance])
-                return
-            }// fine del blocco if e fine anticipata del metodo
+        if (giornoInstance.hasErrors()) {
+            respond giornoInstance.errors, view: 'edit'
+            return
         }// fine del blocco if
 
         giornoInstance.properties = params
+        giornoInstance.save(flush: true)
 
-        if (!giornoInstance.save(flush: true)) {
-            render(view: 'edit', model: [giornoInstance: giornoInstance])
-            return
-        }// fine del blocco if e fine anticipata del metodo
+//        if (!giornoInstance.save(flush: true)) {
+//            render(view: 'edit', model: [giornoInstance: giornoInstance])
+//            return
+//        }// fine del blocco if e fine anticipata del metodo
 
-        flash.message = message(code: 'default.updated.message', args: [message(code: 'giorno.label', default: 'Giorno'), giornoInstance.id])
-        redirect(action: 'show', id: giornoInstance.id)
+        request.withFormat {
+            form multipartForm {
+                flash.message = message(code: 'default.updated.message', args: [message(code: 'giorno.label', default: 'Prova'), giornoInstance.id])
+                redirect giornoInstance
+            }// fine di form
+            '*' { respond giornoInstance, [status: OK] }
+        }// fine di request
+
+//        redirect(action: 'show', id: giornoInstance.id)
     } // fine del metodo
 
     def delete(Long id) {
@@ -401,6 +421,16 @@ class GiornoController {
             flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'giorno.label', default: 'Giorno'), id])
             redirect(action: 'show', id: id)
         }// fine del blocco catch
+    } // fine del metodo
+
+    protected void notFound() {
+        request.withFormat {
+            form multipartForm {
+                flash.message = message(code: 'default.not.found.message', args: [message(code: 'giorno.label', default: 'Giorno'), params.id])
+                redirect action: "index", method: "GET"
+            }// fine di form
+            '*' { render status: NOT_FOUND }
+        }// fine di request
     } // fine del metodo
 
 } // fine della controller classe
