@@ -19,6 +19,26 @@ class ListaGiornoMorto extends ListaGiorno {
     }// fine del metodo
 
     /**
+     * Chiave di selezione del paragrafo
+     * Sovrascritto
+     */
+    @Override
+    protected String getChiave(BioGrails bio) {
+        String chiave = ''
+//        Giorno giorno = bio.giornoMeseMorteLink
+//
+//        if (giorno) {
+//            if (giorno.mese) {
+//                chiave = giorno.mese
+//            } else {
+//                chiave = TAG_PUNTI
+//            }// fine del blocco if-else
+//        }// fine del blocco if
+
+        return chiave
+    }// fine del metodo
+
+    /**
      * Costruisce una lista di biografie
      */
     @Override

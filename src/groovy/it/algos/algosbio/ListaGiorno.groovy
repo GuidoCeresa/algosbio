@@ -7,14 +7,13 @@ abstract class ListaGiorno extends ListaBio {
 
 
     public ListaGiorno(String soggetto) {
-        super(soggetto)
+        this(soggetto, false)
     }// fine del costruttore
 
-//    @Override
-//    protected inizia(String soggetto) {
-//        mappaPref.put(TAG_SUDDIVISIONE_PRIMO_LIVELLO, 'anni')
-//        super.inizia(soggetto)
-//    }// fine del metodo
+    public ListaGiorno(String soggetto,boolean loggato) {
+        super(soggetto,loggato)
+    }// fine del costruttore
+
 
     @Override
     protected elaboraOggetto(String soggetto) {
@@ -23,6 +22,15 @@ abstract class ListaGiorno extends ListaBio {
         if (giorno) {
             oggetto = giorno
         }// fine del blocco if
+    }// fine del metodo
+
+    /**
+     * Regola alcuni (eventuali) parametri specifici della sottoclasse
+     * Sovrascritto
+     */
+    @Override
+    protected elaboraParametri(String soggetto) {
+        tagLivelloParagrafo = '==='
     }// fine del metodo
 
     /**
@@ -59,6 +67,23 @@ abstract class ListaGiorno extends ListaBio {
     protected String getTagTitolo() {
         return ''
     }// fine del metodo
+
+    /**
+     * Pagina principale a cui tornare
+     * Sovrascritto
+     */
+    @Override
+    protected String elaboraRitornoPrincipale() {
+        String ritorno = ''
+        Giorno giorno = this.getGiorno()
+
+        if (giorno) {
+            ritorno = giorno.titolo
+        }// fine del blocco if
+
+        return ritorno
+    }// fine del metodo
+
 
     /**
      * Recupera il singolo Giorno

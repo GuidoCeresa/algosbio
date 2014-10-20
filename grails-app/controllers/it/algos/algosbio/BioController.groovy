@@ -766,16 +766,19 @@ class BioController {
 
     def test() {
         def nonServe
-        nonServe = new ListaGiornoNato('20 gennaio')
-        nonServe = new ListaGiornoMorto('20 gennaio')
-        nonServe = new ListaAnnoNato('1942')
-        nonServe = new ListaAnnoMorto('1250')
-        nonServe = new ListaAttivita('accademici')
-        nonServe = new ListaNazionalita('venezuelani')
-        nonServe = new ListaNome('Adriana')
-        nonServe = new ListaCognome('Amato')
-        nonServe = new ListaLuogoNato('Bergamo')
-        nonServe = new ListaLuogoMorto('Vercelli')
+        boolean loggato
+        loggato = grailsApplication.config.login ? true : false
+
+        nonServe = new ListaAnnoNato('1568',loggato)
+        nonServe = new ListaAnnoMorto('1568',loggato,)
+//        nonServe = new ListaGiornoNato('20 gennaio',loggato)
+//        nonServe = new ListaGiornoMorto('20 gennaio',loggato)
+//        nonServe = new ListaAttivita('accademici',loggato)
+//        nonServe = new ListaNazionalita('venezuelani',loggato)
+//        nonServe = new ListaNome('Adriana',loggato)
+//        nonServe = new ListaCognome('Amato',loggato)
+//        nonServe = new ListaLuogoNato('Bergamo',loggato)
+//        nonServe = new ListaLuogoMorto('Vercelli',loggato)
 
     } // fine del metodo
 

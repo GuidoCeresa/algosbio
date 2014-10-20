@@ -2,6 +2,7 @@ package it.algos.algosbio
 
 import it.algos.algoslib.LibTesto
 import it.algos.algoslib.LibTime
+import it.algos.algoslib.Mese
 import it.algos.algospref.Pref
 import it.algos.algoswiki.Edit
 import it.algos.algoswiki.Risultato
@@ -16,7 +17,6 @@ import org.apache.commons.logging.LogFactory
 class BioLista {
 
     private static def log = LogFactory.getLog(this)
-    protected static String PUNTI = '...'
     public static boolean TRIPLA_ATTIVITA = true //@todo eventuale preferenza
     protected static boolean DOPPIO_SPAZIO = false
     protected static boolean DIM_PARAGRAFO = false
@@ -26,7 +26,8 @@ class BioLista {
     protected static int NUM_RIGHE_PER_CARATTERE_SOTTOPAGINA = 50
     protected static String INI_RIGA = '*'
     protected static String A_CAPO = '\n'
-    private static TAG_ALTRE = 'Altre...'
+    protected static String PUNTI = '...'
+    private static String TAG_ALTRE = 'Altre...'
     private static boolean TITOLO_PARAGRAFO_CON_LINK = true
 
     private ArrayList listaWrapper
@@ -259,9 +260,24 @@ class BioLista {
      * @param tipoMappa
      * @return mappa
      */
-    private static LinkedHashMap getMappa(ArrayList<BioGrails> listaVoci, TipoMappa tipoMappa) {
+    public static LinkedHashMap getMappa(ArrayList<BioGrails> listaVoci) {
+        getMappa(listaVoci, (Toc) null)
+    }// fine del metodo
+
+    /**
+     * Suddivide le voci a seconda del parametro di riferimento
+     *
+     * costruisce una mappa con:
+     * una chiave per ogni parametro
+     * una lista di BioGrails
+     *
+     * @param listaVoci
+     * @param tipoMappa
+     * @return mappa
+     */
+    public static LinkedHashMap getMappa(ArrayList<BioGrails> listaVoci, Toc paragrafo) {
         LinkedHashMap<String, ArrayList<BioGrails>> mappa = null
-        String chiaveOld = 'xyzpippoz'
+        String chiaveOld = 'xyzpippoxyz'
         String chiave = ''
         ArrayList<BioGrails> lista
         BioGrails bio
@@ -270,19 +286,8 @@ class BioLista {
             mappa = new LinkedHashMap<String, ArrayList<BioGrails>>()
             listaVoci?.each {
                 bio = it
-                chiave = getChiave(bio, tipoMappa)
-//                attivita = bio.attivita
-//                if (attivita) {
-//                    chiave = getAttivita(bio)
-//                    if (!chiave) {
-//                        chiave = TAG_ALTRE
-//                    }// fine del blocco if
-//                } else {
-//                    chiave = TAG_ALTRE
-//                }// fine del blocco if-else
-
+                chiave = getChiave(bio, paragrafo)
                 chiave = chiaveUnica(mappa, chiave)
-
                 if (chiave.equals(chiaveOld)) {
                     lista = mappa.get(chiave)
                     lista.add(bio)
@@ -301,19 +306,21 @@ class BioLista {
         }// fine del blocco if
 
         if (mappa) {
-            mappa = (LinkedHashMap) ordinaMappa(mappa)
+            mappa = ordinaMappa(mappa)
         }// fine del blocco if
 
         return mappa
     }// fine del metodo
 
-    public static String getChiave(BioGrails bio, TipoMappa tipoMappa) {
+    public static String getChiave(BioGrails bio, Toc paragrafo) {
         String chiave = ''
         String attivita
         String iniziale
+        Giorno giorno
+        Anno anno
 
-        switch (tipoMappa) {
-            case TipoMappa.attivita:
+        switch (paragrafo) {
+            case Toc.attivita:
                 attivita = bio.attivita
                 if (attivita) {
                     chiave = getAttivita(bio)
@@ -324,9 +331,9 @@ class BioLista {
                     chiave = TAG_ALTRE
                 }// fine del blocco if-else
                 break
-            case TipoMappa.nazionalita:
+            case Toc.nazionalita:
                 break
-            case TipoMappa.lettera:
+            case Toc.lettera:
                 iniziale = bio.cognome
                 if (iniziale) {
                     chiave = iniziale.substring(0, 1)
@@ -334,7 +341,22 @@ class BioLista {
                     chiave = TAG_ALTRE
                 }// fine del blocco if-else
                 break
-            case TipoMappa.localita:
+            case Toc.localita:
+                break
+            case Toc.meseNato:
+                giorno = bio.giornoMeseNascitaLink
+                if (giorno) {
+                    chiave = giorno.mese
+                }// fine del blocco if
+                if (!chiave) {
+                    chiave = PUNTI
+                }// fine del blocco if
+                break
+            case Toc.meseMorto:
+                chiave = bio.giornoMeseMorteLink.mese
+                if (!chiave) {
+                    chiave = PUNTI
+                }// fine del blocco if
                 break
             default: // caso non definito
                 break
@@ -478,9 +500,9 @@ class BioLista {
      * @param mappa non ordinata
      * @return mappa ordinata
      */
-    private static Map ordinaMappa(Map mappaIn) {
+    public static LinkedHashMap ordinaMappa(LinkedHashMap mappaIn) {
         // variabili e costanti locali di lavoro
-        Map mappaOut = mappaIn
+        LinkedHashMap mappaOut = mappaIn
         ArrayList<String> listaChiavi
         String chiave
         def valore
@@ -650,8 +672,8 @@ class BioLista {
         this.plurale = plurale
     }
 
-    private static enum TipoMappa {
-        attivita, nazionalita, lettera, localita
+    public static enum TipoMappa {
+        attivita, nazionalita, lettera, localita, meseNato, meseMorto
     } // fine della Enumeration
 
 }// fine della classe
