@@ -104,10 +104,34 @@ abstract class ListaAnno extends ListaBio {
     }// fine della closure
 
     /**
-     * Recupera il singolo Anno come numero di ordinamento
+     * Incapsula il testo come parametro di un (eventuale) template
+     * Sovrascritto
      */
-    protected int getAnnoNumeroOrdinamento() {
-        return getAnnoNumero() + 2000
+    @Override
+    protected String elaboraTemplate(String testoIn) {
+        return elaboraTemplate(testoIn, 'Lista persone per anno')
+    }// fine del metodo
+
+    /**
+     * Piede della pagina
+     * Elaborazione base
+     */
+    protected elaboraFooter(String categoriaTxt, String natiMorti) {
+        String testo = ''
+        int anno = getAnnoNumero()
+        int annoOrdinamento = anno + 2000
+
+        testo += "<noinclude>"
+        testo += A_CAPO
+        testo += '{{Portale|biografie}}'
+        testo += A_CAPO
+        testo += "[[Categoria:${categoriaTxt}| ${annoOrdinamento}]]"
+        testo += A_CAPO
+        testo += "[[Categoria:${natiMorti} nel ${anno}| ]]"
+        testo += A_CAPO
+        testo += "</noinclude>"
+
+        return testo
     }// fine del metodo
 
     /**

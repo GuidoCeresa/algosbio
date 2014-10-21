@@ -1,5 +1,7 @@
 package it.algos.algosbio
 
+import it.algos.algoslib.Mese
+
 /**
  * Created by gac on 17/10/14.
  */
@@ -7,11 +9,12 @@ abstract class ListaGiorno extends ListaBio {
 
 
     public ListaGiorno(String soggetto) {
-        this(soggetto, false)
+        super(soggetto)
     }// fine del costruttore
 
-    public ListaGiorno(String soggetto,boolean loggato) {
-        super(soggetto,loggato)
+
+    public ListaGiorno(String soggetto, boolean loggato) {
+        super(soggetto, loggato)
     }// fine del costruttore
 
 
@@ -29,8 +32,13 @@ abstract class ListaGiorno extends ListaBio {
      * Sovrascritto
      */
     @Override
-    protected elaboraParametri(String soggetto) {
+    protected elaboraParametri() {
+        usaTavolaContenuti = false
+        usaSuddivisioneParagrafi = true
+        usaDoppiaColonna = true
+        usaSottopagine = false
         tagLivelloParagrafo = '==='
+        tagParagrafoNullo = 'senza anno'
     }// fine del metodo
 
     /**
@@ -84,6 +92,106 @@ abstract class ListaGiorno extends ListaBio {
         return ritorno
     }// fine del metodo
 
+    /**
+     * Ordina le chiavi di una mappa
+     * Sovrascritto
+     *
+     * @param chiavi non ordinate
+     * @return chiavi ordinate
+     */
+    @Override
+    protected ArrayList<String> ordinaChiavi(ArrayList<String> listaChiaviIn) {
+        ArrayList<String> listaChiaviOut = new ArrayList<String>()
+        Secolo secolo
+        String titolo
+
+        Secolo.values()?.each {
+            secolo = (Secolo) it
+            titolo = secolo.titolo
+            if (listaChiaviIn.contains(titolo)) {
+                listaChiaviOut.add(titolo)
+            }// fine del blocco if
+        } // fine del ciclo each
+
+        // valore di ritorno
+        return listaChiaviOut
+    }// fine della closure
+
+    /**
+     * Incapsula il testo come parametro di un (eventuale) template
+     * Sovrascritto
+     */
+    @Override
+    protected String elaboraTemplate(String testoIn) {
+        return elaboraTemplate(testoIn, 'Lista persone per giorno')
+    }// fine del metodo
+
+    /**
+     * Piede della pagina
+     * Elaborazione base
+     */
+    protected elaboraFooter(String categoriaTxt) {
+        String testo = ''
+        String giornoOrdinamento = getGiornoOrdinamento()
+        String titoloPagina = getTitolo()
+
+        testo += "<noinclude>"
+        testo += A_CAPO
+        testo += '{{Portale|biografie}}'
+        testo += A_CAPO
+        testo += "[[Categoria:${categoriaTxt}| ${giornoOrdinamento}]]"
+        testo += A_CAPO
+        testo += "[[Categoria:${titoloPagina}| ]]"
+        testo += A_CAPO
+        testo += "</noinclude>"
+
+        return testo
+    }// fine del metodo
+
+    /**
+     * Recupera il singolo Giorno come numero
+     */
+    protected int getGiornoNumero() {
+        int giornoNumero = 0
+        Giorno giorno = getGiorno()
+
+        if (giorno) {
+            giornoNumero = giorno.bisestile
+        }// fine del blocco if
+
+        return giornoNumero
+    }// fine del metodo
+
+    /**
+     * Recupera il singolo Giorno come ordinamento
+     * Comprende il 29 febbraio per gli anni bisestili
+     */
+    protected String getGiornoOrdinamento() {
+        String giornoTxt = ''
+        int giornoNumero = 0
+        Giorno giorno = getGiorno()
+        String tag = '0'
+
+        if (giorno) {
+            giornoNumero = giorno.bisestile
+        }// fine del blocco if
+
+        if (giornoNumero) {
+            giornoTxt = '' + giornoNumero
+        }// fine del blocco if
+
+        //--completamento a 3 cifre
+        if (giornoTxt) {
+            if (giornoTxt.length() == 1) {
+                giornoTxt = tag + giornoTxt
+            }// fine del blocco if
+            if (giornoTxt.length() == 2) {
+                giornoTxt = tag + giornoTxt
+            }// fine del blocco if
+        }// fine del blocco if
+
+        return giornoTxt
+    }// fine del metodo
 
     /**
      * Recupera il singolo Giorno

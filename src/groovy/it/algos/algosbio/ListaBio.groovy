@@ -1,5 +1,7 @@
 package it.algos.algosbio
 
+import grails.transaction.Transactional
+import groovy.util.logging.Log4j
 import it.algos.algoslib.LibTesto
 import it.algos.algoslib.LibTime
 import it.algos.algoslib.Mese
@@ -9,16 +11,18 @@ import it.algos.algoswiki.WikiLib
 /**
  * Created by gac on 17/10/14.
  */
+@Log4j
+@Transactional(readOnly = false)
 abstract class ListaBio {
+    static transactional = false
 
-    protected static String TAG_PARAMETRO_FILTRO_BIOGRAILS = 'parametroFiltro'
-    protected static String TAG_SUDDIVISIONE_PRIMO_LIVELLO = 'suddivisionePrimoLivello'
-    protected HashMap mappaPref = new HashMap()
+    // utilizzo di un service con la businessLogic
+    // il service NON viene iniettato automaticamente (perché è nel plugin)
+    BioService bioService
+
     protected Object oggetto
     protected ArrayList<BioGrails> listaBiografie
     protected boolean loggato
-    protected static String TAG_PUNTI = 'senza giorno'
-    protected static String TAG_ALTRE = 'Altre...'
     protected static String TAG_INDICE = '__FORCETOC__'
     protected static String TAG_NO_INDICE = '__NOTOC__'
 
@@ -166,11 +170,7 @@ abstract class ListaBio {
         int num = 0
         int maxVoci = Pref.getInt(LibBio.MAX_VOCI_PARAGRAFO_LOCALITA, 100)
 
-        if (usaSuddivisioneParagrafi) {
-            mappa = getMappa(listaBiografie)
-        } else {
-            mappa = getMappa(listaBiografie)
-        }// fine del blocco if-else
+        mappa = getMappa(listaBiografie)
 
         mappa?.each {
             chiave = it.key
@@ -189,21 +189,24 @@ abstract class ListaBio {
             testo = WikiLib.listaDueColonne(testo.trim())
         }// fine del blocco if
         testo += A_CAPO
+        testo = elaboraTemplate(testo)
 
-        return elaboraTemplate(testo)
+        return testo
     }// fine del metodo
 
     /**
      * Incapsula il testo come parametro di un (eventuale) template
      */
-    protected static String elaboraTemplate(String testoBody, String template, String titolo, int numVoci) {
+    protected String elaboraTemplate(String testoBody, String titoloTemplate) {
         String testoOut = testoBody
         String testoIni = ''
         String testoEnd = '}}'
+        String titoloPagina = getTitolo()
+        int numVoci = listaBiografie.size()
 
-        testoIni += "{{${template}"
+        testoIni += "{{${titoloTemplate}"
         testoIni += A_CAPO
-        testoIni += "|titolo=${titolo}"
+        testoIni += "|titolo=${titoloPagina}"
         testoIni += A_CAPO
         testoIni += "|voci=${numVoci}"
         testoIni += A_CAPO
@@ -240,31 +243,36 @@ abstract class ListaBio {
         ArrayList<BioGrails> lista
         BioGrails bio
 
-        if (listaVoci) {
-            mappa = new LinkedHashMap<String, ArrayList<BioGrails>>()
-            listaVoci?.each {
-                bio = it
-                chiave = getChiave(bio)
-                if (chiave.equals(chiaveOld)) {
-                    lista = mappa.get(chiave)
-                    lista.add(bio)
-                } else {
-                    if (mappa.get(chiave)) {
+        if (usaSuddivisioneParagrafi) {
+            if (listaVoci) {
+                mappa = new LinkedHashMap<String, ArrayList<BioGrails>>()
+                listaVoci?.each {
+                    bio = it
+                    chiave = getChiave(bio)
+                    if (chiave.equals(chiaveOld)) {
                         lista = mappa.get(chiave)
                         lista.add(bio)
                     } else {
-                        lista = new ArrayList<BioGrails>()
-                        lista.add(bio)
-                        mappa.put(chiave, lista)
-                        chiaveOld = chiave
+                        if (mappa.get(chiave)) {
+                            lista = mappa.get(chiave)
+                            lista.add(bio)
+                        } else {
+                            lista = new ArrayList<BioGrails>()
+                            lista.add(bio)
+                            mappa.put(chiave, lista)
+                            chiaveOld = chiave
+                        }// fine del blocco if-else
                     }// fine del blocco if-else
-                }// fine del blocco if-else
-            }// fine del ciclo each
-        }// fine del blocco if
+                }// fine del ciclo each
+            }// fine del blocco if
 
-        if (mappa) {
-            mappa = ordinaMappa(mappa)
-        }// fine del blocco if
+            if (mappa) {
+                mappa = ordinaMappa(mappa)
+            }// fine del blocco if
+        } else {
+            mappa = new LinkedHashMap<String, ArrayList<BioGrails>>()
+            mappa.put('', listaVoci)
+        }// fine del blocco if-else
 
         return mappa
     }// fine del metodo
@@ -287,10 +295,55 @@ abstract class ListaBio {
      * Utilizza la didascalia prevista per il tipo di pagina in elaborazione
      * Sovrascritto
      */
-    protected ArrayList<String> estraeListaDidascalie(ArrayList<BioGrails> listaVoci) {
+    private ArrayList<String> estraeListaDidascalie(ArrayList<BioGrails> listaVoci) {
         ArrayList<String> listaDidascalie = null
+        BioGrails bio
+        String didascalia
+
+        if (listaVoci && listaVoci.size() > 0) {
+            listaDidascalie = new ArrayList<String>()
+            listaVoci?.each {
+                bio = (BioGrails) it
+                didascalia = estraeDidascalia(bio)
+                if (didascalia) {
+                    listaDidascalie.add(didascalia)
+                } else {
+                    didascalia = elaboraDidascaliaMancante(bio)
+                    if (didascalia) {
+                        listaDidascalie.add(didascalia)
+                    }// fine del blocco if
+                }// fine del blocco if-else
+            } // fine del ciclo each
+        }// fine del blocco if
 
         return listaDidascalie
+    }// fine del metodo
+
+    /**
+     * Utilizza la didascalia prevista per il tipo di pagina in elaborazione
+     * Sovrascritto
+     */
+    protected String estraeDidascalia(BioGrails bio) {
+        return ''
+    }// fine del metodo
+
+    /**
+     * Prova ad elaborare il bio (BioGrails) e ad estrarre nuyovamente la didascalia
+     */
+    private String elaboraDidascaliaMancante(BioGrails bio) {
+        String didascalia = ''
+        int pageid = 0
+
+        if (bio) {
+            pageid = bio.pageid
+        }// fine del blocco if
+
+        if (bioService) {
+            bioService.elabora(pageid)
+            didascalia = estraeDidascalia(bio)
+        }// fine del blocco if
+
+        return didascalia
     }// fine del metodo
 
 
@@ -324,27 +377,6 @@ abstract class ListaBio {
         }// fine del ciclo each
 
         return testo.trim()
-    }// fine del metodo
-
-    /**
-     * Piede della pagina
-     * Elaborazione base
-     */
-    protected static elaboraFooter(String categoriaTxt, int anno,String natiMorti) {
-        String testo = ''
-        def annoOrdinamento = anno + 2000
-
-        testo += "<noinclude>"
-        testo += A_CAPO
-        testo += '{{Portale|biografie}}'
-        testo += A_CAPO
-        testo += "[[Categoria:${categoriaTxt}| ${annoOrdinamento}]]"
-        testo += A_CAPO
-        testo += "[[Categoria:${natiMorti} nel ${anno}| ]]"
-        testo += A_CAPO
-        testo += "</noinclude>"
-
-        return testo
     }// fine del metodo
 
     /**

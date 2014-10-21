@@ -29,25 +29,8 @@ class ListaAnnoMorto extends ListaAnno {
      * Sovrascritto
      */
     @Override
-    public ArrayList<String> estraeListaDidascalie(ArrayList<BioGrails> listaVoci) {
-        ArrayList<String> listaDidascalie = null
-        BioGrails bio
-        String didascalia
-
-        if (listaVoci && listaVoci.size() > 0) {
-            listaDidascalie = new ArrayList<String>()
-            listaVoci?.each {
-                bio = (BioGrails) it
-                didascalia = bio.didascaliaAnnoMorto
-                if (didascalia) {
-                    listaDidascalie.add(didascalia)
-                } else {
-                    def stopo
-                }// fine del blocco if-else
-            } // fine del ciclo each
-        }// fine del blocco if
-
-        return listaDidascalie
+    protected String estraeDidascalia(BioGrails bio) {
+        return bio.didascaliaAnnoMorto
     }// fine del metodo
 
     /**
@@ -68,16 +51,6 @@ class ListaAnnoMorto extends ListaAnno {
         return chiave
     }// fine del metodo
 
-    /**
-     * Incapsula il testo come parametro di un (eventuale) template
-     * Sovrascritto
-     */
-    protected String elaboraTemplate(String testoIn) {
-        def annoTxt = super.getAnnoNumero()
-        int numVoci = listaBiografie.size()
-
-        return elaboraTemplate(testoIn, "Lista persone per anno", "Morti nel ${annoTxt}", numVoci)
-    }// fine del metodo
 
     /**
      * Piede della pagina
@@ -85,7 +58,7 @@ class ListaAnnoMorto extends ListaAnno {
      */
     @Override
     protected elaboraFooter() {
-        return elaboraFooter("Liste di morti nell'anno", getAnnoNumero(), 'Morti')
+        return elaboraFooter("Liste di morti nell'anno", 'Morti')
     }// fine del metodo
 
     /**

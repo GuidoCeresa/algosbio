@@ -36,6 +36,7 @@ class GiornoController {
     def eventoService
     def giornoService
     def bioGrailsService
+    def bioService
 
     def index() {
         redirect(action: 'list', params: params)
@@ -194,8 +195,9 @@ class GiornoController {
         if (grailsApplication.config.login || Pref.getBool(LibBio.DEBUG, false)) {
             if (giorno) {
                 def nonServe
-                nonServe = new ListaGiornoNato(giorno.titolo)
-                nonServe = new ListaGiornoMorto(giorno.titolo)
+                String titolo = giorno.titolo
+                nonServe = new ListaGiornoNato(titolo)
+                nonServe = new ListaGiornoMorto(titolo)
                 flash.message = "Eseguito upload sul server wiki della pagina con la lista delle voci per il giorno ${giorno.titolo}"
             } else {
                 flash.error = 'Non ho trovato il giorno indicato'

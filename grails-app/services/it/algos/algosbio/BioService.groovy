@@ -13,6 +13,7 @@
 
 package it.algos.algosbio
 
+import grails.transaction.Transactional
 import groovy.util.logging.Log4j
 import it.algos.algoslib.Lib
 import it.algos.algoslib.LibArray
@@ -26,7 +27,9 @@ import it.algos.algoswiki.*
 import org.h2.engine.Setting
 
 @Log4j
+@Transactional(readOnly = false)
 class BioService {
+    static transactional = false
 
     public static int idDebug = 734256  //todo ADG
     public static int idDebug2 = 16440  //todo Kōbō Abe
@@ -142,7 +145,6 @@ class BioService {
     public ArrayList<Integer> elabora(ArrayList<Integer> listaRecordsDaElaborare) {
         // variabili e costanti locali di lavoro
         ArrayList<Integer> listaRecordsElaborati = listaRecordsDaElaborare
-        boolean debug = Preferenze.getBool((String) grailsApplication.config.debug)
         String numVociTxt
         long inizioInizio = System.currentTimeMillis()
         long inizio

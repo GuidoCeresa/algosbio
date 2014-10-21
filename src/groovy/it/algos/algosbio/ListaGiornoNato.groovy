@@ -8,6 +8,7 @@ import org.grails.datastore.mapping.query.api.Criteria
 class ListaGiornoNato extends ListaGiorno {
 
 
+
     public ListaGiornoNato(String soggetto) {
         this(soggetto, false)
     }// fine del costruttore
@@ -29,19 +30,8 @@ class ListaGiornoNato extends ListaGiorno {
      * Sovrascritto
      */
     @Override
-    public ArrayList<String> estraeListaDidascalie(ArrayList<BioGrails> listaVoci) {
-        ArrayList<String> listaDidascalie = null
-        BioGrails bio
-
-        if (listaVoci && listaVoci.size() > 0) {
-            listaDidascalie = new ArrayList<String>()
-            listaVoci?.each {
-                bio = (BioGrails) it
-                listaDidascalie.add(bio.didascaliaGiornoNato)
-            } // fine del ciclo each
-        }// fine del blocco if
-
-        return listaDidascalie
+    protected String estraeDidascalia(BioGrails bio) {
+        return bio.didascaliaGiornoNato
     }// fine del metodo
 
     /**
@@ -49,24 +39,31 @@ class ListaGiornoNato extends ListaGiorno {
      * Sovrascritto
      */
     @Override
-    protected  String getChiave(BioGrails bio) {
-        String chiave = ''
-//        Giorno giorno = bio.giornoMeseNascitaLink
-//
-//        if (giorno) {
-//            if (giorno.mese) {
-//                chiave = giorno.mese
-//            } else {
-//                chiave = TAG_PUNTI
-//            }// fine del blocco if-else
-//        }// fine del blocco if
-//
+    protected String getChiave(BioGrails bio) {
+        String chiave
+        Anno anno = bio.annoNascitaLink
+
+        if (anno && anno.secolo) {
+            chiave = anno.secolo
+        } else {
+            chiave = tagParagrafoNullo
+        }// fine del blocco if-else
+
         return chiave
     }// fine del metodo
 
-/**
- * costruisce una lista di biografie
- */
+    /**
+     * Piede della pagina
+     * Sovrascritto
+     */
+    @Override
+    protected elaboraFooter() {
+        return elaboraFooter("Liste di nati per giorno")
+    }// fine del metodo
+
+    /**
+     * costruisce una lista di biografie
+     */
     @Override
     protected elaboraListaBiografie() {
         Giorno giorno = super.getGiorno()
