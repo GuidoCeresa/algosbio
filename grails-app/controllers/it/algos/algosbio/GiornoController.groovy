@@ -155,7 +155,11 @@ class GiornoController {
     //--passa al metodo effettivo senza nessun dialogo di conferma
     def uploadGiorniNascita() {
         if (grailsApplication && grailsApplication.config.login) {
-            bioGrailsService.uploadGiorniNascita()
+            if (Pref.getBool(LibBio.USA_LISTE_BIO_GIORNI)) {
+                giornoService.uploadGiorniNascita()
+            } else {
+                bioGrailsService.uploadGiorniNascita()
+            }// fine del blocco if-else
         } else {
             flash.error = 'Devi essere loggato per effettuare un upload di pagine sul server wiki'
         }// fine del blocco if-else
@@ -167,7 +171,11 @@ class GiornoController {
     //--passa al metodo effettivo senza nessun dialogo di conferma
     def uploadGiorniMorte() {
         if (grailsApplication && grailsApplication.config.login) {
-            bioGrailsService.uploadGiorniMorte()
+            if (Pref.getBool(LibBio.USA_LISTE_BIO_GIORNI)) {
+                giornoService.uploadGiorniMorte()
+            } else {
+                bioGrailsService.uploadGiorniMorte()
+            }// fine del blocco if-else
         } else {
             flash.error = 'Devi essere loggato per effettuare un upload di pagine sul server wiki'
         }// fine del blocco if-else
@@ -179,8 +187,13 @@ class GiornoController {
     //--passa al metodo effettivo senza nessun dialogo di conferma
     def uploadAllGiorni() {
         if (grailsApplication && grailsApplication.config.login) {
-            bioGrailsService.uploadGiorniNascita()
-            bioGrailsService.uploadGiorniMorte()
+            if (Pref.getBool(LibBio.USA_LISTE_BIO_GIORNI)) {
+                giornoService.uploadGiorniNascita()
+                giornoService.uploadGiorniMorte()
+            } else {
+                bioGrailsService.uploadGiorniNascita()
+                bioGrailsService.uploadGiorniMorte()
+            }// fine del blocco if-else
         } else {
             flash.error = 'Devi essere loggato per effettuare un upload di pagine sul server wiki'
         }// fine del blocco if-else
@@ -198,7 +211,7 @@ class GiornoController {
                 String titolo = giorno.titolo
                 nonServe = new ListaGiornoNato(titolo)
                 nonServe = new ListaGiornoMorto(titolo)
-                flash.message = "Eseguito upload sul server wiki della pagina con la lista delle voci per il giorno ${giorno.titolo}"
+                flash.message = "Eseguito upload sul server wiki della pagina con la lista delle voci per il giorno ${titolo}"
             } else {
                 flash.error = 'Non ho trovato il giorno indicato'
             }// fine del blocco if-else
@@ -370,13 +383,10 @@ class GiornoController {
                 noMenuCreate  : noMenuCreate],
                 params: params)
     } // fine del metodo
-//    def update(Long id) {
-//        def stop
-//    } // fine del metodo
+
 
     @Transactional
     def updateNew(Giorno giornoInstance) {
-//        def giornoInstance = Giorno.get(id)
         if (giornoInstance == null) {
             notFound()
             return
@@ -390,20 +400,13 @@ class GiornoController {
         giornoInstance.properties = params
         giornoInstance.save(flush: true)
 
-//        if (!giornoInstance.save(flush: true)) {
-//            render(view: 'edit', model: [giornoInstance: giornoInstance])
-//            return
-//        }// fine del blocco if e fine anticipata del metodo
-
         request.withFormat {
             form multipartForm {
-                flash.message = message(code: 'default.updated.message', args: [message(code: 'giorno.label', default: 'Prova'), giornoInstance.id])
+                flash.message = message(code: 'default.updated.message', args: [message(code: 'giorno.label', default: 'Anno'), giornoInstance.titolo])
                 redirect giornoInstance
             }// fine di form
             '*' { respond giornoInstance, [status: OK] }
         }// fine di request
-
-//        redirect(action: 'show', id: giornoInstance.id)
     } // fine del metodo
 
     def delete(Long id) {

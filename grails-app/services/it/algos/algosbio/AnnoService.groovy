@@ -13,6 +13,8 @@
 
 package it.algos.algosbio
 
+import it.algos.algospref.Pref
+
 class AnnoService {
 
     boolean transactional = false
@@ -133,5 +135,57 @@ class AnnoService {
         // valore di ritorno
         return anno
     } // fine della closure
+
+    /**
+     * creazione delle liste partendo da BioGrails
+     * elabora e crea tutti gli di nascita modificati
+     */
+    def int uploadAnniNascita() {
+        int anniiModificati = 0
+        boolean registrata = false
+        ArrayList listaAnniModificati
+        String titolo
+        Anno anno
+        ListaBio listaBio
+
+            listaAnniModificati = Anno.findAllBySporcoNato(true)
+            listaAnniModificati?.each {
+                registrata = uploadAnnoNascita((Anno) it)
+                if (registrata) {
+                    anniiModificati++
+                }// fine del blocco if
+            } // fine del ciclo each
+
+        return anniiModificati
+    } // fine del metodo
+
+    /**
+     * creazione delle liste partendo da BioGrails
+     * elabora e crea tutti gli di nascita modificati
+     */
+    def int uploadAnniMorte() {
+        int anniiModificati = 0
+        boolean debug = Pref.getBool(LibBio.DEBUG, false)
+        boolean registrata = false
+        ArrayList listaAnniModificati
+        String titolo
+        Anno anno
+
+        if (debug) {
+            titolo = Pref.getStr(LibBio.ANNO_DEBUG, '1952')
+            anno = Anno.findByTitolo(titolo)
+            uploadAnnoMorte(anno)
+        } else {
+            listaAnniModificati = Anno.findAllBySporcoMorto(true)
+            listaAnniModificati?.each {
+                registrata = uploadAnnoMorte((Anno) it)
+                if (registrata) {
+                    anniiModificati++
+                }// fine del blocco if
+            } // fine del ciclo each
+        }// fine del blocco if-else
+
+        return anniiModificati
+    } // fine del metodo
 
 } // fine della service classe

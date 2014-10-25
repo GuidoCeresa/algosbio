@@ -561,6 +561,30 @@ class VersioneBootStrap {
             versioneService.newVersione('Anno', 'Aggiunto campo \'anno\'')
         }// fine del blocco if
 
+        //--creata una nuova preferenza
+        if (versioneService && versioneService.installaVersione(68)) {
+            Pref pref = new Pref()
+            pref.ordine = Pref.list().size() + 1
+            pref.code = LibBio.USA_LISTE_BIO_GIORNI
+            pref.descrizione = 'Usa le nuove liste per i giorni'
+            pref.type = Type.booleano
+            pref.bool = true
+            pref.save(flush: true)
+            versioneService.newVersione('Preferenze', 'USA_LISTE_BIO_GIORNI di default true')
+        }// fine del blocco if
+
+        //--creata una nuova preferenza
+        if (versioneService && versioneService.installaVersione(69)) {
+            Pref pref = new Pref()
+            pref.ordine = Pref.list().size() + 1
+            pref.code = LibBio.USA_LISTE_BIO_ANNI
+            pref.descrizione = 'Usa le nuove liste per gli anni'
+            pref.type = Type.booleano
+            pref.bool = true
+            pref.save(flush: true)
+            versioneService.newVersione('Preferenze', 'USA_LISTE_BIO_ANNI di default true')
+        }// fine del blocco if
+
     }// fine della closure
 
 

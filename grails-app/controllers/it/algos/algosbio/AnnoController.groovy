@@ -13,12 +13,16 @@
 
 package it.algos.algosbio
 
+import grails.transaction.Transactional
 import it.algos.algos.DialogoController
 import it.algos.algos.TipoDialogo
 import it.algos.algoslib.Lib
 import it.algos.algospref.Pref
 import org.codehaus.groovy.grails.commons.DefaultGrailsDomainClass
 import org.springframework.dao.DataIntegrityViolationException
+
+import static org.springframework.http.HttpStatus.NOT_FOUND
+import static org.springframework.http.HttpStatus.OK
 
 class AnnoController {
 
@@ -204,17 +208,24 @@ class AnnoController {
     //--elabora e crea le liste dell'anno indicato (nascita e morte) e lo uploada sul server wiki
     //--passa al metodo effettivo senza nessun dialogo di conferma
     def uploadSingoloAnno(Long id) {
-        def anno = Anno.get(id)
+        Anno anno = Anno.get(id)
 
-        if (grailsApplication && grailsApplication.config.login) {
-            bioGrailsService.uploadAnnoNascita(anno)
-            bioGrailsService.uploadAnnoMorte(anno)
-            flash.info = "Eseguito upload delle liste dell'anno sul server wiki"
+        if (grailsApplication.config.login || Pref.getBool(LibBio.DEBUG, false)) {
+            if (anno) {
+                def nonServe
+                String titolo = anno.titolo
+                nonServe = new ListaAnnoNato(titolo)
+                nonServe = new ListaAnnoMorto(titolo)
+                flash.message = "Eseguito upload sul server wiki della pagina con la lista delle voci per l'anno ${titolo}"
+            } else {
+                flash.error = "Non ho trovato l'anno indicato"
+            }// fine del blocco if-else
         } else {
             flash.error = 'Devi essere loggato per effettuare un upload di pagine sul server wiki'
         }// fine del blocco if-else
         redirect(action: 'list')
     } // fine del metodo
+
 
     def list(Integer max) {
         params.max = Math.min(max ?: 100, 100)
@@ -230,12 +241,8 @@ class AnnoController {
         //--solo azione e di default controller=questo; classe e titolo vengono uguali
         //--mappa con [cont:'controller', action:'metodo', icon:'iconaImmagine', title:'titoloVisibile']
         menuExtra = [
-                [action: 'sporca',
-                 icon  : 'list',
-                 title : 'Sporca tutto'],
-                [action: 'pulisce',
-                 icon  : 'list',
-                 title : 'Pulisce tutto'],
+                [action: 'sporca', icon: 'list', title: 'Sporca tutti'],
+                [action: 'pulisce', icon: 'list', title: 'Pulisce tutti'],
                 [cont: 'anno', action: 'uploadAnniNascita', icon: 'frecciasu', title: 'Upload nascita'],
                 [cont: 'anno', action: 'uploadAnniMorte', icon: 'frecciasu', title: 'Upload morte'],
                 [cont: 'anno', action: 'uploadAllAnni', icon: 'frecciasu', title: 'Upload all anni']
@@ -285,8 +292,8 @@ class AnnoController {
                 annoInstanceTotal: recordsTotali,
                 menuExtra        : menuExtra,
                 titoloLista      : titoloLista,
-                campiLista           : campiLista,
-                noMenuCreate         : noMenuCreate],
+                campiLista       : campiLista,
+                noMenuCreate     : noMenuCreate],
                 params: params)
     } // fine del metodo
 
@@ -342,7 +349,7 @@ class AnnoController {
 
         if (!annoInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'anno.label', default: 'Anno'), id])
-            redirect(action: 'list')
+            redirect(action: 'index')
             return
         }// fine del blocco if e fine anticipata del metodo
 
@@ -350,7 +357,7 @@ class AnnoController {
         //--solo azione e di default controller=questo; classe e titolo vengono uguali
         //--mappa con [cont:'controller', action:'metodo', icon:'iconaImmagine', title:'titoloVisibile']
         menuExtra = [
-                [cont: 'anno', action: "uploadSingoloAnno/${id}", icon: 'database', title: 'UploadSingoloAnno'],
+                [cont: 'anno', action: "uploadSingoloAnno/${id}", icon: 'database', title: 'Upload singolo anno'],
         ]
         // fine della definizione
 
@@ -366,6 +373,7 @@ class AnnoController {
 
     def edit(Long id) {
         def annoInstance = Anno.get(id)
+        def noMenuCreate = true
 
         if (!annoInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'anno.label', default: 'Anno'), id])
@@ -373,37 +381,37 @@ class AnnoController {
             return
         }// fine del blocco if e fine anticipata del metodo
 
-        [annoInstance: annoInstance]
+        //--presentazione della view (edit), secondo il modello
+        //--noMenuCreate può esserci: true o false
+        //--menuExtra può essere nullo o vuoto
+        render(view: 'edit', model: [
+                annoInstance: annoInstance,
+                noMenuCreate: noMenuCreate],
+                params: params)
     } // fine del metodo
 
-    def update(Long id, Long version) {
-        def annoInstance = Anno.get(id)
-
-        if (!annoInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'anno.label', default: 'Anno'), id])
-            redirect(action: 'list')
+    @Transactional
+    def updateNew(Anno annoInstance) {
+        if (annoInstance == null) {
+            notFound()
             return
-        }// fine del blocco if e fine anticipata del metodo
+        }// fine del blocco if
 
-        if (version != null) {
-            if (annoInstance.version > version) {
-                annoInstance.errors.rejectValue("version", "default.optimistic.locking.failure",
-                        [message(code: 'anno.label', default: 'Anno')] as Object[],
-                        "Another user has updated this Anno while you were editing")
-                render(view: 'edit', model: [annoInstance: annoInstance])
-                return
-            }// fine del blocco if e fine anticipata del metodo
+        if (annoInstance.hasErrors()) {
+            respond annoInstance.errors, view: 'edit'
+            return
         }// fine del blocco if
 
         annoInstance.properties = params
+        annoInstance.save(flush: true)
 
-        if (!annoInstance.save(flush: true)) {
-            render(view: 'edit', model: [annoInstance: annoInstance])
-            return
-        }// fine del blocco if e fine anticipata del metodo
-
-        flash.message = message(code: 'default.updated.message', args: [message(code: 'anno.label', default: 'Anno'), annoInstance.id])
-        redirect(action: 'show', id: annoInstance.id)
+        request.withFormat {
+            form multipartForm {
+                flash.message = message(code: 'default.updated.message', args: [message(code: 'anno.label', default: 'Anno'), annoInstance.titolo])
+                redirect annoInstance
+            }// fine di form
+            '*' { respond annoInstance, [status: OK] }
+        }// fine di request
     } // fine del metodo
 
     def delete(Long id) {
@@ -423,6 +431,16 @@ class AnnoController {
             flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'anno.label', default: 'Anno'), id])
             redirect(action: 'show', id: id)
         }// fine del blocco catch
+    } // fine del metodo
+
+    protected void notFound() {
+        request.withFormat {
+            form multipartForm {
+                flash.message = message(code: 'default.not.found.message', args: [message(code: 'anno.label', default: 'Anno'), params.id])
+                redirect action: "index", method: "GET"
+            }// fine di form
+            '*' { render status: NOT_FOUND }
+        }// fine di request
     } // fine del metodo
 
 } // fine della controller classe

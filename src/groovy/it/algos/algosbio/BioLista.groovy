@@ -261,7 +261,7 @@ class BioLista {
      * @return mappa
      */
     public static LinkedHashMap getMappa(ArrayList<BioGrails> listaVoci) {
-        getMappa(listaVoci, (Toc) null)
+        getMappa(listaVoci, (TipoMappa) null)
     }// fine del metodo
 
     /**
@@ -275,7 +275,7 @@ class BioLista {
      * @param tipoMappa
      * @return mappa
      */
-    public static LinkedHashMap getMappa(ArrayList<BioGrails> listaVoci, Toc paragrafo) {
+    public static LinkedHashMap getMappa(ArrayList<BioGrails> listaVoci, TipoMappa paragrafo) {
         LinkedHashMap<String, ArrayList<BioGrails>> mappa = null
         String chiaveOld = 'xyzpippoxyz'
         String chiave = ''
@@ -312,7 +312,7 @@ class BioLista {
         return mappa
     }// fine del metodo
 
-    public static String getChiave(BioGrails bio, Toc paragrafo) {
+    public static String getChiave(BioGrails bio, TipoMappa paragrafo) {
         String chiave = ''
         String attivita
         String iniziale
@@ -320,7 +320,7 @@ class BioLista {
         Anno anno
 
         switch (paragrafo) {
-            case Toc.attivita:
+            case TipoMappa.attivita:
                 attivita = bio.attivita
                 if (attivita) {
                     chiave = getAttivita(bio)
@@ -331,9 +331,9 @@ class BioLista {
                     chiave = TAG_ALTRE
                 }// fine del blocco if-else
                 break
-            case Toc.nazionalita:
+            case TipoMappa.nazionalita:
                 break
-            case Toc.lettera:
+            case TipoMappa.lettera:
                 iniziale = bio.cognome
                 if (iniziale) {
                     chiave = iniziale.substring(0, 1)
@@ -341,9 +341,9 @@ class BioLista {
                     chiave = TAG_ALTRE
                 }// fine del blocco if-else
                 break
-            case Toc.localita:
+            case TipoMappa.localita:
                 break
-            case Toc.meseNato:
+            case TipoMappa.meseNato:
                 giorno = bio.giornoMeseNascitaLink
                 if (giorno) {
                     chiave = giorno.mese
@@ -352,7 +352,7 @@ class BioLista {
                     chiave = PUNTI
                 }// fine del blocco if
                 break
-            case Toc.meseMorto:
+            case TipoMappa.meseMorto:
                 chiave = bio.giornoMeseMorteLink.mese
                 if (!chiave) {
                     chiave = PUNTI

@@ -8,6 +8,10 @@ import it.algos.algoslib.Mese
 abstract class ListaGiorno extends ListaBio {
 
 
+    public ListaGiorno(Giorno giorno) {
+        super(giorno)
+    }// fine del costruttore
+
     public ListaGiorno(String soggetto) {
         super(soggetto)
     }// fine del costruttore
@@ -81,12 +85,14 @@ abstract class ListaGiorno extends ListaBio {
      * Sovrascritto
      */
     @Override
-    protected String elaboraRitornoPrincipale() {
+    protected String elaboraincipit() {
         String ritorno = ''
         Giorno giorno = this.getGiorno()
 
         if (giorno) {
-            ritorno = giorno.titolo
+            ritorno += "{{torna a|"
+            ritorno += giorno.titolo
+            ritorno += "}}"
         }// fine del blocco if
 
         return ritorno

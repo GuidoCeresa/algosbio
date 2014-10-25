@@ -72,6 +72,8 @@ class LibBio {
     public static final String MAX_CICLI_ELABORA_COGNOMI = 'maxCicliElaboraCognomi'
     public static final String TAGLIO_COGNOMI = 'tagloCognomi'
     public static final String USA_CATEGORIA_SOTTOPAGINE_ANTROPONIMI = 'usaCategoriaSottopagineAntroponimi'
+    public static final String USA_LISTE_BIO_GIORNI = 'usaListeBioGiorni'
+    public static final String USA_LISTE_BIO_ANNI = 'usaListeBioAnni'
 
     // campi di una mappa
     public static final String MAPPA_TITOLO_PARAGRAFO = 'titoloParagrafo'

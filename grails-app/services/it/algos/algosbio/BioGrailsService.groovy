@@ -25,6 +25,7 @@ class BioGrailsService {
 
     def grailsApplication
     def logWikiService
+    def giornoService
 
     public static String aCapo = '\n'
     public static String ast = '*'
@@ -37,10 +38,10 @@ class BioGrailsService {
         def giorniMorti
         def anniNati
         def anniMorti
-        def giorniNatiNew
-        def giorniMortiNew
-        def anniNatiNew
-        def anniMortiNew
+        def giorniNatiNew = 0
+        def giorniMortiNew = 0
+        def anniNatiNew = 0
+        def anniMortiNew = 0
         String infoOld
         String infoNew
         long inizio = System.currentTimeMillis()
@@ -59,10 +60,20 @@ class BioGrailsService {
         anniMorti = LibWiki.setBold(anniMorti)
         infoOld = "Upload voci cronologiche: giorniNati=${giorniNati}, giorniMorti=${giorniMorti}, anniNati=${anniNati}, anniMorti=${anniMorti}"
 
-        giorniNatiNew = uploadGiorniNascita() + ''
-        giorniMortiNew = uploadGiorniMorte() + ''
-        anniNatiNew = uploadAnniNascita() + ''
-        anniMortiNew = uploadAnniMorte() + ''
+        if (Pref.getBool(LibBio.USA_LISTE_BIO_GIORNI)) {
+            giornoService.uploadGiorniNascita()
+            giornoService.uploadGiorniMorte()
+        } else {
+            giorniNatiNew = uploadGiorniNascita() + ''
+            giorniMortiNew = uploadGiorniMorte() + ''
+        }// fine del blocco if-else
+        if (Pref.getBool(LibBio.USA_LISTE_BIO_ANNI)) {
+            giornoService.uploadGiorniNascita()
+            giornoService.uploadGiorniMorte()
+        } else {
+            anniNatiNew = uploadAnniNascita() + ''
+            anniMortiNew = uploadAnniMorte() + ''
+        }// fine del blocco if-else
         giorniNatiNew = LibWiki.setBold(giorniNatiNew)
         giorniMortiNew = LibWiki.setBold(giorniMortiNew)
         anniNatiNew = LibWiki.setBold(anniNatiNew)
@@ -84,8 +95,13 @@ class BioGrailsService {
     def uploadGiorni() {
         Map mappa = new HashMap()
 
-        uploadGiorniNascita()
-        uploadGiorniMorte()
+        if (Pref.getBool(LibBio.USA_LISTE_BIO_GIORNI)) {
+            giornoService.uploadGiorniNascita()
+            giornoService.uploadGiorniMorte()
+        } else {
+            uploadGiorniNascita()
+            uploadGiorniMorte()
+        }// fine del blocco if-else
     } // fine del metodo
 
     //--creazione delle liste partendo da BioGrails
@@ -160,7 +176,7 @@ class BioGrailsService {
     private static ArrayList<BioGrails> getListaBiografie(Giorno giorno) {
         ArrayList<BioGrails> listaBiografie = null
 
-            listaBiografie = BioGrails.findAllByGiornoMeseNascitaLink(giorno, [sort: 'annoNascitaLink'])
+        listaBiografie = BioGrails.findAllByGiornoMeseNascitaLink(giorno, [sort: 'annoNascitaLink'])
 
         return listaBiografie
     }// fine del metodo

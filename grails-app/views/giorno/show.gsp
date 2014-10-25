@@ -18,7 +18,7 @@
                                                                           args="[entityName]"/></g:link></li>
                 </g:if>
                 <g:if test="${menuExtra}">
-                    <algos:menuExtra menuExtra="${menuExtra}"></algos:menuExtra>
+                    <algos:menuExtra menuExtra="${menuExtra}"> </algos:menuExtra>
                 </g:if>
 			</ul>
 		</div>

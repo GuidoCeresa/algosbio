@@ -70,12 +70,14 @@ abstract class ListaAnno extends ListaBio {
      * Sovrascritto
      */
     @Override
-    protected String elaboraRitornoPrincipale() {
+    protected String elaboraincipit() {
         String ritorno = ''
         Anno anno = this.getAnno()
 
         if (anno) {
-            ritorno = anno.titolo
+            ritorno += "{{torna a|"
+            ritorno += anno.titolo
+            ritorno += "}}"
         }// fine del blocco if
 
         return ritorno

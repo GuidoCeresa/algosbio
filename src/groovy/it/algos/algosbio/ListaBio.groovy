@@ -6,6 +6,7 @@ import it.algos.algoslib.LibTesto
 import it.algos.algoslib.LibTime
 import it.algos.algoslib.Mese
 import it.algos.algospref.Pref
+import it.algos.algoswiki.Risultato
 import it.algos.algoswiki.WikiLib
 
 /**
@@ -33,8 +34,17 @@ abstract class ListaBio {
     protected boolean usaSuddivisioneParagrafi = false
     protected boolean usaDoppiaColonna = false
     protected boolean usaSottopagine = false
+    protected String tagTemplateBio = 'ListaBio'
     protected String tagLivelloParagrafo = '=='
     protected String tagParagrafoNullo = 'Altre...'
+    public registrata
+
+    public ListaBio(Object oggetto) {
+        this.oggetto = oggetto
+        elaboraParametri()
+        elaboraListaBiografie()
+        elaboraPagina()
+    }// fine del costruttore
 
     public ListaBio(String soggetto) {
         this(soggetto, false)
@@ -75,6 +85,8 @@ abstract class ListaBio {
         String summary = LibBio.getSummary()
         String titolo = getTitolo()
         String testo = ''
+        EditBio paginaModificata
+        Risultato risultato
 
         //header
         testo += this.elaboraHead()
@@ -88,11 +100,14 @@ abstract class ListaBio {
         //registra la pagina
         testo = testo.trim()
         if (!debug) {
-            new EditBio(titolo, testo, summary)
+            paginaModificata = new EditBio(titolo, testo, summary)
+            registrata = paginaModificata.registrata
         }// fine del blocco if
         if (debug && loggato) {
-            new EditBio('Utente:Biobot/2', testo, summary)
+            paginaModificata = new EditBio('Utente:Biobot/2', testo, summary)
+            registrata = paginaModificata.registrata
         }// fine del blocco if
+
         def stop
     }// fine del metodo
 
@@ -110,10 +125,11 @@ abstract class ListaBio {
     protected String elaboraHead() {
         // variabili e costanti locali di lavoro
         String testo = ''
-        String torna = elaboraRitornoPrincipale()
+        String incipit = elaboraincipit()
         String dataCorrente = LibTime.getGioMeseAnnoLungo(new Date())
         int numPersone = listaBiografie.size()
         String personeTxt = LibTesto.formatNum(numPersone)
+        String template = tagTemplateBio
 
         if (usaTavolaContenuti) {
             testo += TAG_INDICE
@@ -124,15 +140,15 @@ abstract class ListaBio {
 
         testo += "<noinclude>"
         testo += A_CAPO
-        testo += "{{ListaBio"
+        testo += "{{${template}"
         testo += "|bio="
         testo += personeTxt
         testo += "|data="
         testo += dataCorrente.trim()
         testo += "}}"
         testo += A_CAPO
-        if (torna) {
-            testo += "{{torna a|$torna}}"
+        if (incipit) {
+            testo += incipit
             testo += A_CAPO
         }// fine del blocco if
         testo += "</noinclude>"
@@ -145,7 +161,7 @@ abstract class ListaBio {
      * Pagina principale a cui tornare
      * Sovrascritto
      */
-    protected String elaboraRitornoPrincipale() {
+    protected String elaboraincipit() {
         return ''
     }// fine del metodo
 

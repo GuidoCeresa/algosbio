@@ -631,20 +631,22 @@ class BioWikiService {
                 if (lista) {
                     mappa = creaMappa((ArrayList) it)
                     elencoPageids = creaStringaChiavi(mappa)
-
-                    query = new QueryTimestamp(elencoPageids)
-                    if (query) {
-                        listaWrap = query.getListaWrapTime()
-                        if (listaWrap) {
-                            listaModificateTmp = chekTimeLista(mappa, listaWrap)
-                        }// fine del blocco if
-                        listaErroriWrap = query.getListaErrori()
-                        if (listaErroriWrap) {
-                            listaErroriWrap?.each {
-                                log.error 'Errore querytimestamp in ' + it
-                            } // fine del ciclo each
+                    if (elencoPageids) {
+                        query = new QueryTimestamp(elencoPageids)
+                        if (query) {
+                            listaWrap = query.getListaWrapTime()
+                            if (listaWrap) {
+                                listaModificateTmp = chekTimeLista(mappa, listaWrap)
+                            }// fine del blocco if
+                            listaErroriWrap = query.getListaErrori()
+                            if (listaErroriWrap) {
+                                listaErroriWrap?.each {
+                                    log.error 'Errore querytimestamp in ' + it
+                                } // fine del ciclo each
+                            }// fine del blocco if
                         }// fine del blocco if
                     }// fine del blocco if
+
                 }// fine del blocco if
 
                 try { // prova ad eseguire il codice

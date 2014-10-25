@@ -8,6 +8,9 @@ import org.grails.datastore.mapping.query.api.Criteria
 class ListaGiornoNato extends ListaGiorno {
 
 
+    public ListaGiornoNato(Giorno giorno) {
+        super(giorno)
+    }// fine del costruttore
 
     public ListaGiornoNato(String soggetto) {
         this(soggetto, false)

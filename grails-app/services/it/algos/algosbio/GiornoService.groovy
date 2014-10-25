@@ -113,7 +113,6 @@ class GiornoService {
 
     /**
      * Sporca il record
-     *
      * Se non esiste non fa nulla
      */
     public static sporcoMorto(def giornoDaSporcare) {
@@ -138,5 +137,45 @@ class GiornoService {
         // valore di ritorno
         return giorno
     } // fine della closure
+
+    /**
+     * creazione delle liste partendo da BioGrails
+     * elabora e crea tutti i giorni di nascita modificati
+     */
+    public int uploadGiorniNascita() {
+        int giorniModificati = 0
+        ArrayList<Giorno> listaGiorniModificati
+        ListaBio listaBio
+
+        listaGiorniModificati = Giorno.findAllBySporcoNato(true)
+        listaGiorniModificati?.each {
+            listaBio = new ListaGiornoNato(it)
+            if (listaBio.registrata) {
+                giorniModificati++
+            }// fine del blocco if
+        } // fine del ciclo each
+
+        return giorniModificati
+    } // fine del metodo
+
+    /**
+     * creazione delle liste partendo da BioGrails
+     * elabora e crea tutti i giorni di nascita modificati
+     */
+    def int uploadGiorniMorte() {
+        int giorniModificati = 0
+        ArrayList<Giorno> listaGiorniModificati
+        ListaBio listaBio
+
+        listaGiorniModificati = Giorno.findAllBySporcoMorto(true)
+        listaGiorniModificati?.each {
+            listaBio = new ListaGiornoMorto(it)
+            if (listaBio.registrata) {
+                giorniModificati++
+            }// fine del blocco if
+        } // fine del ciclo each
+
+        return giorniModificati
+    } // fine del metodo
 
 } // fine della service classe
