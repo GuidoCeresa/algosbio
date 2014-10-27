@@ -1,18 +1,21 @@
 package it.algos.algosbio
 
 import it.algos.algoslib.Mese
+import it.algos.algoswiki.Login
 
 /**
  * Created by gac on 18/10/14.
  */
 abstract class ListaAnno extends ListaBio {
 
-    public ListaAnno(String soggetto) {
-        this(soggetto, false)
+
+    public ListaAnno(Anno anno, Login login) {
+        super(anno, login)
     }// fine del costruttore
 
-    public ListaAnno(String soggetto, boolean loggato) {
-        super(soggetto, loggato)
+
+    public ListaAnno(String soggetto, Login login) {
+        super(soggetto, login)
     }// fine del costruttore
 
     @Override
@@ -166,5 +169,25 @@ abstract class ListaAnno extends ListaBio {
         return anno
     }// fine del metodo
 
+    /**
+     * Elabora e crea le liste dell'anno indicato (nascita e morte) e le uploada sul server wiki
+     */
+    public static void uploadAnno(String titolo, Login login) {
+        def nonServe
+
+        if (titolo && login && login.isValido()) {
+            nonServe = new ListaAnnoNato(titolo, login)
+            nonServe = new ListaAnnoMorto(titolo, login)
+        }// fine del blocco if
+    }// fine del metodo
+
+    /**
+     * Elabora e crea le liste dell'anno indicato (nascita e morte) e le uploada sul server wiki
+     */
+    public static void uploadAnno(Anno anno, Login login) {
+        if (anno && login && login.isValido()) {
+            uploadAnno(anno.titolo, login)
+        }// fine del blocco if
+    }// fine del metodo
 
 }// fine della classe

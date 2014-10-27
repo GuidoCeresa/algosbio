@@ -18,6 +18,7 @@ import it.algos.algos.DialogoController
 import it.algos.algos.TipoDialogo
 import it.algos.algoslib.Lib
 import it.algos.algospref.Pref
+import it.algos.algoswiki.Login
 import org.codehaus.groovy.grails.commons.DefaultGrailsDomainClass
 import org.springframework.dao.DataIntegrityViolationException
 
@@ -203,21 +204,20 @@ class GiornoController {
     //--elabora e crea le liste del giorno indicato (nascita e morte) e lo uploada sul server wiki
     //--passa al metodo effettivo senza nessun dialogo di conferma
     def uploadSingoloGiorno(Long id) {
+        Login login = grailsApplication.config.login
         Giorno giorno = Giorno.get(id)
 
-        if (grailsApplication.config.login || Pref.getBool(LibBio.DEBUG, false)) {
+        if (login && login.isValido()) {
             if (giorno) {
-                def nonServe
-                String titolo = giorno.titolo
-                nonServe = new ListaGiornoNato(titolo)
-                nonServe = new ListaGiornoMorto(titolo)
-                flash.message = "Eseguito upload sul server wiki della pagina con la lista delle voci per il giorno ${titolo}"
+                ListaGiorno.uploadGiorno(giorno, login)
+                flash.message = "Eseguito upload sul server wiki delle pagine con le liste delle voci nati e morti per il giorno ${giorno.titolo}"
             } else {
                 flash.error = 'Non ho trovato il giorno indicato'
             }// fine del blocco if-else
         } else {
             flash.error = 'Devi essere loggato per effettuare un upload di pagine sul server wiki'
         }// fine del blocco if-else
+
         redirect(action: 'list')
     } // fine del metodo
 

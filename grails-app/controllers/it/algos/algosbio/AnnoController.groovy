@@ -18,6 +18,7 @@ import it.algos.algos.DialogoController
 import it.algos.algos.TipoDialogo
 import it.algos.algoslib.Lib
 import it.algos.algospref.Pref
+import it.algos.algoswiki.Login
 import org.codehaus.groovy.grails.commons.DefaultGrailsDomainClass
 import org.springframework.dao.DataIntegrityViolationException
 
@@ -208,21 +209,20 @@ class AnnoController {
     //--elabora e crea le liste dell'anno indicato (nascita e morte) e lo uploada sul server wiki
     //--passa al metodo effettivo senza nessun dialogo di conferma
     def uploadSingoloAnno(Long id) {
+        Login login = grailsApplication.config.login
         Anno anno = Anno.get(id)
 
-        if (grailsApplication.config.login || Pref.getBool(LibBio.DEBUG, false)) {
+        if (login && login.isValido()) {
             if (anno) {
-                def nonServe
-                String titolo = anno.titolo
-                nonServe = new ListaAnnoNato(titolo)
-                nonServe = new ListaAnnoMorto(titolo)
-                flash.message = "Eseguito upload sul server wiki della pagina con la lista delle voci per l'anno ${titolo}"
+                ListaAnno.uploadAnno(anno, login)
+                flash.message = "Eseguito upload sul server wiki delle pagine con le liste delle voci nati e morti per l'anno ${anno.titolo}"
             } else {
                 flash.error = "Non ho trovato l'anno indicato"
             }// fine del blocco if-else
         } else {
             flash.error = 'Devi essere loggato per effettuare un upload di pagine sul server wiki'
         }// fine del blocco if-else
+
         redirect(action: 'list')
     } // fine del metodo
 

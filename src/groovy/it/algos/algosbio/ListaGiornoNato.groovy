@@ -1,5 +1,6 @@
 package it.algos.algosbio
 
+import it.algos.algoswiki.Login
 import org.grails.datastore.mapping.query.api.Criteria
 
 /**
@@ -8,16 +9,12 @@ import org.grails.datastore.mapping.query.api.Criteria
 class ListaGiornoNato extends ListaGiorno {
 
 
-    public ListaGiornoNato(Giorno giorno) {
-        super(giorno)
+    public ListaGiornoNato(Giorno giorno, Login login) {
+        super(giorno, login)
     }// fine del costruttore
 
-    public ListaGiornoNato(String soggetto) {
-        this(soggetto, false)
-    }// fine del costruttore
-
-    public ListaGiornoNato(String soggetto, boolean loggato) {
-        super(soggetto, loggato)
+    public ListaGiornoNato(String soggetto, Login login) {
+        super(soggetto, login)
     }// fine del costruttore
 
     /**

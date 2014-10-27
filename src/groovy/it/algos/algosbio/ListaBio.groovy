@@ -6,6 +6,7 @@ import it.algos.algoslib.LibTesto
 import it.algos.algoslib.LibTime
 import it.algos.algoslib.Mese
 import it.algos.algospref.Pref
+import it.algos.algoswiki.Login
 import it.algos.algoswiki.Risultato
 import it.algos.algoswiki.WikiLib
 
@@ -21,14 +22,16 @@ abstract class ListaBio {
     // il service NON viene iniettato automaticamente (perché è nel plugin)
     BioService bioService
 
-    protected Object oggetto
-    protected ArrayList<BioGrails> listaBiografie
-    protected boolean loggato
     protected static String TAG_INDICE = '__FORCETOC__'
     protected static String TAG_NO_INDICE = '__NOTOC__'
 
     protected static String A_CAPO = '\n'
     protected static String SPAZIO = ' '
+
+    protected Object oggetto
+    protected String soggetto
+    protected ArrayList<BioGrails> listaBiografie
+    protected Login login
 
     protected boolean usaTavolaContenuti = Pref.getBool(LibBio.USA_TAVOLA_CONTENUTI, true)
     protected boolean usaSuddivisioneParagrafi = false
@@ -39,25 +42,21 @@ abstract class ListaBio {
     protected String tagParagrafoNullo = 'Altre...'
     public registrata
 
-    public ListaBio(Object oggetto) {
+    public ListaBio(Object oggetto, Login login) {
         this.oggetto = oggetto
-        elaboraParametri()
-        elaboraListaBiografie()
-        elaboraPagina()
-    }// fine del costruttore
-
-    public ListaBio(String soggetto) {
-        this(soggetto, false)
-    }// fine del costruttore
-
-    public ListaBio(String soggetto, boolean loggato) {
-        this.loggato = loggato
-        inizia(soggetto)
+        inizia(login)
     }// fine del costruttore
 
 
-    protected inizia(String soggetto) {
+    public ListaBio(String soggetto, Login login) {
+        this.soggetto = soggetto
         elaboraOggetto(soggetto)
+        inizia(login)
+    }// fine del costruttore
+
+
+    protected inizia(Login login) {
+        this.login = login
         elaboraParametri()
         elaboraListaBiografie()
         elaboraPagina()
@@ -99,13 +98,14 @@ abstract class ListaBio {
 
         //registra la pagina
         testo = testo.trim()
-        if (!debug) {
-            paginaModificata = new EditBio(titolo, testo, summary)
-            registrata = paginaModificata.registrata
-        }// fine del blocco if
-        if (debug && loggato) {
-            paginaModificata = new EditBio('Utente:Biobot/2', testo, summary)
-            registrata = paginaModificata.registrata
+        if (login && login.isValido()) {
+            if (debug) {
+                paginaModificata = new EditBio('Utente:Biobot/2', testo, summary)
+                registrata = paginaModificata.registrata
+            } else {
+                paginaModificata = new EditBio(titolo, testo, summary)
+                registrata = paginaModificata.registrata
+            }// fine del blocco if-else
         }// fine del blocco if
 
         def stop

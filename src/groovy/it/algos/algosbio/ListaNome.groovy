@@ -1,6 +1,7 @@
 package it.algos.algosbio
 
 import it.algos.algoslib.LibTesto
+import it.algos.algoswiki.Login
 
 /**
  * Created by gac on 18/10/14.
@@ -8,16 +9,13 @@ import it.algos.algoslib.LibTesto
 class ListaNome extends ListaBio {
     private boolean titoloParagrafoConLink = true
 
-    public ListaNome(Antroponimo antroponimo) {
-        super(antroponimo)
+    public ListaNome(Antroponimo antroponimo, Login login) {
+        super(antroponimo, login)
     }// fine del costruttore
 
-    public ListaNome(String soggetto) {
-        this(soggetto, false)
-    }// fine del costruttore
 
-    public ListaNome(String soggetto, boolean loggato) {
-        super(soggetto, loggato)
+    public ListaNome(String soggetto, Login login) {
+        super(soggetto, login)
     }// fine del costruttore
 
     @Override

@@ -1,6 +1,7 @@
 package it.algos.algosbio
 
 import it.algos.algoslib.Mese
+import it.algos.algoswiki.Login
 
 /**
  * Created by gac on 17/10/14.
@@ -8,17 +9,13 @@ import it.algos.algoslib.Mese
 abstract class ListaGiorno extends ListaBio {
 
 
-    public ListaGiorno(Giorno giorno) {
-        super(giorno)
-    }// fine del costruttore
-
-    public ListaGiorno(String soggetto) {
-        super(soggetto)
+    public ListaGiorno(Giorno giorno, Login login) {
+        super(giorno, login)
     }// fine del costruttore
 
 
-    public ListaGiorno(String soggetto, boolean loggato) {
-        super(soggetto, loggato)
+    public ListaGiorno(String soggetto, Login login) {
+        super(soggetto, login)
     }// fine del costruttore
 
 
@@ -211,5 +208,27 @@ abstract class ListaGiorno extends ListaBio {
 
         return giorno
     }// fine del metodo
+
+    /**
+     * Elabora e crea le liste del giorno indicato (nascita e morte) e le uploada sul server wiki
+     */
+    public static void uploadGiorno(String titolo, Login login) {
+        def nonServe
+
+        if (titolo && login && login.isValido()) {
+            nonServe = new ListaGiornoNato(titolo, login)
+            nonServe = new ListaGiornoMorto(titolo, login)
+        }// fine del blocco if
+    }// fine del metodo
+
+    /**
+     * Elabora e crea le liste del giorno indicato (nascita e morte) e le uploada sul server wiki
+     */
+    public static void uploadGiorno(Giorno giorno, Login login) {
+        if (giorno && login && login.isValido()) {
+            uploadGiorno(giorno.titolo, login)
+        }// fine del blocco if
+    }// fine del metodo
+
 
 }// fine della classe

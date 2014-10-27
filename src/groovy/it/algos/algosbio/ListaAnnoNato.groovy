@@ -1,6 +1,7 @@
 package it.algos.algosbio
 
 import it.algos.algoslib.Mese
+import it.algos.algoswiki.Login
 import org.grails.datastore.mapping.query.api.Criteria
 
 /**
@@ -9,12 +10,12 @@ import org.grails.datastore.mapping.query.api.Criteria
 class ListaAnnoNato extends ListaAnno {
 
 
-    public ListaAnnoNato(String soggetto) {
-        this(soggetto, false)
+    public ListaAnnoNato(Anno anno, Login login) {
+        super(anno, login)
     }// fine del costruttore
 
-    public ListaAnnoNato(String soggetto, boolean loggato) {
-        super(soggetto, loggato)
+    public ListaAnnoNato(String soggetto, Login login) {
+        super(soggetto, login)
     }// fine del costruttore
 
     /**
@@ -51,7 +52,6 @@ class ListaAnnoNato extends ListaAnno {
 
         return chiave
     }// fine del metodo
-
 
     /**
      * Piede della pagina
