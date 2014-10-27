@@ -769,7 +769,7 @@ class BioController {
         boolean loggato
         loggato = grailsApplication.config.login ? true : false
 
-        nonServe = new ListaNome('Adriana',loggato)
+        nonServe = new ListaNome('Mario',loggato)
 
 //        nonServe = new ListaGiornoNato('11 marzo',loggato)
 //        nonServe = new ListaGiornoMorto('11 marzo',loggato)

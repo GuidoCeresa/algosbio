@@ -1,7 +1,6 @@
 package it.algos.algosbio
 
 import it.algos.algoslib.LibTesto
-import org.grails.datastore.mapping.query.api.Criteria
 
 /**
  * Created by gac on 18/10/14.
@@ -202,6 +201,7 @@ class ListaNome extends ListaBio {
         if (antroponimo) {
             listaBiografie = BioGrails.findAllByNomeLink(antroponimo, [sort: 'forzaOrdinamento'])
         }// fine del blocco if
+        def stop
     }// fine del metodo
 
 }// fine della classe
