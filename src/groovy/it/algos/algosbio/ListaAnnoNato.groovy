@@ -10,12 +10,12 @@ import org.grails.datastore.mapping.query.api.Criteria
 class ListaAnnoNato extends ListaAnno {
 
 
-    public ListaAnnoNato(Anno anno, Login login) {
-        super(anno, login)
+    public ListaAnnoNato(Anno anno) {
+        super(anno)
     }// fine del costruttore
 
-    public ListaAnnoNato(String soggetto, Login login) {
-        super(soggetto, login)
+    public ListaAnnoNato(String soggetto) {
+        super(soggetto)
     }// fine del costruttore
 
     /**
@@ -39,8 +39,7 @@ class ListaAnnoNato extends ListaAnno {
      * Chiave di selezione del paragrafo
      * Sovrascritto
      */
-    @Override
-    protected String getChiave(BioGrails bio) {
+    protected String getChiaveParagrafo(BioGrails bio) {
         String chiave
         Giorno giorno = bio.giornoMeseNascitaLink
 

@@ -142,19 +142,21 @@ class AnnoService {
      */
     def int uploadAnniNascita() {
         int anniiModificati = 0
-        boolean registrata = false
-        ArrayList listaAnniModificati
-        String titolo
-        Anno anno
+        ArrayList<Anno> listaAnniModificati
         ListaBio listaBio
 
+        if (Pref.getBool(LibBio.REGISTRA_ALL_GIORNI_ANNI, false)) {
+            listaAnniModificati = Anno.list()
+        } else {
             listaAnniModificati = Anno.findAllBySporcoNato(true)
-            listaAnniModificati?.each {
-                registrata = uploadAnnoNascita((Anno) it)
-                if (registrata) {
-                    anniiModificati++
-                }// fine del blocco if
-            } // fine del ciclo each
+        }// fine del blocco if-else
+
+        listaAnniModificati?.each {
+            listaBio = new ListaAnnoNato(it)
+            if (listaBio.registrata) {
+                anniiModificati++
+            }// fine del blocco if
+        } // fine del ciclo each
 
         return anniiModificati
     } // fine del metodo
@@ -165,27 +167,24 @@ class AnnoService {
      */
     def int uploadAnniMorte() {
         int anniiModificati = 0
-        boolean debug = Pref.getBool(LibBio.DEBUG, false)
-        boolean registrata = false
-        ArrayList listaAnniModificati
-        String titolo
-        Anno anno
+        ArrayList<Anno> listaAnniModificati
+        ListaBio listaBio
 
-        if (debug) {
-            titolo = Pref.getStr(LibBio.ANNO_DEBUG, '1952')
-            anno = Anno.findByTitolo(titolo)
-            uploadAnnoMorte(anno)
+        if (Pref.getBool(LibBio.REGISTRA_ALL_GIORNI_ANNI, false)) {
+            listaAnniModificati = Anno.list()
         } else {
             listaAnniModificati = Anno.findAllBySporcoMorto(true)
-            listaAnniModificati?.each {
-                registrata = uploadAnnoMorte((Anno) it)
-                if (registrata) {
-                    anniiModificati++
-                }// fine del blocco if
-            } // fine del ciclo each
         }// fine del blocco if-else
+
+        listaAnniModificati?.each {
+            listaBio = new ListaAnnoMorto(it)
+            if (listaBio.registrata) {
+                anniiModificati++
+            }// fine del blocco if
+        } // fine del ciclo each
 
         return anniiModificati
     } // fine del metodo
+
 
 } // fine della service classe

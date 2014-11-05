@@ -153,17 +153,16 @@ class AnnoController {
     //--elabora e crea tutti gli anni modificati (solo nascita)
     //--passa al metodo effettivo senza nessun dialogo di conferma
     def uploadAnniNascita() {
-        boolean debug = Pref.getBool(LibBio.DEBUG, false)
-
-        if (grailsApplication && grailsApplication.config.login) {
-            bioGrailsService.uploadAnniNascita()
-        } else {
-            if (debug) {
-                bioGrailsService.uploadAnniNascita()
+        if (grailsApplication && grailsApplication.config.login && grailsApplication.config.login.isValido()) {
+            if (Pref.getBool(LibBio.USA_LISTE_BIO_GIORNI)) {
+                annoService.uploadAnniNascita()
             } else {
-                flash.error = 'Devi essere loggato per effettuare un upload di pagine sul server wiki'
+                bioGrailsService.uploadAnniNascita()
             }// fine del blocco if-else
+        } else {
+            flash.error = 'Devi essere loggato per effettuare un upload di pagine sul server wiki'
         }// fine del blocco if-else
+
         redirect(action: 'list')
     } // fine del metodo
 
@@ -171,17 +170,16 @@ class AnnoController {
     //--elabora e crea tutti gli anni modificati (solo morte)
     //--passa al metodo effettivo senza nessun dialogo di conferma
     def uploadAnniMorte() {
-        boolean debug = Pref.getBool(LibBio.DEBUG, false)
-
-        if (grailsApplication && grailsApplication.config.login) {
-            bioGrailsService.uploadAnniMorte()
-        } else {
-            if (debug) {
-                bioGrailsService.uploadAnniMorte()
+        if (grailsApplication && grailsApplication.config.login && grailsApplication.config.login.isValido()) {
+            if (Pref.getBool(LibBio.USA_LISTE_BIO_GIORNI)) {
+                annoService.uploadAnniMorte()
             } else {
-                flash.error = 'Devi essere loggato per effettuare un upload di pagine sul server wiki'
+                bioGrailsService.uploadAnniMorte()
             }// fine del blocco if-else
+        } else {
+            flash.error = 'Devi essere loggato per effettuare un upload di pagine sul server wiki'
         }// fine del blocco if-else
+
         redirect(action: 'list')
     } // fine del metodo
 
@@ -189,18 +187,16 @@ class AnnoController {
     //--elabora e crea tutti gli anni modificati
     //--passa al metodo effettivo senza nessun dialogo di conferma
     def uploadAllAnni() {
-        boolean debug = Pref.getBool(LibBio.DEBUG, false)
-
-        if (grailsApplication && grailsApplication.config.login) {
-            bioGrailsService.uploadAnniNascita()
-            bioGrailsService.uploadAnniMorte()
-        } else {
-            if (debug) {
+        if (grailsApplication && grailsApplication.config.login && grailsApplication.config.login.isValido()) {
+            if (Pref.getBool(LibBio.USA_LISTE_BIO_GIORNI)) {
+                annoService.uploadAnniNascita()
+                annoService.uploadAnniMorte()
+            } else {
                 bioGrailsService.uploadAnniNascita()
                 bioGrailsService.uploadAnniMorte()
-            } else {
-                flash.error = 'Devi essere loggato per effettuare un upload di pagine sul server wiki'
             }// fine del blocco if-else
+        } else {
+            flash.error = 'Devi essere loggato per effettuare un upload di pagine sul server wiki'
         }// fine del blocco if-else
 
         redirect(action: 'list')
@@ -209,12 +205,11 @@ class AnnoController {
     //--elabora e crea le liste dell'anno indicato (nascita e morte) e lo uploada sul server wiki
     //--passa al metodo effettivo senza nessun dialogo di conferma
     def uploadSingoloAnno(Long id) {
-        Login login = grailsApplication.config.login
         Anno anno = Anno.get(id)
 
-        if (login && login.isValido()) {
+        if (grailsApplication && grailsApplication.config.login && grailsApplication.config.login.isValido()) {
             if (anno) {
-                ListaAnno.uploadAnno(anno, login)
+                ListaAnno.uploadAnno(anno)
                 flash.message = "Eseguito upload sul server wiki delle pagine con le liste delle voci nati e morti per l'anno ${anno.titolo}"
             } else {
                 flash.error = "Non ho trovato l'anno indicato"
@@ -442,5 +437,6 @@ class AnnoController {
             '*' { render status: NOT_FOUND }
         }// fine di request
     } // fine del metodo
+
 
 } // fine della controller classe

@@ -9,13 +9,13 @@ import it.algos.algoswiki.Login
 abstract class ListaAnno extends ListaBio {
 
 
-    public ListaAnno(Anno anno, Login login) {
-        super(anno, login)
+    public ListaAnno(Anno anno) {
+        super(anno)
     }// fine del costruttore
 
 
-    public ListaAnno(String soggetto, Login login) {
-        super(soggetto, login)
+    public ListaAnno(String soggetto) {
+        super(soggetto)
     }// fine del costruttore
 
     @Override
@@ -35,6 +35,7 @@ abstract class ListaAnno extends ListaBio {
     protected elaboraParametri() {
         usaTavolaContenuti = false
         usaSuddivisioneParagrafi = true
+        usaTitoloParagrafoConLink = false
         usaDoppiaColonna = true
         usaSottopagine = false
         tagLivelloParagrafo = '==='
@@ -172,21 +173,24 @@ abstract class ListaAnno extends ListaBio {
     /**
      * Elabora e crea le liste dell'anno indicato (nascita e morte) e le uploada sul server wiki
      */
-    public static void uploadAnno(String titolo, Login login) {
+    public static void uploadAnno(String titolo) {
         def nonServe
 
-        if (titolo && login && login.isValido()) {
-            nonServe = new ListaAnnoNato(titolo, login)
-            nonServe = new ListaAnnoMorto(titolo, login)
+        if (titolo) {
+            nonServe = new ListaAnnoNato(titolo)
+            nonServe = new ListaAnnoMorto(titolo)
         }// fine del blocco if
     }// fine del metodo
 
     /**
      * Elabora e crea le liste dell'anno indicato (nascita e morte) e le uploada sul server wiki
      */
-    public static void uploadAnno(Anno anno, Login login) {
-        if (anno && login && login.isValido()) {
-            uploadAnno(anno.titolo, login)
+    public static void uploadAnno(Anno anno) {
+        def nonServe
+
+        if (anno) {
+            nonServe = new ListaAnnoNato(anno)
+            nonServe = new ListaAnnoMorto(anno)
         }// fine del blocco if
     }// fine del metodo
 

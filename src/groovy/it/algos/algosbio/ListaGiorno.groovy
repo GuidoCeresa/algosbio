@@ -9,13 +9,13 @@ import it.algos.algoswiki.Login
 abstract class ListaGiorno extends ListaBio {
 
 
-    public ListaGiorno(Giorno giorno, Login login) {
-        super(giorno, login)
+    public ListaGiorno(Giorno giorno) {
+        super(giorno)
     }// fine del costruttore
 
 
-    public ListaGiorno(String soggetto, Login login) {
-        super(soggetto, login)
+    public ListaGiorno(String soggetto) {
+        super(soggetto)
     }// fine del costruttore
 
 
@@ -36,6 +36,7 @@ abstract class ListaGiorno extends ListaBio {
     protected elaboraParametri() {
         usaTavolaContenuti = false
         usaSuddivisioneParagrafi = true
+        usaTitoloParagrafoConLink = false
         usaDoppiaColonna = true
         usaSottopagine = false
         tagLivelloParagrafo = '==='
@@ -212,21 +213,24 @@ abstract class ListaGiorno extends ListaBio {
     /**
      * Elabora e crea le liste del giorno indicato (nascita e morte) e le uploada sul server wiki
      */
-    public static void uploadGiorno(String titolo, Login login) {
+    public static void uploadGiorno(String titolo) {
         def nonServe
 
-        if (titolo && login && login.isValido()) {
-            nonServe = new ListaGiornoNato(titolo, login)
-            nonServe = new ListaGiornoMorto(titolo, login)
+        if (titolo) {
+            nonServe = new ListaGiornoNato(titolo)
+            nonServe = new ListaGiornoMorto(titolo)
         }// fine del blocco if
     }// fine del metodo
 
     /**
      * Elabora e crea le liste del giorno indicato (nascita e morte) e le uploada sul server wiki
      */
-    public static void uploadGiorno(Giorno giorno, Login login) {
-        if (giorno && login && login.isValido()) {
-            uploadGiorno(giorno.titolo, login)
+    public static void uploadGiorno(Giorno giorno) {
+        def nonServe
+
+        if (giorno) {
+            nonServe = new ListaGiornoNato(giorno)
+            nonServe = new ListaGiornoMorto(giorno)
         }// fine del blocco if
     }// fine del metodo
 

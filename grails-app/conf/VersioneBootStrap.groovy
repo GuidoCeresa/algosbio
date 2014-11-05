@@ -2,6 +2,7 @@ import groovy.sql.Sql
 import it.algos.algosbio.Anno
 import it.algos.algosbio.Genere
 import it.algos.algosbio.Giorno
+import it.algos.algosbio.LibPass
 import it.algos.algosbio.Localita
 import it.algos.algosbio.Secolo
 import it.algos.algoslib.Mese
@@ -585,6 +586,42 @@ class VersioneBootStrap {
             versioneService.newVersione('Preferenze', 'USA_LISTE_BIO_ANNI di default true')
         }// fine del blocco if
 
+        //--creata una nuova preferenza
+        if (versioneService && versioneService.installaVersione(70)) {
+            Pref pref = new Pref()
+            pref.ordine = Pref.list().size() + 1
+            pref.code = LibBio.REGISTRA_ALL_GIORNI_ANNI
+            pref.descrizione = "Registra tutti i giorni e tutti gli anni anche se sono 'puliti'"
+            pref.type = Type.booleano
+            pref.bool = false
+            pref.save(flush: true)
+            versioneService.newVersione('Preferenze', 'REGISTRA_ALL_GIORNI_ANNI di default false')
+        }// fine del blocco if
+
+        //--creata una nuova preferenza
+        if (versioneService && versioneService.installaVersione(71)) {
+            Pref pref = new Pref()
+            pref.ordine = Pref.list().size() + 1
+            pref.code = LibBio.BOT_NAME
+            pref.descrizione = "Nickname del bot usato"
+            pref.type = Type.stringa
+            pref.stringa = 'Biobot'
+            pref.save(flush: true)
+            versioneService.newVersione('Preferenze', 'BOT_NAME di default Biobot')
+        }// fine del blocco if
+
+        //--creata una nuova preferenza
+        if (versioneService && versioneService.installaVersione(72)) {
+            Pref pref = new Pref()
+            pref.ordine = Pref.list().size() + 1
+            pref.code = LibBio.BOT_PASSWORD
+            pref.descrizione = "Password (criptata) del bot usato"
+            pref.type = Type.stringa
+            pref.stringa = LibPass.codifica('criptata')
+            pref.save(flush: true)
+            versioneService.newVersione('Preferenze', 'BOT_PASSWORD di default ...')
+        }// fine del blocco if
+
     }// fine della closure
 
 
@@ -694,4 +731,4 @@ class VersioneBootStrap {
     def destroy = {
     }// fine della closure
 
-}// fine della classe
+}// fine della classe di bootstrap

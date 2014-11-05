@@ -1,6 +1,7 @@
 package it.algos.algosbio
 
 import grails.transaction.Transactional
+import grails.util.Holders
 import groovy.util.logging.Log4j
 import it.algos.algoslib.LibTesto
 import it.algos.algoslib.LibTime
@@ -16,6 +17,7 @@ import it.algos.algoswiki.WikiLib
 @Log4j
 @Transactional(readOnly = false)
 abstract class ListaBio {
+
     static transactional = false
 
     // utilizzo di un service con la businessLogic
@@ -31,32 +33,32 @@ abstract class ListaBio {
     protected Object oggetto
     protected String soggetto
     protected ArrayList<BioGrails> listaBiografie
-    protected Login login
 
     protected boolean usaTavolaContenuti = Pref.getBool(LibBio.USA_TAVOLA_CONTENUTI, true)
     protected boolean usaSuddivisioneParagrafi = false
+    protected boolean usaTitoloParagrafoConLink = false
     protected boolean usaDoppiaColonna = false
     protected boolean usaSottopagine = false
+    protected int maxVociParagrafo = 100
     protected String tagTemplateBio = 'ListaBio'
     protected String tagLivelloParagrafo = '=='
     protected String tagParagrafoNullo = 'Altre...'
     public registrata
 
-    public ListaBio(Object oggetto, Login login) {
+    public ListaBio(Object oggetto) {
         this.oggetto = oggetto
-        inizia(login)
+        inizia()
     }// fine del costruttore
 
 
-    public ListaBio(String soggetto, Login login) {
+    public ListaBio(String soggetto) {
         this.soggetto = soggetto
         elaboraOggetto(soggetto)
-        inizia(login)
+        inizia()
     }// fine del costruttore
 
 
-    protected inizia(Login login) {
-        this.login = login
+    protected inizia() {
         elaboraParametri()
         elaboraListaBiografie()
         elaboraPagina()
@@ -98,15 +100,13 @@ abstract class ListaBio {
 
         //registra la pagina
         testo = testo.trim()
-        if (login && login.isValido()) {
-            if (debug) {
-                paginaModificata = new EditBio('Utente:Biobot/2', testo, summary)
-                registrata = paginaModificata.registrata
-            } else {
-                paginaModificata = new EditBio(titolo, testo, summary)
-                registrata = paginaModificata.registrata
-            }// fine del blocco if-else
-        }// fine del blocco if
+        if (debug) {
+            paginaModificata = new EditBio('Utente:Biobot/2', testo, summary)
+            registrata = paginaModificata.registrata
+        } else {
+            paginaModificata = new EditBio(titolo, testo, summary)
+            registrata = paginaModificata.registrata
+        }// fine del blocco if-else
 
         def stop
     }// fine del metodo
@@ -179,26 +179,22 @@ abstract class ListaBio {
     protected String elaboraBody() {
         String testo = ''
         LinkedHashMap mappa = null
-        String chiave
+        String chiaveSemplice
+        String chiaveParagrafo
+        String titoloParagrafo
         ArrayList<BioGrails> listaVoci
         ArrayList<BioGrails> listaVociOrdinate
         ArrayList<String> listaDidascalie
-        int num = 0
-        int maxVoci = Pref.getInt(LibBio.MAX_VOCI_PARAGRAFO_LOCALITA, 100)
 
         mappa = getMappa(listaBiografie)
 
         mappa?.each {
-            chiave = it.key
-            listaVoci = (ArrayList<BioGrails>) mappa.get(chiave)
+            chiaveParagrafo = it.key
+            listaVoci = (ArrayList<BioGrails>) mappa.get(chiaveParagrafo)
             listaVociOrdinate = ordinaVoci(listaVoci)
-            num = listaVociOrdinate.size()
             listaDidascalie = estraeListaDidascalie(listaVociOrdinate)
-            if (usaSottopagine && num >= maxVoci) {
-                testo += elaboraParagrafo(chiave, listaDidascalie)
-            } else {
-                testo += elaboraParagrafo(chiave, listaDidascalie)
-            }// fine del blocco if-else
+            titoloParagrafo = elaboraTitoloParagrafo(chiaveParagrafo, listaVociOrdinate)
+            testo += elaboraParagrafo(chiaveParagrafo, titoloParagrafo, listaDidascalie)
         }// fine del ciclo each
 
         if (usaDoppiaColonna) {
@@ -264,7 +260,7 @@ abstract class ListaBio {
                 mappa = new LinkedHashMap<String, ArrayList<BioGrails>>()
                 listaVoci?.each {
                     bio = it
-                    chiave = getChiave(bio)
+                    chiave = getChiaveParagrafo(bio)
                     if (chiave.equals(chiaveOld)) {
                         lista = mappa.get(chiave)
                         lista.add(bio)
@@ -297,8 +293,16 @@ abstract class ListaBio {
      * Chiave di selezione del paragrafo
      * Sovrascritto
      */
-    protected String getChiave(BioGrails bio) {
+    protected String getChiaveParagrafo(BioGrails bio) {
         return ''
+    }// fine del metodo
+
+    /**
+     * Chiave di selezione del paragrafo con eventuali link
+     * Sovrascritto
+     */
+    protected String elaboraTitoloParagrafo(String chiaveParagrafo, ArrayList<BioGrails> listaVoci) {
+        return chiaveParagrafo
     }// fine del metodo
 
     protected static ArrayList<BioGrails> ordinaVoci(ArrayList<BioGrails> listaVoci) {
@@ -362,15 +366,37 @@ abstract class ListaBio {
         return didascalia
     }// fine del metodo
 
+    /**
+     * Decide se ci sono sottopagine
+     * Sovrascritto
+     */
+    protected String elaboraParagrafo(String chiaveParagrafo, String titoloParagrafo, ArrayList<String> listaDidascalie) {
+        String testo = ''
+        int num = listaDidascalie.size()
 
-    protected String elaboraParagrafo(String titoloParagrafo, ArrayList<String> listaDidascalie) {
+        if (usaSottopagine && num >= maxVociParagrafo) {
+            testo += elaboraParagrafoSottoPagina(chiaveParagrafo, titoloParagrafo, listaDidascalie)
+        } else {
+            testo += elaboraParagrafoNormale(chiaveParagrafo, titoloParagrafo, listaDidascalie)
+        }// fine del blocco if-else
+
+        return testo
+    }// fine del metodo
+
+    /**
+     * Creazione della sottopagina e del rimando
+     * Sovrascritto
+     */
+    protected String elaboraParagrafoSottoPagina(String chiaveParagrafo, String titoloParagrafo, ArrayList<String> listaDidascalie) {
+        return elaboraParagrafoNormale(chiaveParagrafo, titoloParagrafo, listaDidascalie)
+    }// fine del metodo
+
+    protected String elaboraParagrafoNormale(String chiaveParagrafo, String titoloParagrafo, ArrayList<String> listaDidascalie) {
         String testo = ''
         String tag = tagLivelloParagrafo
 
         if (titoloParagrafo) {
-            testo += tag
-            testo += titoloParagrafo
-            testo += tag
+            testo += tag + titoloParagrafo + tag
         }// fine del blocco if
 
         testo += A_CAPO

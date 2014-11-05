@@ -13,6 +13,7 @@
 
 package it.algos.algosbio
 
+import grails.util.Holders
 import it.algos.algos.DialogoController
 import it.algos.algos.TipoDialogo
 import it.algos.algoslib.Lib
@@ -20,6 +21,7 @@ import it.algos.algoslib.LibTesto
 import it.algos.algospref.LibPref
 import it.algos.algospref.Pref
 import it.algos.algospref.Type
+import it.algos.algoswiki.Login
 
 //--gestisce operazioni aggiuntive e di controllo
 class BioController {
@@ -767,17 +769,21 @@ class BioController {
     def test() {
         def nonServe
         boolean loggato
-        loggato = grailsApplication.config.login ? true : false
+        //--recupera la grailsApplication da Holders
+        def grailsApplication = Holders.grailsApplication
+        Login login = grailsApplication.config.loginBot
 
-        nonServe = new ListaNome('Adriana', loggato)
+//        nonServe = new ListaNome('Adriana')
+        nonServe = new ListaNome('Ahmed')
 
-        nonServe = new ListaGiornoNato('11 marzo', loggato)
-        nonServe = new ListaGiornoMorto('11 marzo', loggato)
-        nonServe = new ListaAnnoNato('1568', loggato)
-        nonServe = new ListaAnnoMorto('1568', loggato)
+//        nonServe = new ListaGiornoNato('11 marzo')
+//        nonServe = new ListaGiornoMorto('11 marzo')
+//        nonServe = new ListaAnnoNato('1568')
+//        nonServe = new ListaAnnoMorto('1568')
+
 
 //        nonServe = new ListaAttivita('accademici',loggato)
-//        nonServe = new ListaNazionalita('venezuelani',loggato)
+//        nonServe = new ListaNazionalita('venezuelani',loggato)˚
 //        nonServe = new ListaCognome('Amato',loggato)
 //        nonServe = new ListaLuogoNato('Bergamo',loggato)
 //        nonServe = new ListaLuogoMorto('Vercelli',loggato)

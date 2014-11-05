@@ -155,7 +155,7 @@ class GiornoController {
     //--elabora e crea tutti i giorni modificati (solo nascita)
     //--passa al metodo effettivo senza nessun dialogo di conferma
     def uploadGiorniNascita() {
-        if (grailsApplication && grailsApplication.config.login) {
+        if (grailsApplication && grailsApplication.config.login && grailsApplication.config.login.isValido()) {
             if (Pref.getBool(LibBio.USA_LISTE_BIO_GIORNI)) {
                 giornoService.uploadGiorniNascita()
             } else {
@@ -164,6 +164,7 @@ class GiornoController {
         } else {
             flash.error = 'Devi essere loggato per effettuare un upload di pagine sul server wiki'
         }// fine del blocco if-else
+
         redirect(action: 'list')
     } // fine del metodo
 
@@ -171,7 +172,7 @@ class GiornoController {
     //--elabora e crea tutti i giorni modificati (solo morte)
     //--passa al metodo effettivo senza nessun dialogo di conferma
     def uploadGiorniMorte() {
-        if (grailsApplication && grailsApplication.config.login) {
+        if (grailsApplication && grailsApplication.config.login && grailsApplication.config.login.isValido()) {
             if (Pref.getBool(LibBio.USA_LISTE_BIO_GIORNI)) {
                 giornoService.uploadGiorniMorte()
             } else {
@@ -180,6 +181,7 @@ class GiornoController {
         } else {
             flash.error = 'Devi essere loggato per effettuare un upload di pagine sul server wiki'
         }// fine del blocco if-else
+
         redirect(action: 'list')
     } // fine del metodo
 
@@ -187,7 +189,7 @@ class GiornoController {
     //--elabora e crea tutti i giorni modificati
     //--passa al metodo effettivo senza nessun dialogo di conferma
     def uploadAllGiorni() {
-        if (grailsApplication && grailsApplication.config.login) {
+        if (grailsApplication && grailsApplication.config.login && grailsApplication.config.login.isValido()) {
             if (Pref.getBool(LibBio.USA_LISTE_BIO_GIORNI)) {
                 giornoService.uploadGiorniNascita()
                 giornoService.uploadGiorniMorte()
@@ -198,18 +200,18 @@ class GiornoController {
         } else {
             flash.error = 'Devi essere loggato per effettuare un upload di pagine sul server wiki'
         }// fine del blocco if-else
+
         redirect(action: 'list')
     } // fine del metodo
 
     //--elabora e crea le liste del giorno indicato (nascita e morte) e lo uploada sul server wiki
     //--passa al metodo effettivo senza nessun dialogo di conferma
     def uploadSingoloGiorno(Long id) {
-        Login login = grailsApplication.config.login
         Giorno giorno = Giorno.get(id)
 
-        if (login && login.isValido()) {
+        if (grailsApplication && grailsApplication.config.login && grailsApplication.config.login.isValido()) {
             if (giorno) {
-                ListaGiorno.uploadGiorno(giorno, login)
+                ListaGiorno.uploadGiorno(giorno)
                 flash.message = "Eseguito upload sul server wiki delle pagine con le liste delle voci nati e morti per il giorno ${giorno.titolo}"
             } else {
                 flash.error = 'Non ho trovato il giorno indicato'

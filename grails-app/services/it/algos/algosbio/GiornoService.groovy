@@ -14,6 +14,8 @@
 package it.algos.algosbio
 
 import it.algos.algoslib.LibTime
+import it.algos.algospref.Pref
+import it.algos.algoswiki.Login
 
 class GiornoService {
 
@@ -147,7 +149,12 @@ class GiornoService {
         ArrayList<Giorno> listaGiorniModificati
         ListaBio listaBio
 
-        listaGiorniModificati = Giorno.findAllBySporcoNato(true)
+        if (Pref.getBool(LibBio.REGISTRA_ALL_GIORNI_ANNI, false)) {
+            listaGiorniModificati = Giorno.list()
+        } else {
+            listaGiorniModificati = Giorno.findAllBySporcoNato(true)
+        }// fine del blocco if-else
+
         listaGiorniModificati?.each {
             listaBio = new ListaGiornoNato(it)
             if (listaBio.registrata) {
@@ -167,7 +174,12 @@ class GiornoService {
         ArrayList<Giorno> listaGiorniModificati
         ListaBio listaBio
 
-        listaGiorniModificati = Giorno.findAllBySporcoMorto(true)
+        if (Pref.getBool(LibBio.REGISTRA_ALL_GIORNI_ANNI, false)) {
+            listaGiorniModificati = Giorno.list()
+        } else {
+            listaGiorniModificati = Giorno.findAllBySporcoMorto(true)
+        }// fine del blocco if-else
+
         listaGiorniModificati?.each {
             listaBio = new ListaGiornoMorto(it)
             if (listaBio.registrata) {

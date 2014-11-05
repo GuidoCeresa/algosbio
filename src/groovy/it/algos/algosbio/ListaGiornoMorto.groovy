@@ -9,13 +9,13 @@ import org.grails.datastore.mapping.query.api.Criteria
 class ListaGiornoMorto extends ListaGiorno {
 
 
-    public ListaGiornoMorto(Giorno giorno, Login login) {
-        super(giorno, login)
+    public ListaGiornoMorto(Giorno giorno) {
+        super(giorno)
     }// fine del costruttore
 
 
-    public ListaGiornoMorto(String soggetto, Login login) {
-        super(soggetto, login)
+    public ListaGiornoMorto(String soggetto) {
+        super(soggetto)
     }// fine del costruttore
 
     /**
@@ -39,8 +39,7 @@ class ListaGiornoMorto extends ListaGiorno {
      * Chiave di selezione del paragrafo
      * Sovrascritto
      */
-    @Override
-    protected String getChiave(BioGrails bio) {
+    protected String getChiaveParagrafo(BioGrails bio) {
         String chiave
         Anno anno = bio.annoMorteLink
 

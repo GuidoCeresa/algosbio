@@ -1,12 +1,17 @@
 package it.algos.algosbio
 
+import grails.test.mixin.Mock
+import grails.test.mixin.TestFor
 import grails.test.mixin.TestMixin
 import grails.test.mixin.domain.DomainClassUnitTestMixin
+import groovy.mock.interceptor.MockFor
 
 /**
  * Created by gac on 14/10/14.
  */
 @TestMixin(DomainClassUnitTestMixin)
+@TestFor(Attivita)
+@Mock(Attivita)
 class BioListaTest extends GroovyTestCase {
 
     // Setup logic here
@@ -36,6 +41,7 @@ class BioListaTest extends GroovyTestCase {
         ArrayList<BioGrails> listaVoci = BioGrails.findAllByAttivitaLink(attivita)
 
         mappa = BioLista.getMappaNazionalita(listaVoci)
+        def lista = Attivita.list()
         def stop
 
 

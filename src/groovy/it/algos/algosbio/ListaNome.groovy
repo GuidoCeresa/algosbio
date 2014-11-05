@@ -7,15 +7,14 @@ import it.algos.algoswiki.Login
  * Created by gac on 18/10/14.
  */
 class ListaNome extends ListaBio {
-    private boolean titoloParagrafoConLink = true
 
-    public ListaNome(Antroponimo antroponimo, Login login) {
-        super(antroponimo, login)
+    public ListaNome(Antroponimo antroponimo) {
+        super(antroponimo)
     }// fine del costruttore
 
 
-    public ListaNome(String soggetto, Login login) {
-        super(soggetto, login)
+    public ListaNome(String soggetto) {
+        super(soggetto)
     }// fine del costruttore
 
     @Override
@@ -36,9 +35,10 @@ class ListaNome extends ListaBio {
         usaTavolaContenuti = true
         tagTemplateBio = 'StatBio'
         usaSuddivisioneParagrafi = true
-        titoloParagrafoConLink = true
+        usaTitoloParagrafoConLink = true
         usaDoppiaColonna = false
-        usaSottopagine = false
+        usaSottopagine = true
+        maxVociParagrafo = 20
         tagLivelloParagrafo = '=='
         tagParagrafoNullo = 'Altre...'
     }// fine del metodo
@@ -81,14 +81,72 @@ class ListaNome extends ListaBio {
      * Sovrascritto
      */
     @Override
-    protected String getChiave(BioGrails bio) {
-        String chiave = getAttivita(bio)
+    protected String getChiaveParagrafo(BioGrails bio) {
+        String chiave = attivitaPluralePerGenere(bio)
 
         if (!chiave) {
             chiave = tagParagrafoNullo
         }// fine del blocco if
 
         return chiave
+    }// fine del metodo
+
+    /**
+     * Chiave di selezione del paragrafo con eventuali link
+     * Sovrascritto
+     */
+    @Override
+    protected String elaboraTitoloParagrafo(String chiaveParagrafo, ArrayList<BioGrails> listaVoci) {
+        String titoloParagrafo = chiaveParagrafo
+        String singolare
+        Professione professione
+        BioGrails bio
+
+        if (usaTitoloParagrafoConLink && listaVoci && listaVoci.size() > 0) {
+            titoloParagrafo = '[['
+            bio = listaVoci.get(0)
+            if (bio) {
+                singolare = bio.attivita
+            }// fine del blocco if
+            if (singolare) {
+                professione = Professione.findBySingolare(singolare)
+            }// fine del blocco if
+            if (professione) {
+                titoloParagrafo += LibTesto.primaMaiuscola(professione.voce)
+            } else {
+                titoloParagrafo += LibTesto.primaMaiuscola(singolare)
+            }// fine del blocco if-else
+            titoloParagrafo += '|'
+            titoloParagrafo += chiaveParagrafo
+            titoloParagrafo += ']]'
+        }// fine del blocco if-else
+
+        return titoloParagrafo
+    }// fine del metodo
+
+    /**
+     * Creazione della sottopagina e del rimando
+     * Sovrascritto
+     */
+    @Override
+    protected String elaboraParagrafoSottoPagina(String chiaveParagrafo, String titoloParagrafo, ArrayList<String> listaDidascalie) {
+        String testo = ''
+        String tag = tagLivelloParagrafo
+        String titoloSottovoce = 'Persone di nome ' + soggetto + '/' + chiaveParagrafo
+
+        if (titoloParagrafo) {
+            testo += tag + titoloParagrafo + tag
+        }// fine del blocco if
+
+        testo += A_CAPO
+        testo += "*{{Vedi anche|${titoloSottovoce}}}"
+        testo += A_CAPO
+        testo += A_CAPO
+
+        //creazione della sottopagina
+        new ListaNomeAttivita(titoloSottovoce)
+
+        return testo
     }// fine del metodo
 
     /**
@@ -134,46 +192,26 @@ class ListaNome extends ListaBio {
         return nome
     }// fine del metodo
 
-    // restituisce il nome dell'attività
-    // restituisce il plurale
-    // restituisce il primo carattere maiuscolo
-    // aggiunge un link alla voce di riferimento
-    private String getAttivita(BioGrails bio) {
-        String attivitaLinkata = ''
-        String singolare
-        boolean link = titoloParagrafoConLink
-        String attivita
-        String genere
-        Professione professione
 
-        if (bio) {
-            singolare = bio.attivita
-            genere = bio.sesso
-            if (singolare) {
-                attivita = attivitaPluralePerGenere(singolare, genere)
-                if (attivita) {
-                    if (link) {
-                        professione = Professione.findBySingolare(singolare)
-                        attivitaLinkata = '[['
-                        if (professione) {
-                            attivitaLinkata += LibTesto.primaMaiuscola(professione.voce)
-                        } else {
-                            attivitaLinkata += LibTesto.primaMaiuscola(singolare)
-                        }// fine del blocco if-else
-                        attivitaLinkata += '|'
-                        attivitaLinkata += attivita
-                        attivitaLinkata += ']]'
-                    } else {
-                        attivitaLinkata = attivita
-                    }// fine del blocco if-else
-                }// fine del blocco if
-            }// fine del blocco if
+    private static String attivitaPluralePerGenere(BioGrails bio) {
+        String plurale
+        String singolare = bio.attivita
+        String sesso = bio.sesso
+        Genere genere = Genere.findBySingolareAndSesso(singolare, sesso)
+
+        if (genere) {
+            plurale = genere.plurale
         }// fine del blocco if
 
-        return attivitaLinkata
+        if (plurale) {
+            plurale = LibTesto.primaMaiuscola(plurale)
+            plurale = plurale.trim()
+        }// fine del blocco if
+
+        return plurale
     }// fine del metodo
 
-    private static String attivitaPluralePerGenere(String singolare, String sesso) {
+    private static String attivitaPluralePerGenere2(String singolare, String sesso) {
         String plurale
         Genere genere = Genere.findBySingolareAndSesso(singolare, sesso)
 
