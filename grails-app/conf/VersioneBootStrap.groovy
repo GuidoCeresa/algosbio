@@ -598,13 +598,6 @@ class VersioneBootStrap {
             versioneService.newVersione('Preferenze', 'BOT_PASSWORD di default ...')
         }// fine del blocco if
 
-        //--modifica preferenza
-        if (versioneService && versioneService.installaVersione(71)) {
-            Pref pref = Pref.findByCode(LibBio.BOT_PASSWORD)
-            pref.stringa = LibPass.codifica('fulvia')
-            pref.save(flush: true)
-        }// fine del blocco if
-
     }// fine della closure
 
 
