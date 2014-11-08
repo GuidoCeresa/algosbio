@@ -774,7 +774,8 @@ class BioController {
         Login login = grailsApplication.config.loginBot
 
 //        nonServe = new ListaNome('Adriana')
-        nonServe = new ListaNome('Ahmed')
+//        nonServe = new ListaNome('Aaron')
+        nonServe = new ListaNome('Adolf')
 
 //        nonServe = new ListaGiornoNato('11 marzo')
 //        nonServe = new ListaGiornoMorto('11 marzo')

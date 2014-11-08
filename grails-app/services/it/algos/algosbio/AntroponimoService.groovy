@@ -382,6 +382,22 @@ class AntroponimoService {
      */
     public void elaboraSingoloNome(String nome) {
         boolean debug = Pref.getBool(LibBio.DEBUG, false)
+        def nonServe
+
+        if (debug) {
+            nome = 'Andrea'
+        }// fine del blocco if
+
+        nonServe = new ListaNome(nome)
+
+        def stop
+    }// fine del metodo
+
+    /**
+     * Elabora la pagina per un singolo nome
+     */
+    public void elaboraSingoloNomeOld(String nome) {
+        boolean debug = Pref.getBool(LibBio.DEBUG, false)
         String titolo
         String testo = ''
         String summary = LibBio.getSummary()

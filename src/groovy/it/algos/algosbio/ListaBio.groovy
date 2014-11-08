@@ -34,8 +34,7 @@ abstract class ListaBio {
     protected String soggetto   //9 marzo, 1934, Mario, Politici, ecc
     protected String titoloPagina
     //Nati il 9 marzo, Nati nel 1934, Persone di nome Mario, Progetto:Biografie/Attività/Politici, ecc
-    protected String titoloPaginaMadre
-    protected String soggettoSpecifico   //8 marzo, 1934, Mario/Calciatori, Politici/Italiani, ecc
+    protected String titoloPaginaMadre = ''
     protected ArrayList<BioGrails> listaBiografie
 
     protected boolean usaTavolaContenuti = Pref.getBool(LibBio.USA_TAVOLA_CONTENUTI, true)
@@ -68,12 +67,6 @@ abstract class ListaBio {
     }// fine del costruttore
 
     protected inizia(boolean iniziaSubito) {
-        if (soggetto) {
-            this.soggettoSpecifico = soggetto
-            this.titoloPagina = soggetto
-        }// fine del blocco if
-        titoloPaginaMadre = ''
-
         elaboraParametri()
 
         if (iniziaSubito) {
@@ -102,7 +95,6 @@ abstract class ListaBio {
     protected elaboraPagina() {
         boolean debug = Pref.getBool(LibBio.DEBUG, false)
         String summary = LibBio.getSummary()
-//        String titolo = getTitolo()
         String testo = ''
         EditBio paginaModificata
         Risultato risultato
@@ -256,7 +248,6 @@ abstract class ListaBio {
         String testoOut = testoBody
         String testoIni = ''
         String testoEnd = '}}'
-//        String titoloPagina = getTitolo()
         int numVoci = listaBiografie.size()
 
         testoIni += "{{${titoloTemplate}"

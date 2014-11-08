@@ -32,10 +32,10 @@ public enum DidascaliaTipo {
     semplice("semplice", "nome, cognome, attività e nazionalità", true) {
         public String refText() {
             String testo = "";
-            testo += "Attività " + parametri + fixBold("Attività") + vir + fixBold("Attività2") + vir + fixBold("Attività3") + tempBio + temp + fixBold("[[Template:Bio/plurale attività|attività]]");
+            testo += "Attività " + parametri + fixBold("Attività") + vir + fixBold("Attività2") + vir + fixBold("Attività3") + tempBio + temp + fixBold("[[Modulo:Bio/Plurale attività]]");
             testo += ". Il valore del parametro " + fixBold("AttivitàAltre") + tempBio + " non viene preso in considerazione.";
             testo += tagRef;
-            testo += "Nazionalità" + parametro + fixBold("Nazionalità") + tempBio + temp + fixBold("[[Template:Bio/plurale nazionalità|nazionalità]]");
+            testo += "Nazionalità" + parametro + fixBold("Nazionalità") + tempBio + temp + fixBold("[[Modulo:Bio/Plurale nazionalità]]");
             return testo;
         }
     },

@@ -1,12 +1,16 @@
 package it.algos.algosbio
 
 import it.algos.algoslib.LibTesto
+import it.algos.algospref.Pref
 import it.algos.algoswiki.Login
 
 /**
  * Created by gac on 18/10/14.
  */
 class ListaNome extends ListaBio {
+
+    protected boolean usaNomeDoppio
+
 
     public ListaNome(Antroponimo antroponimo) {
         super(antroponimo)
@@ -42,7 +46,8 @@ class ListaNome extends ListaBio {
         usaTitoloParagrafoConLink = true
         usaDoppiaColonna = false
         usaSottopagine = true
-        maxVociParagrafo = 20
+        usaNomeDoppio = true
+        maxVociParagrafo = Pref.getInt(LibBio.MAX_VOCI_PARAGRAFO_ANTROPONIMI, 50)
         tagLivelloParagrafo = '=='
         tagParagrafoNullo = 'Altre...'
     }// fine del metodo
@@ -53,7 +58,7 @@ class ListaNome extends ListaBio {
     @Override
     protected elaboraTitolo() {
         if (!titoloPagina) {
-            titoloPagina = 'Persone di nome ' + getNome()
+            titoloPagina = 'Persone di nome ' + soggetto
         }// fine del blocco if
     }// fine del metodo
 
@@ -123,7 +128,7 @@ class ListaNome extends ListaBio {
         Professione professione
         BioGrails bio
 
-        if (usaTitoloParagrafoConLink && listaVoci && listaVoci.size() > 0) {
+        if (usaTitoloParagrafoConLink && !chiaveParagrafo.equals(tagParagrafoNullo) && listaVoci && listaVoci.size() > 0) {
             titoloParagrafo = '[['
             bio = listaVoci.get(0)
             if (bio) {
@@ -152,12 +157,10 @@ class ListaNome extends ListaBio {
     @Override
     protected creazioneSottopagina(String chiaveParagrafo, String titoloParagrafo, ArrayList<BioGrails> listaVociOrdinate) {
         ListaBio sottoVoce
-        String titoloSottovoce = getTitoloSottovoce(chiaveParagrafo)
 
         //creazione della sottopagina
-        sottoVoce = new ListaNomeAttivita(titoloSottovoce, false)
+        sottoVoce = new ListaNomeAttivita(elaboraSoggettoSpecifico(chiaveParagrafo), false)
         sottoVoce.listaBiografie = listaVociOrdinate
-        sottoVoce.soggettoSpecifico = elaboraSoggettoSpecifico(chiaveParagrafo)
         sottoVoce.titoloPaginaMadre = titoloPagina
         sottoVoce.elaboraPagina()
     }// fine del metodo
@@ -185,7 +188,7 @@ class ListaNome extends ListaBio {
     @Override
     protected elaboraFooter() {
         String testo = ''
-        String nome = soggettoSpecifico
+        String nome = soggetto
 
         testo += "<noinclude>"
         testo += "[[Categoria:Liste di persone per nome|${nome}]]"
@@ -262,11 +265,19 @@ class ListaNome extends ListaBio {
     @Override
     protected elaboraListaBiografie() {
         Antroponimo antroponimo = getAntroponimo()
+        String tagSpazio = ' '
+        String tagWillCard = '%'
+        String nomeSemplice = soggetto
+        String nomeWillCardA = nomeSemplice + tagSpazio + tagWillCard
+        String nomeWillCardB = tagWillCard + tagSpazio + nomeSemplice
 
-        if (antroponimo) {
-            listaBiografie = BioGrails.findAllByNomeLink(antroponimo, [sort: 'forzaOrdinamento'])
-        }// fine del blocco if
-        def stop
+        if (usaNomeDoppio) {
+            listaBiografie = BioGrails.findAllByNomeLikeOrNomeLikeOrNomeLike(nomeSemplice, nomeWillCardA, nomeWillCardB, [sort: 'forzaOrdinamento'])
+        } else {
+            if (antroponimo) {
+                listaBiografie = BioGrails.findAllByNomeLink(antroponimo, [sort: 'forzaOrdinamento'])
+            }// fine del blocco if
+        }// fine del blocco if-else
     }// fine del metodo
 
 }// fine della classe
