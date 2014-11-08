@@ -17,6 +17,10 @@ class ListaNome extends ListaBio {
         super(soggetto)
     }// fine del costruttore
 
+    public ListaNome(String soggetto, boolean iniziaSubito) {
+        super(soggetto, iniziaSubito)
+    }// fine del costruttore
+
     @Override
     protected elaboraOggetto(String soggetto) {
         Antroponimo antroponimo = Antroponimo.findByNome(LibTesto.primaMaiuscola(soggetto))
@@ -47,8 +51,25 @@ class ListaNome extends ListaBio {
      * Costruisce il titolo della pagina
      */
     @Override
-    protected String getTitolo() {
-        return 'Persone di nome ' + getNome()
+    protected elaboraTitolo() {
+        if (!titoloPagina) {
+            titoloPagina = 'Persone di nome ' + getNome()
+        }// fine del blocco if
+    }// fine del metodo
+
+    /**
+     * Voce principale a cui tornare
+     * Sovrascritto
+     */
+    @Override
+    protected String elaboraRitorno() {
+        String testo = ''
+
+        if (titoloPaginaMadre) {
+            testo = "{{Torna a|" + titoloPaginaMadre + "}}"
+        }// fine del blocco if
+
+        return testo
     }// fine del metodo
 
     /**
@@ -56,7 +77,7 @@ class ListaNome extends ListaBio {
      * Sovrascritto
      */
     @Override
-    protected String elaboraincipit() {
+    protected String elaboraIncipit() {
         String ritorno = ''
         String nome = this.getNome()
 
@@ -125,28 +146,36 @@ class ListaNome extends ListaBio {
     }// fine del metodo
 
     /**
-     * Creazione della sottopagina e del rimando
+     * Creazione della sottopagina
      * Sovrascritto
      */
     @Override
-    protected String elaboraParagrafoSottoPagina(String chiaveParagrafo, String titoloParagrafo, ArrayList<String> listaDidascalie) {
-        String testo = ''
-        String tag = tagLivelloParagrafo
-        String titoloSottovoce = 'Persone di nome ' + soggetto + '/' + chiaveParagrafo
-
-        if (titoloParagrafo) {
-            testo += tag + titoloParagrafo + tag
-        }// fine del blocco if
-
-        testo += A_CAPO
-        testo += "*{{Vedi anche|${titoloSottovoce}}}"
-        testo += A_CAPO
-        testo += A_CAPO
+    protected creazioneSottopagina(String chiaveParagrafo, String titoloParagrafo, ArrayList<BioGrails> listaVociOrdinate) {
+        ListaBio sottoVoce
+        String titoloSottovoce = getTitoloSottovoce(chiaveParagrafo)
 
         //creazione della sottopagina
-        new ListaNomeAttivita(titoloSottovoce)
+        sottoVoce = new ListaNomeAttivita(titoloSottovoce, false)
+        sottoVoce.listaBiografie = listaVociOrdinate
+        sottoVoce.soggettoSpecifico = elaboraSoggettoSpecifico(chiaveParagrafo)
+        sottoVoce.titoloPaginaMadre = titoloPagina
+        sottoVoce.elaboraPagina()
+    }// fine del metodo
 
-        return testo
+    /**
+     * Titolo della sottopagina
+     * Sovrascritto
+     */
+    @Override
+    protected String getTitoloSottovoce(String chiaveParagrafo) {
+        return 'Persone di nome ' + elaboraSoggettoSpecifico(chiaveParagrafo)
+    }// fine del metodo
+
+    /**
+     * Elabora soggetto specifico
+     */
+    protected String elaboraSoggettoSpecifico(String chiaveParagrafo) {
+        return soggetto + '/' + chiaveParagrafo
     }// fine del metodo
 
     /**
@@ -156,7 +185,7 @@ class ListaNome extends ListaBio {
     @Override
     protected elaboraFooter() {
         String testo = ''
-        String nome = getNome()
+        String nome = soggettoSpecifico
 
         testo += "<noinclude>"
         testo += "[[Categoria:Liste di persone per nome|${nome}]]"

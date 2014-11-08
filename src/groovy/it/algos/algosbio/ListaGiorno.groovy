@@ -83,7 +83,7 @@ abstract class ListaGiorno extends ListaBio {
      * Sovrascritto
      */
     @Override
-    protected String elaboraincipit() {
+    protected String elaboraIncipit() {
         String ritorno = ''
         Giorno giorno = this.getGiorno()
 

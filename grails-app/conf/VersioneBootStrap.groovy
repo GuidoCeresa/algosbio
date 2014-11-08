@@ -566,30 +566,6 @@ class VersioneBootStrap {
         if (versioneService && versioneService.installaVersione(68)) {
             Pref pref = new Pref()
             pref.ordine = Pref.list().size() + 1
-            pref.code = LibBio.USA_LISTE_BIO_GIORNI
-            pref.descrizione = 'Usa le nuove liste per i giorni'
-            pref.type = Type.booleano
-            pref.bool = true
-            pref.save(flush: true)
-            versioneService.newVersione('Preferenze', 'USA_LISTE_BIO_GIORNI di default true')
-        }// fine del blocco if
-
-        //--creata una nuova preferenza
-        if (versioneService && versioneService.installaVersione(69)) {
-            Pref pref = new Pref()
-            pref.ordine = Pref.list().size() + 1
-            pref.code = LibBio.USA_LISTE_BIO_ANNI
-            pref.descrizione = 'Usa le nuove liste per gli anni'
-            pref.type = Type.booleano
-            pref.bool = true
-            pref.save(flush: true)
-            versioneService.newVersione('Preferenze', 'USA_LISTE_BIO_ANNI di default true')
-        }// fine del blocco if
-
-        //--creata una nuova preferenza
-        if (versioneService && versioneService.installaVersione(70)) {
-            Pref pref = new Pref()
-            pref.ordine = Pref.list().size() + 1
             pref.code = LibBio.REGISTRA_ALL_GIORNI_ANNI
             pref.descrizione = "Registra tutti i giorni e tutti gli anni anche se sono 'puliti'"
             pref.type = Type.booleano
@@ -599,7 +575,7 @@ class VersioneBootStrap {
         }// fine del blocco if
 
         //--creata una nuova preferenza
-        if (versioneService && versioneService.installaVersione(71)) {
+        if (versioneService && versioneService.installaVersione(69)) {
             Pref pref = new Pref()
             pref.ordine = Pref.list().size() + 1
             pref.code = LibBio.BOT_NAME
@@ -611,7 +587,7 @@ class VersioneBootStrap {
         }// fine del blocco if
 
         //--creata una nuova preferenza
-        if (versioneService && versioneService.installaVersione(72)) {
+        if (versioneService && versioneService.installaVersione(70)) {
             Pref pref = new Pref()
             pref.ordine = Pref.list().size() + 1
             pref.code = LibBio.BOT_PASSWORD
@@ -620,6 +596,13 @@ class VersioneBootStrap {
             pref.stringa = LibPass.codifica('criptata')
             pref.save(flush: true)
             versioneService.newVersione('Preferenze', 'BOT_PASSWORD di default ...')
+        }// fine del blocco if
+
+        //--modifica preferenza
+        if (versioneService && versioneService.installaVersione(71)) {
+            Pref pref = Pref.findByCode(LibBio.BOT_PASSWORD)
+            pref.stringa = LibPass.codifica('fulvia')
+            pref.save(flush: true)
         }// fine del blocco if
 
     }// fine della closure

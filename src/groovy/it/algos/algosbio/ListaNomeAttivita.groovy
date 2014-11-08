@@ -18,6 +18,10 @@ class ListaNomeAttivita extends ListaNome {
         super(soggetto)
     }// fine del costruttore
 
+    public ListaNomeAttivita(String soggetto, boolean iniziaSubito) {
+        super(soggetto, iniziaSubito)
+    }// fine del costruttore
+
     /**
      * Regola alcuni (eventuali) parametri specifici della sottoclasse
      * Sovrascritto
@@ -34,87 +38,23 @@ class ListaNomeAttivita extends ListaNome {
         tagParagrafoNullo = '...'
     }// fine del metodo
 
-//    /**
-//     * Costruisce il titolo della pagina
-//     */
-//    @Override
-//    protected String getTitolo() {
-//        return 'Persone di nome ' + getNome()
-//    }// fine del metodo
-
-
     /**
      * Chiave di selezione del paragrafo
      * Sovrascritto
      */
     @Override
     protected String getChiaveParagrafo(BioGrails bio) {
-        String chiave = bio.nome
+        String chiave = bio.cognome
 
-        if (!chiave) {
+        if (chiave) {
+            chiave = chiave.substring(0, 1).toUpperCase()
+        } else {
             chiave = tagParagrafoNullo
-        }// fine del blocco if
+        }// fine del blocco if-else
 
         return chiave
     }// fine del metodo
 
-//    /**
-//     * Piede della pagina
-//     * Sovrascritto
-//     */
-//    @Override
-//    protected elaboraFooter() {
-//        String testo = ''
-//        String nome = getNome()
-//
-//        testo += "<noinclude>"
-//        testo += "[[Categoria:Liste di persone per nome|${nome}]]"
-//        testo += "</noinclude>"
-//
-//        return testo
-//    }// fine del metodo
-
-//    /**
-//     * Recupera il singolo Antroponimo
-//     */
-//    private Antroponimo getAntroponimo() {
-//        Antroponimo antroponimo = null
-//
-//        if (oggetto && oggetto instanceof Antroponimo) {
-//            antroponimo = (Antroponimo) oggetto
-//        }// fine del blocco if
-//
-//        return antroponimo
-//    }// fine del metodo
-
-//    /**
-//     * Recupera il singolo nome
-//     */
-//    private String getNome() {
-//        String nome = ''
-//        Antroponimo antroponimo = getAntroponimo()
-//
-//        if (antroponimo) {
-//            nome = antroponimo.nome
-//        }// fine del blocco if
-//
-//        return nome
-//    }// fine del metodo
-
-
-
-//    /**
-//     * Costruisce una lista di biografie
-//     */
-//    @Override
-//    protected elaboraListaBiografie() {
-//        Antroponimo antroponimo = getAntroponimo()
-//
-//        if (antroponimo) {
-//            listaBiografie = BioGrails.findAllByNomeLink(antroponimo, [sort: 'forzaOrdinamento'])
-//        }// fine del blocco if
-//        def stop
-//    }// fine del metodo
 
 }// fine della classe
 

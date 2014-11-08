@@ -30,8 +30,12 @@ abstract class ListaBio {
     protected static String A_CAPO = '\n'
     protected static String SPAZIO = ' '
 
-    protected Object oggetto
-    protected String soggetto
+    protected Object oggetto    //Giorno, Anno, Antroponimo, Attivita, ecc
+    protected String soggetto   //9 marzo, 1934, Mario, Politici, ecc
+    protected String titoloPagina
+    //Nati il 9 marzo, Nati nel 1934, Persone di nome Mario, Progetto:Biografie/Attività/Politici, ecc
+    protected String titoloPaginaMadre
+    protected String soggettoSpecifico   //8 marzo, 1934, Mario/Calciatori, Politici/Italiani, ecc
     protected ArrayList<BioGrails> listaBiografie
 
     protected boolean usaTavolaContenuti = Pref.getBool(LibBio.USA_TAVOLA_CONTENUTI, true)
@@ -45,23 +49,37 @@ abstract class ListaBio {
     protected String tagParagrafoNullo = 'Altre...'
     public registrata
 
+
     public ListaBio(Object oggetto) {
         this.oggetto = oggetto
-        inizia()
+        inizia(true)
     }// fine del costruttore
 
 
     public ListaBio(String soggetto) {
-        this.soggetto = soggetto
-        elaboraOggetto(soggetto)
-        inizia()
+        this(soggetto, true)
     }// fine del costruttore
 
 
-    protected inizia() {
+    public ListaBio(String soggetto, boolean iniziaSubito) {
+        this.soggetto = soggetto
+        elaboraOggetto(soggetto)
+        this.inizia(iniziaSubito)
+    }// fine del costruttore
+
+    protected inizia(boolean iniziaSubito) {
+        if (soggetto) {
+            this.soggettoSpecifico = soggetto
+            this.titoloPagina = soggetto
+        }// fine del blocco if
+        titoloPaginaMadre = ''
+
         elaboraParametri()
-        elaboraListaBiografie()
-        elaboraPagina()
+
+        if (iniziaSubito) {
+            elaboraListaBiografie()
+            elaboraPagina()
+        }// fine del blocco if
     }// fine del metodo
 
     /**
@@ -84,10 +102,13 @@ abstract class ListaBio {
     protected elaboraPagina() {
         boolean debug = Pref.getBool(LibBio.DEBUG, false)
         String summary = LibBio.getSummary()
-        String titolo = getTitolo()
+//        String titolo = getTitolo()
         String testo = ''
         EditBio paginaModificata
         Risultato risultato
+
+        //titolo della pagina
+        elaboraTitolo()
 
         //header
         testo += this.elaboraHead()
@@ -104,11 +125,19 @@ abstract class ListaBio {
             paginaModificata = new EditBio('Utente:Biobot/2', testo, summary)
             registrata = paginaModificata.registrata
         } else {
-            paginaModificata = new EditBio(titolo, testo, summary)
+            paginaModificata = new EditBio(titoloPagina, testo, summary)
             registrata = paginaModificata.registrata
         }// fine del blocco if-else
 
         def stop
+    }// fine del metodo
+
+    /**
+     * Titolo della pagina da creare/caricare su wikipedia
+     * Sovrascritto
+     */
+    protected elaboraTitolo() {
+        return ''
     }// fine del metodo
 
     /**
@@ -125,7 +154,8 @@ abstract class ListaBio {
     protected String elaboraHead() {
         // variabili e costanti locali di lavoro
         String testo = ''
-        String incipit = elaboraincipit()
+        String ritorno = elaboraRitorno()
+        String incipit = elaboraIncipit()
         String dataCorrente = LibTime.getGioMeseAnnoLungo(new Date())
         int numPersone = listaBiografie.size()
         String personeTxt = LibTesto.formatNum(numPersone)
@@ -138,6 +168,11 @@ abstract class ListaBio {
         }// fine del blocco if-else
         testo += A_CAPO
 
+        if (ritorno) {
+            testo += ritorno
+            testo += A_CAPO
+        }// fine del blocco if
+
         testo += "<noinclude>"
         testo += A_CAPO
         testo += "{{${template}"
@@ -147,6 +182,7 @@ abstract class ListaBio {
         testo += dataCorrente.trim()
         testo += "}}"
         testo += A_CAPO
+
         if (incipit) {
             testo += incipit
             testo += A_CAPO
@@ -158,10 +194,18 @@ abstract class ListaBio {
     }// fine del metodo
 
     /**
+     * Voce principale a cui tornare
+     * Sovrascritto
+     */
+    protected String elaboraRitorno() {
+        return ''
+    }// fine del metodo
+
+    /**
      * Pagina principale a cui tornare
      * Sovrascritto
      */
-    protected String elaboraincipit() {
+    protected String elaboraIncipit() {
         return ''
     }// fine del metodo
 
@@ -194,13 +238,12 @@ abstract class ListaBio {
             listaVociOrdinate = ordinaVoci(listaVoci)
             listaDidascalie = estraeListaDidascalie(listaVociOrdinate)
             titoloParagrafo = elaboraTitoloParagrafo(chiaveParagrafo, listaVociOrdinate)
-            testo += elaboraParagrafo(chiaveParagrafo, titoloParagrafo, listaDidascalie)
+            testo += elaboraParagrafo(chiaveParagrafo, titoloParagrafo, listaVociOrdinate, listaDidascalie)
         }// fine del ciclo each
 
         if (usaDoppiaColonna) {
             testo = WikiLib.listaDueColonne(testo.trim())
         }// fine del blocco if
-        testo += A_CAPO
         testo = elaboraTemplate(testo)
 
         return testo
@@ -213,7 +256,7 @@ abstract class ListaBio {
         String testoOut = testoBody
         String testoIni = ''
         String testoEnd = '}}'
-        String titoloPagina = getTitolo()
+//        String titoloPagina = getTitolo()
         int numVoci = listaBiografie.size()
 
         testoIni += "{{${titoloTemplate}"
@@ -370,42 +413,80 @@ abstract class ListaBio {
      * Decide se ci sono sottopagine
      * Sovrascritto
      */
-    protected String elaboraParagrafo(String chiaveParagrafo, String titoloParagrafo, ArrayList<String> listaDidascalie) {
+    protected String elaboraParagrafo(String chiaveParagrafo, String titoloParagrafo, ArrayList<BioGrails> listaVociOrdinate, ArrayList<String> listaDidascalie) {
         String testo = ''
         int num = listaDidascalie.size()
 
         if (usaSottopagine && num >= maxVociParagrafo) {
-            testo += elaboraParagrafoSottoPagina(chiaveParagrafo, titoloParagrafo, listaDidascalie)
+            testo += elaboraParagrafoSottoPagina(chiaveParagrafo, titoloParagrafo, listaVociOrdinate)
         } else {
-            testo += elaboraParagrafoNormale(chiaveParagrafo, titoloParagrafo, listaDidascalie)
+            testo += elaboraParagrafoNormale(titoloParagrafo, listaDidascalie)
         }// fine del blocco if-else
 
         return testo
     }// fine del metodo
 
-    /**
-     * Creazione della sottopagina e del rimando
-     * Sovrascritto
-     */
-    protected String elaboraParagrafoSottoPagina(String chiaveParagrafo, String titoloParagrafo, ArrayList<String> listaDidascalie) {
-        return elaboraParagrafoNormale(chiaveParagrafo, titoloParagrafo, listaDidascalie)
+    protected String elaboraParagrafoNormale(String titoloParagrafo, ArrayList<String> listaDidascalie) {
+        String testo = ''
+
+        testo += elaboraTitoloParagrafo(titoloParagrafo)
+        testo += getParagrafoDidascalia(listaDidascalie)
+
+        return testo + A_CAPO + A_CAPO
     }// fine del metodo
 
-    protected String elaboraParagrafoNormale(String chiaveParagrafo, String titoloParagrafo, ArrayList<String> listaDidascalie) {
+    /**
+     * Creazione della sottopagina e del rimando
+     */
+    protected String elaboraParagrafoSottoPagina(String chiaveParagrafo, String titoloParagrafo, ArrayList<BioGrails> listaVociOrdinate) {
+        creazioneSottopagina(chiaveParagrafo, titoloParagrafo, listaVociOrdinate)
+        return elaborazioneRimando(chiaveParagrafo, titoloParagrafo)
+    }// fine del metodo
+
+    /**
+     * Creazione della sottopagina
+     * Sovrascritto
+     */
+    protected creazioneSottopagina(String chiaveParagrafo, String titoloParagrafo, ArrayList<BioGrails> listaVociOrdinate) {
+    }// fine del metodo
+
+    /**
+     * Creazione del rimando
+     */
+    protected String elaborazioneRimando(String chiaveParagrafo, String titoloParagrafo) {
         String testo = ''
-        String tag = tagLivelloParagrafo
+        String titoloSottovoce = getTitoloSottovoce(chiaveParagrafo)
 
-        if (titoloParagrafo) {
-            testo += tag + titoloParagrafo + tag
+        testo += elaboraTitoloParagrafo(titoloParagrafo)
+        testo += "*{{Vedi anche|${titoloSottovoce}}}"
+
+        return testo + A_CAPO + A_CAPO
+    }// fine del metodo
+
+    /**
+     * Titolo del paragrafo
+     */
+    protected String elaboraTitoloParagrafo(String titoloParagrafo) {
+        String testo = ''
+
+        if (usaSuddivisioneParagrafi) {
+            testo += tagLivelloParagrafo
+            testo += titoloParagrafo
+            testo += tagLivelloParagrafo
+            testo += A_CAPO
         }// fine del blocco if
-
-        testo += A_CAPO
-        testo += getParagrafoDidascalia(listaDidascalie)
-        testo += A_CAPO
-        testo += A_CAPO
 
         return testo
     }// fine del metodo
+
+    /**
+     * Titolo della sottopagina
+     * Sovrascritto
+     */
+    protected String getTitoloSottovoce(String chiaveParagrafo) {
+        return 'Persone di nome ' + soggetto + '/' + chiaveParagrafo
+    }// fine del metodo
+
 
     protected static String getParagrafoDidascalia(ArrayList<String> listaDidascalie) {
         String testo = ''
