@@ -773,15 +773,46 @@ class BioController {
         def grailsApplication = Holders.grailsApplication
         Login login = grailsApplication.config.loginBot
 
+
+        String query = "select distinct nome from BioGrails where nome <>'' order by nome asc"
+        int delta = 1000
+        int totaleVoci = Antroponimo.count()
+        ArrayList<String> lista
+        lista = (ArrayList<String>) BioGrails.executeQuery(query)
+        def stop
+        Antroponimo antroponimo
+
+        long inizio = System.currentTimeMillis()
+        int num = 100
+        int numVoci
+        String nome
+        for (int k = 0; k < num; k++) {
+            nome = lista.get(k)
+            nome = AntroponimoService.check(nome)
+            if (nome) {
+                query = "select count(nome) from BioGrails where nome='${nome}'"
+                def risultato = BioGrails.executeQuery(query)
+                antroponimo = Antroponimo.findByNome(nome)
+                if (true) {
+                    new Antroponimo(nome: 'x'+nome).save()
+                }// fine del blocco if
+
+            }// fine del blocco if
+
+        } // fine del ciclo for
+        long fine = System.currentTimeMillis()
+        long durata = fine - inizio
+        durata = durata / 1000
+        println(durata)
+
 //        nonServe = new ListaNome('Adriana')
 //        nonServe = new ListaNome('Aaron')
-        nonServe = new ListaNome('Adolf')
+//        nonServe = new ListaNome('Adolf')
 
 //        nonServe = new ListaGiornoNato('11 marzo')
 //        nonServe = new ListaGiornoMorto('11 marzo')
 //        nonServe = new ListaAnnoNato('1568')
 //        nonServe = new ListaAnnoMorto('1568')
-
 
 //        nonServe = new ListaAttivita('accademici',loggato)
 //        nonServe = new ListaNazionalita('venezuelani',loggato)˚

@@ -36,7 +36,22 @@ class AntroponimoService {
     private String progetto = 'Progetto:Antroponimi/'
     private String templateIncipit = 'incipit lista nomi'
 
-    //--recupera una lista 'grezza' di tutti i nomi
+    /**
+     * cancella i records di antroponimi
+     * @deprecated
+     */
+    public static void cancellaTutto() {
+        def recs = Antroponimo.list()
+
+        recs?.each {
+            it.delete(flush: true)
+        } // fine del ciclo each
+    }// fine del metodo
+
+    /**
+     * costruisce i records
+     * @deprecated
+     */
     public void costruisce() {
         ArrayList<String> listaNomiParziale
         ArrayList<String> listaNomiUniciDiversiPerAccento
@@ -72,7 +87,11 @@ class AntroponimoService {
         log.info 'Fine costruzione antroponimi'
     }// fine del metodo
 
-    public void costruisceOld() {
+    /**
+     * Aggiunta nuovi records
+     * Vengono creati nuovi records per i nomi presenti nelle voci (bioGrails) che superano la soglia minima
+     */
+    public void aggiunge() {
         ArrayList<String> listaNomiCompleta
         ArrayList<String> listaNomiUniciDiversiPerAccento
 
@@ -86,21 +105,13 @@ class AntroponimoService {
         spazzolaPacchetto(listaNomiUniciDiversiPerAccento)
     }// fine del metodo
 
-    //--cancella i records di antroponimi
-    public static void cancellaTutto() {
-        def recs = Antroponimo.list()
-
-        recs?.each {
-            it.delete(flush: true)
-        } // fine del ciclo each
-    }// fine del metodo
-
     //--recupera una lista 'grezza' di tutti i nomi
     private static ArrayList<String> creaListaNomiCompleta() {
         ArrayList<String> listaNomiCompleta
-        String query = "select nome from BioGrails where nome <>'' order by nome asc"
+        String query = "select distinct nome from BioGrails where nome <>'' order by nome asc"
 
-        listaNomiCompleta = (ArrayList<String>) BioGrails.executeQuery(query, [max: 10000])
+//        listaNomiCompleta = (ArrayList<String>) BioGrails.executeQuery(query, [max: 1000])
+        listaNomiCompleta = (ArrayList<String>) BioGrails.executeQuery(query)
 
         return listaNomiCompleta
     }// fine del metodo
@@ -137,7 +148,7 @@ class AntroponimoService {
         ArrayList listaTagIniziali = new ArrayList()
         int pos
         String tagSpazio = ' '
-        boolean usaNomeSingolo = Preferenze.getBool('usaNomeSingolo')
+        boolean usaNomeSingolo = Pref.getBool(LibBio.CONFRONTA_SOLO_PRIMO_NOME_ANTROPONIMI)
 
         listaTagContenuto.add('<ref')
         listaTagContenuto.add('-')
@@ -159,7 +170,7 @@ class AntroponimoService {
 
         String tag = ''
 
-        if (nomeIn.length() > 1 && nomeIn.length() < 100) {
+        if (nomeIn.length() > 2 && nomeIn.length() < 100) {
             nomeOut = nomeIn
 
             if (usaNomeSingolo) {
@@ -200,21 +211,33 @@ class AntroponimoService {
     //--ricostruisce i records di antroponimi
     public static void spazzolaPacchetto(ArrayList<String> listaNomiUniciDiversiPerAccento) {
         int soglia = Pref.getInt(LibBio.SOGLIA_ANTROPONIMI)
+        long inizio = System.currentTimeMillis()
+        long fine
+        long durata
+        String mess
 
         listaNomiUniciDiversiPerAccento?.each {
             spazzolaNome(it, soglia)
         }// fine del ciclo each
+
+        fine = System.currentTimeMillis()
+        durata = fine - inizio
+        durata = durata / 1000
+        mess = ' Creati nuovi records in ' + durata + ' sec.'
+        println(mess)
     }// fine del metodo
 
     private static void spazzolaNome(String nome, int soglia) {
-        int lunghezza
         int numVoci
+        Antroponimo antroponimo
 
         if (nome) {
             numVoci = numeroVociCheUsanoNome(nome)
             if (numVoci > soglia) {
-                lunghezza = nome.length()
-                new Antroponimo(nome: nome, voci: numVoci, lunghezza: lunghezza).save(flush: true)
+                antroponimo = Antroponimo.findByNome(nome)
+                if (antroponimo == null) {
+                    new Antroponimo(nome: nome, voci: numVoci, lunghezza: nome.length()).save()
+                }// fine del blocco if
             }// fine del blocco if
         }// fine del blocco if
     }// fine del metodo
@@ -222,7 +245,7 @@ class AntroponimoService {
     private static int numeroVociCheUsanoNome(String nome) {
         int numVoci = 0
         ArrayList risultato
-        String query = "select count(*) from BioGrails where nome='${nome}'"
+        String query = "select count(nome) from BioGrails where nome='${nome}'"
 
         risultato = BioGrails.executeQuery(query)
         if (risultato && risultato.size() == 1) {
@@ -230,6 +253,41 @@ class AntroponimoService {
         }// fine del blocco if
 
         return numVoci
+    }// fine del metodo
+
+    /**
+     * Ricalcolo records esistenti
+     * Ricalcola il numero delle voci (bioGrails) che utilizzano ogni record (antroponimo)
+     */
+    public void ricalcola() {
+        ArrayList<Antroponimo> listaAntroponimi = Antroponimo.list()
+
+        listaAntroponimi?.each {
+            ricalcolaAntroponimo(it)
+        } // fine del ciclo each
+
+//        query = "select count(nome) from BioGrails where nome='${nome}'"
+//        def risultato = BioGrails.executeQuery(query)
+//        antroponimo = Antroponimo.findByNome(nome)
+//
+//
+//        //--elimina tutto ciò che compare oltre al nome
+//        listaNomiUniciDiversiPerAccento = elaboraNomiUnici(listaNomiCompleta)
+//
+//        //--ricostruisce i records di antroponimi
+//        spazzolaPacchetto(listaNomiUniciDiversiPerAccento)
+    }// fine del metodo
+
+    private static void ricalcolaAntroponimo(Antroponimo antroponimo) {
+        String nome
+        int numVoci
+
+        if (antroponimo) {
+            nome = antroponimo.nome
+            numVoci = numeroVociCheUsanoNome(nome)
+            antroponimo.voci = numVoci
+            antroponimo.save()
+        }// fine del blocco if
     }// fine del metodo
 
     // Elabora tutte le pagine

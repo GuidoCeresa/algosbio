@@ -43,26 +43,24 @@ class AntroponimoController {
         redirect(action: 'list', params: params)
     } // fine del metodo
 
-    //--ricostruisce
+    //--aggiunge
     //--mostra un avviso di spiegazione per l'operazione da compiere
     //--passa al metodo effettivo
-    def ricostruisce() {
+    def aggiunge() {
         params.tipo = TipoDialogo.conferma
-        params.titolo = 'Creazione dalle voci'
+        params.titolo = 'Aggiunta nuovi records'
         params.avviso = []
-        params.avviso.add('Vengono cancellati tutti i precedenti records di antroponimi')
-        params.avviso.add('Vengono creati tutti i records coi nomi presenti nelle voci (bioGrails)')
-        params.avviso.add('Tempo indicativo: quattro ore')
+        params.avviso.add('Vengono creati nuovi records per i nomi presenti nelle voci (bioGrails) che superano la soglia minima')
+        params.avviso.add('Tempo indicativo: cinque ore')
         params.returnController = 'antroponimo'
-        params.returnAction = 'costruisceDopoConferma'
+        params.returnAction = 'aggiungeDopoConferma'
         redirect(controller: 'dialogo', action: 'box', params: params)
     } // fine del metodo
 
     //--ritorno dal dialogo di conferma
     //--a seconda del valore ritornato come parametro, esegue o meno l'operazione
-    //--cancella i precedenti records
     //--crea i records estraendoli dalle voci esistenti (bioGrails)
-    def costruisceDopoConferma() {
+    def aggiungeDopoConferma() {
         String valore
         flash.message = 'Operazione annullata. Antroponimi non modificati.'
 
@@ -71,10 +69,46 @@ class AntroponimoController {
                 valore = (String) params.valore
                 if (valore.equals(DialogoController.DIALOGO_CONFERMA)) {
                     if (antroponimoService) {
-                        antroponimoService.costruisce()
+                        antroponimoService.aggiunge()
+                    }// fine del blocco if
+                    flash.message = 'Operazione effettuata. Sono stati creati i nuovi antroponimi'
+                }// fine del blocco if
+            }// fine del blocco if
+        }// fine del blocco if
+
+        redirect(action: 'list')
+    } // fine del metodo
+
+    //--ricalcola
+    //--mostra un avviso di spiegazione per l'operazione da compiere
+    //--passa al metodo effettivo
+    def ricalcola() {
+        params.tipo = TipoDialogo.conferma
+        params.titolo = 'Ricalcolo records esistenti'
+        params.avviso = []
+        params.avviso.add('Ricalcola il numero delle voci (bioGrails) che utilizzano ogni record (antroponimo)')
+        params.avviso.add('Tempo indicativo: quattro ore')
+        params.returnController = 'antroponimo'
+        params.returnAction = 'ricalcolaDopoConferma'
+        redirect(controller: 'dialogo', action: 'box', params: params)
+    } // fine del metodo
+
+    //--ritorno dal dialogo di conferma
+    //--a seconda del valore ritornato come parametro, esegue o meno l'operazione
+    //--ricalcola il numero delle voci (bioGrails) che utilizzano ogni record (antroponimo)
+    def ricalcolaDopoConferma() {
+        String valore
+        flash.message = 'Operazione annullata. Antroponimi non modificati.'
+
+        if (params.valore) {
+            if (params.valore instanceof String) {
+                valore = (String) params.valore
+                if (valore.equals(DialogoController.DIALOGO_CONFERMA)) {
+                    if (antroponimoService) {
+                        antroponimoService.ricalcola()
                         antroponimoService.creaPagineControllo()
                     }// fine del blocco if
-                    flash.message = 'Operazione effettuata. Sono stati creati gli antroponimi'
+                    flash.message = 'Operazione effettuata. Sono stati ricalcolati gli antroponimi'
                 }// fine del blocco if
             }// fine del blocco if
         }// fine del blocco if
@@ -214,7 +248,8 @@ class AntroponimoController {
         //--solo azione e di default controller=questo; classe e titolo vengono uguali
         //--mappa con [cont:'controller', action:'metodo', icon:'iconaImmagine', title:'titoloVisibile']
         menuExtra = [
-                [cont: 'antroponimo', action: 'ricostruisce', icon: 'frecciasu', title: 'Ricostruzione completa'],
+                [cont: 'antroponimo', action: 'aggiunge', icon: 'frecciasu', title: 'Aggiunta nuovi records'],
+                [cont: 'antroponimo', action: 'ricalcola', icon: 'frecciasu', title: 'Ricalcolo voci'],
                 [cont: 'antroponimo', action: 'elabora', icon: 'frecciasu', title: 'Upload antroponimi'],
         ]
         // fine della definizione
