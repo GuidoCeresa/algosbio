@@ -23,6 +23,8 @@ import it.algos.algoswiki.TipoAllineamento
 import it.algos.algoswiki.WikiLib
 import it.algos.algoswiki.WikiService
 
+import java.text.Normalizer
+
 class AntroponimoService {
 
     // utilizzo di un service con la businessLogic
@@ -148,7 +150,8 @@ class AntroponimoService {
         ArrayList listaTagIniziali = new ArrayList()
         int pos
         String tagSpazio = ' '
-        boolean usaNomeSingolo = Pref.getBool(LibBio.CONFRONTA_SOLO_PRIMO_NOME_ANTROPONIMI)
+//        boolean usaNomeSingolo = Pref.getBool(LibBio.CONFRONTA_SOLO_PRIMO_NOME_ANTROPONIMI)
+        boolean usaNomeSingolo = true
 
         listaTagContenuto.add('<ref')
         listaTagContenuto.add('-')
@@ -167,6 +170,7 @@ class AntroponimoService {
         listaTagIniziali.add('<!--')
         listaTagIniziali.add('{')
         listaTagIniziali.add('&')
+        listaTagIniziali.add('A.')
 
         String tag = ''
 
@@ -203,6 +207,12 @@ class AntroponimoService {
 
             //nomeOut = nomeOut.toLowerCase()       //@todo va in errore per GianCarlo
             nomeOut = LibTesto.primaMaiuscola(nomeOut)
+
+            //
+            if (Pref.getBool(LibBio.USA_ACCENTI_NORMALIZZATI, true)) {
+                nomeOut = Normalizer.normalize(nomeOut, Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", "")
+            }// fine del blocco if
+
         }// fine del blocco if-else
 
         return nomeOut
@@ -216,9 +226,14 @@ class AntroponimoService {
         long durata
         String mess
 
-        listaNomiUniciDiversiPerAccento?.each {
-            spazzolaNome(it, soglia)
-        }// fine del ciclo each
+
+        for (int k = 0; k < 300; k++) {
+            spazzolaNome(listaNomiUniciDiversiPerAccento.get(k), soglia)
+        } // fine del ciclo for
+
+//        listaNomiUniciDiversiPerAccento?.each {
+//            spazzolaNome(it, soglia)
+//        }// fine del ciclo each
 
         fine = System.currentTimeMillis()
         durata = fine - inizio
@@ -243,14 +258,13 @@ class AntroponimoService {
     }// fine del metodo
 
     private static int numeroVociCheUsanoNome(String nome) {
-        int numVoci = 0
-        ArrayList risultato
-        String query = "select count(nome) from BioGrails where nome='${nome}'"
+        int numVoci
+        String tagSpazio = ' '
+        String tagWillCard = '%'
+        String nomeWillCardA = nome + tagSpazio + tagWillCard
+        String nomeWillCardB = tagWillCard + tagSpazio + nome
 
-        risultato = BioGrails.executeQuery(query)
-        if (risultato && risultato.size() == 1) {
-            numVoci = (int) risultato.get(0)
-        }// fine del blocco if
+        numVoci = BioGrails.countByNomeLikeOrNomeLikeOrNomeLike(nome, nomeWillCardA, nomeWillCardB)
 
         return numVoci
     }// fine del metodo
@@ -260,22 +274,11 @@ class AntroponimoService {
      * Ricalcola il numero delle voci (bioGrails) che utilizzano ogni record (antroponimo)
      */
     public void ricalcola() {
-        ArrayList<Antroponimo> listaAntroponimi = Antroponimo.list()
+        ArrayList<Antroponimo> listaAntroponimi = Antroponimo.list(sort: 'nome')
 
         listaAntroponimi?.each {
             ricalcolaAntroponimo(it)
         } // fine del ciclo each
-
-//        query = "select count(nome) from BioGrails where nome='${nome}'"
-//        def risultato = BioGrails.executeQuery(query)
-//        antroponimo = Antroponimo.findByNome(nome)
-//
-//
-//        //--elimina tutto ciò che compare oltre al nome
-//        listaNomiUniciDiversiPerAccento = elaboraNomiUnici(listaNomiCompleta)
-//
-//        //--ricostruisce i records di antroponimi
-//        spazzolaPacchetto(listaNomiUniciDiversiPerAccento)
     }// fine del metodo
 
     private static void ricalcolaAntroponimo(Antroponimo antroponimo) {

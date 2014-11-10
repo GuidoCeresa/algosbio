@@ -598,6 +598,18 @@ class VersioneBootStrap {
             versioneService.newVersione('Preferenze', 'BOT_PASSWORD di default ...')
         }// fine del blocco if
 
+        //--creata una nuova preferenza
+        if (versioneService && versioneService.installaVersione(71)) {
+            Pref pref = new Pref()
+            pref.ordine = Pref.list().size() + 1
+            pref.code = LibBio.USA_ACCENTI_NORMALIZZATI
+            pref.descrizione = "Sostituisce le lettere accentate con le corrispondenti 'neutre', nelle ricerche degli antroponimi. Trova uguali Aaron e Aaròn."
+            pref.type = Type.booleano
+            pref.bool = true
+            pref.save(flush: true)
+            versioneService.newVersione('Preferenze', 'USA_ACCENTI_NORMALIZZATI di default true')
+        }// fine del blocco if
+
     }// fine della closure
 
 

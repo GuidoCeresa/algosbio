@@ -77,6 +77,7 @@ class LibBio {
     public static final String REGISTRA_ALL_GIORNI_ANNI = 'registraAllGiorniAnni'
     public static final String BOT_NAME = 'botName'
     public static final String BOT_PASSWORD = 'botPassword'
+    public static final String USA_ACCENTI_NORMALIZZATI = 'usaAccentiNormalizzati'
 
     // campi di una mappa
     public static final String MAPPA_TITOLO_PARAGRAFO = 'titoloParagrafo'

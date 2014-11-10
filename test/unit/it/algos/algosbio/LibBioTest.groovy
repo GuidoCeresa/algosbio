@@ -1,4 +1,5 @@
 package it.algos.algosbio
+import it.algos.algosbio.LibBio
 
 /**
  * Created with IntelliJ IDEA.
@@ -54,6 +55,9 @@ class LibBioTest extends GroovyTestCase {
         ottenuto = LibBio.getMin(inizio)
         assert previsto == ottenuto
 
+    } // fine del test
+
+    void testAccenti() {
     } // fine del test
 
 } // fine della classe test unit

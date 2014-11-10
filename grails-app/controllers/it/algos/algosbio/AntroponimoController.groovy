@@ -51,7 +51,7 @@ class AntroponimoController {
         params.titolo = 'Aggiunta nuovi records'
         params.avviso = []
         params.avviso.add('Vengono creati nuovi records per i nomi presenti nelle voci (bioGrails) che superano la soglia minima')
-        params.avviso.add('Tempo indicativo: cinque ore')
+        params.avviso.add('Tempo indicativo: due ore')
         params.returnController = 'antroponimo'
         params.returnAction = 'aggiungeDopoConferma'
         redirect(controller: 'dialogo', action: 'box', params: params)
@@ -105,7 +105,7 @@ class AntroponimoController {
                 valore = (String) params.valore
                 if (valore.equals(DialogoController.DIALOGO_CONFERMA)) {
                     if (antroponimoService) {
-                        antroponimoService.ricalcola()
+//                        antroponimoService.ricalcola()
                         antroponimoService.creaPagineControllo()
                     }// fine del blocco if
                     flash.message = 'Operazione effettuata. Sono stati ricalcolati gli antroponimi'
