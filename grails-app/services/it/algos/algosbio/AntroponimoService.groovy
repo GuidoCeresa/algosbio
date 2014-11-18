@@ -13,36 +13,89 @@
 
 package it.algos.algosbio
 
+import grails.transaction.Transactional
 import it.algos.algoslib.LibTesto
 import it.algos.algoslib.LibTime
-import it.algos.algospref.LibPref
+import it.algos.algoslib.LibWiki
 import it.algos.algospref.Pref
-import it.algos.algospref.Preferenze
 import it.algos.algoswiki.Edit
+import it.algos.algoswiki.QueryVoce
 import it.algos.algoswiki.TipoAllineamento
 import it.algos.algoswiki.WikiLib
 import it.algos.algoswiki.WikiService
 
 import java.text.Normalizer
 
+/**
+ * Gestione dei nomi (antroponimi)
+ *
+ * 1° fase da fare una tantum o ogni 6-12 mesi
+ * Annullamento del link tra BioGrails e gli Antroponimi
+ * Creazione dei records di antroponimi leggendo i records BioGrails
+ * Controllo della pagina Progetto:Antroponimi/Nomi doppi
+ * Ricalcolo delle voci per ricostruire in ogni record di BioGrails il link verso il corretto record di Antroponimo
+ *
+ * 2° fase da fare una tantum
+ * Aggiunta dei records di antroponimi leggendo i records BioGrails
+ * Controllo della pagina Progetto:Antroponimi/Nomi doppi
+ * Ricalcolo delle voci per ricostruire in ogni record di BioGrails il link verso il corretto record di Antroponimo
+ *
+ * 3° fase da fare ogni settimana
+ * Controllo della pagina Progetto:Antroponimi/Nomi doppi
+ * Spazzolamento di tutti i records di Antroponimi per aggiornare il numero di voci linkate
+ * Creazione della pagina/lista per ogni record di Antroponimi che supera la soglia
+ *
+ * Note:
+ * A- Se USA_ACCENTI_NORMALIZZATI è true, devo vedere sempre il nome Aaròn. Se è false lo vedo solo se supera SOGLIA_ANTROPONIMI
+ * B- Crea records di Antroponimo al di sopra di SOGLIA_ANTROPONIMI
+ * C- Se USA_SOLO_PRIMO_NOME_ANTROPONIMI è true, considera solo il primo nome che trova per creare un antroponimo
+ *    e trovo solo Aaron. Se è false, trovo anche Aaron Michael (se supera la SOGLIA_ANTROPONIMI)
+ * D- Se USA_LISTA_NOMI_DOPPI è true, aggiunge i records letti da Progetto:Antroponimi/Nomi doppi
+ *
+ * nomi distinti: 93.219
+ * 2382 antroponimi
+ * Jean-Jacques deve rimanere, Jean Baptiste no
+ */
+@Transactional(readOnly = false)
 class AntroponimoService {
 
     // utilizzo di un service con la businessLogic
     // il service NON viene iniettato automaticamente (perché è nel plugin)
     WikiService wikiService = new WikiService()
 
-    private tagTitolo = 'Persone di nome '
     private static String aCapo = '\n'
+    private static String TITOLO_LISTA_NOMI_DOPPI = 'Progetto:Antroponimi/Nomi doppi'
+
+    private tagTitolo = 'Persone di nome '
     private tagPunti = 'Altre...'
     private boolean titoloParagrafoConLink = true
     private String progetto = 'Progetto:Antroponimi/'
     private String templateIncipit = 'incipit lista nomi'
 
     /**
+     * azzera i link tra BioGrails e Antroponimo
      * cancella i records di antroponimi
-     * @deprecated
      */
     public static void cancellaTutto() {
+        cancellaLink()
+        cancellaAntroponimi()
+    }// fine del metodo
+
+    /**
+     * azzera i link tra BioGrails e Antroponimo
+     */
+    public static void cancellaLink() {
+        String query = "update BioGrails set nomeLink=null"
+        BioGrails.executeUpdate(query)
+
+        query = "update Antroponimo set voceRiferimento=null"
+        Antroponimo.executeUpdate(query)
+    }// fine del metodo
+
+    /**
+     * cancella i records di antroponimi
+     */
+    public static void cancellaAntroponimi() {
         def recs = Antroponimo.list()
 
         recs?.each {
@@ -52,39 +105,10 @@ class AntroponimoService {
 
     /**
      * costruisce i records
-     * @deprecated
      */
     public void costruisce() {
-        ArrayList<String> listaNomiParziale
-        ArrayList<String> listaNomiUniciDiversiPerAccento
-        String query = "select nome from BioGrails where nome <>'' order by nome asc"
-        int delta = 1000
-        int totaleVoci = BioGrails.count()
-        log.info 'Inizio costruzione antroponimi'
-        long inizio
-        long fine
-        long durata
-        String mess
-        def numAntro
-
-        cancellaTutto()
-
-        //ciclo
-        for (int k = 0; k < totaleVoci; k += delta) {
-            inizio = System.currentTimeMillis()
-            listaNomiParziale = (ArrayList<String>) BioGrails.executeQuery(query, [max: delta, offset: k])
-            listaNomiUniciDiversiPerAccento = elaboraNomiUnici(listaNomiParziale)
-            spazzolaPacchetto(listaNomiUniciDiversiPerAccento)
-
-            fine = System.currentTimeMillis()
-            durata = fine - inizio
-            durata = durata / 1000
-            numAntro = Antroponimo.count()
-            mess = 'Elaborate ' + LibTesto.formatNum(delta) + ' voci in ' + durata + ' sec. per un totale di '
-            mess += LibTesto.formatNum(k + delta) + '/' + LibTesto.formatNum(totaleVoci) + ' voci.'
-            mess += ' Creati ' + LibTesto.formatNum(numAntro) + ' nuovi antroponimi'
-            println(mess)
-        } // fine del ciclo for
+//        cancellaTutto()
+        aggiunge()
 
         log.info 'Fine costruzione antroponimi'
     }// fine del metodo
@@ -95,73 +119,76 @@ class AntroponimoService {
      */
     public void aggiunge() {
         ArrayList<String> listaNomiCompleta
-        ArrayList<String> listaNomiUniciDiversiPerAccento
+        ArrayList<String> listaNomiUnici
+
+        listaNomiDoppi()
 
         //--recupera una lista 'grezza' di tutti i nomi
         listaNomiCompleta = creaListaNomiCompleta()
 
         //--elimina tutto ciò che compare oltre al nome
-        listaNomiUniciDiversiPerAccento = elaboraNomiUnici(listaNomiCompleta)
+        listaNomiUnici = elaboraNomiUnici(listaNomiCompleta)
 
-        //--ricostruisce i records di antroponimi
-        spazzolaPacchetto(listaNomiUniciDiversiPerAccento)
+        //--(ri)costruisce i records di antroponimi
+        spazzolaPacchetto(listaNomiUnici)
+
+        //--aggiunge i riferimenti alla voce principale di ogni record
+        elaboraVocePrincipale()
     }// fine del metodo
 
-    //--recupera una lista 'grezza' di tutti i nomi
+    /**
+     * Recupera una lista 'grezza' di tutti i nomi
+     */
     private static ArrayList<String> creaListaNomiCompleta() {
-        ArrayList<String> listaNomiCompleta
         String query = "select distinct nome from BioGrails where nome <>'' order by nome asc"
-
-//        listaNomiCompleta = (ArrayList<String>) BioGrails.executeQuery(query, [max: 1000])
-        listaNomiCompleta = (ArrayList<String>) BioGrails.executeQuery(query)
-
-        return listaNomiCompleta
+        return (ArrayList<String>) BioGrails.executeQuery(query)
     }// fine del metodo
 
-    //--elimina tutto ciò che compare oltre al nome
-    public static ArrayList<String> elaboraNomiUnici(ArrayList listaNomiCompleta) {
-        ArrayList<String> listaNomiUniciDiversiPerAccento = null
+    /**
+     * Elabora tutti i nomi
+     * Costruisce una lista di nomi ''validi' e 'unici'
+     */
+    public static ArrayList<String> elaboraNomiUnici(ArrayList<String> listaNomiCompleta) {
+        ArrayList<String> listaNomiUnici = new ArrayList<String>()
         String nomeDaControllare
         String nomeValido = ' '
-        int k = 0
 
-        if (listaNomiCompleta && listaNomiCompleta.size() > 0) {
-            listaNomiUniciDiversiPerAccento = new ArrayList<String>()
-
-            //--costruisce una lista di nomi 'unici'
-            //--i nomi sono differenziati in base all'accento
-            listaNomiCompleta.each {
-                nomeDaControllare = (String) it
-                nomeValido = check(nomeDaControllare)
-                if (nomeValido) {
-                    if (!listaNomiUniciDiversiPerAccento.contains(nomeValido)) {
-                        listaNomiUniciDiversiPerAccento.add(nomeValido)
-                    }// fine del blocco if
+        //--costruisce una lista di nomi 'unici'
+        listaNomiCompleta?.each {
+            nomeDaControllare = (String) it
+            nomeValido = check(nomeDaControllare)
+            if (nomeValido) {
+                if (!listaNomiUnici.contains(nomeValido)) {
+                    listaNomiUnici.add(nomeValido)
                 }// fine del blocco if
-            }// fine del ciclo each
-        }// fine del blocco if
+            }// fine del blocco if
+        }// fine del ciclo each
 
-        return listaNomiUniciDiversiPerAccento
+        return listaNomiUnici
     }// fine del metodo
 
+    /**
+     * Elabora il singolo nome
+     * Usa (secondo preferenze) i nomi singoli: Maria e Maria Cristina sono uguali
+     * Elimina caratteri 'anomali' dal nome
+     */
     private static String check(String nomeIn) {
         String nomeOut = ''
         ArrayList listaTagContenuto = new ArrayList()
         ArrayList listaTagIniziali = new ArrayList()
         int pos
         String tagSpazio = ' '
-//        boolean usaNomeSingolo = Pref.getBool(LibBio.CONFRONTA_SOLO_PRIMO_NOME_ANTROPONIMI)
-        boolean usaNomeSingolo = true
+        boolean usaNomeSingolo = Pref.getBool(LibBio.USA_SOLO_PRIMO_NOME_ANTROPONIMI)
 
         listaTagContenuto.add('<ref')
-        listaTagContenuto.add('-')
+//        listaTagContenuto.add('-')
         listaTagContenuto.add('"')
-        listaTagContenuto.add("'")
+//        listaTagContenuto.add("'")
         listaTagContenuto.add('(')
 
         listaTagIniziali.add('"')
-        listaTagIniziali.add("'")//apice
-        listaTagIniziali.add('ʿ')//apostrofo
+        listaTagIniziali.add("''")//doppio apice
+        listaTagIniziali.add('ʿʿ')//doppio apostrofo
         listaTagIniziali.add('‘')//altro tipo di apostrofo
         listaTagIniziali.add('‛')//altro tipo di apostrofo
         listaTagIniziali.add('[')
@@ -177,8 +204,8 @@ class AntroponimoService {
         if (nomeIn.length() > 2 && nomeIn.length() < 100) {
             nomeOut = nomeIn
 
+            // @todo Maria e Maria Cristina sono uguali
             if (usaNomeSingolo) {
-                // @todo Maria e Maria Cristina sono uguali
                 if (nomeOut.contains(tagSpazio)) {
                     pos = nomeOut.indexOf(tagSpazio)
                     nomeOut = nomeOut.substring(0, pos)
@@ -209,85 +236,245 @@ class AntroponimoService {
             nomeOut = LibTesto.primaMaiuscola(nomeOut)
 
             //
-            if (Pref.getBool(LibBio.USA_ACCENTI_NORMALIZZATI, true)) {
+            if (Pref.getBool(LibBio.USA_ACCENTI_NORMALIZZATI, false)) {
                 nomeOut = Normalizer.normalize(nomeOut, Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", "")
             }// fine del blocco if
 
-        }// fine del blocco if-else
+            if (nomeOut.length() < 2) {
+                nomeOut = ''
+            }// fine del blocco if
+        }// fine del blocco if
 
         return nomeOut
     }// fine del metodo
 
-    //--ricostruisce i records di antroponimi
-    public static void spazzolaPacchetto(ArrayList<String> listaNomiUniciDiversiPerAccento) {
+    /**
+     * Spazzola la lista di nomi
+     */
+    public void spazzolaPacchetto(ArrayList<String> listaNomiUnici) {
         int soglia = Pref.getInt(LibBio.SOGLIA_ANTROPONIMI)
         long inizio = System.currentTimeMillis()
         long fine
         long durata
         String mess
 
-
-        for (int k = 0; k < 300; k++) {
-            spazzolaNome(listaNomiUniciDiversiPerAccento.get(k), soglia)
+        for (int k = 0; k < 10000; k++) {
+            spazzolaNome(listaNomiUnici.get(k), soglia)
         } // fine del ciclo for
 
-//        listaNomiUniciDiversiPerAccento?.each {
+//        listaNomiUnici?.each {
 //            spazzolaNome(it, soglia)
-//        }// fine del ciclo each
+//        } // fine del ciclo each
 
         fine = System.currentTimeMillis()
         durata = fine - inizio
         durata = durata / 1000
-        mess = ' Creati nuovi records in ' + durata + ' sec.'
+        mess = ' Spazzolati tutti i nuovi records in ' + durata + ' sec.'
         println(mess)
     }// fine del metodo
 
-    private static void spazzolaNome(String nome, int soglia) {
+    /**
+     * Controlla il singolo nome
+     * Controlla la soglia minima
+     * Crea un record per ogni nome non ancora esistente (se supera la soglia)
+     * Registra anche i nomi accentati ma col riferimento al record del nome normalizzato (senza accenti)
+     */
+    private void spazzolaNome(String nomeConEventualeAccento, int soglia) {
         int numVoci
-        Antroponimo antroponimo
 
-        if (nome) {
-            numVoci = numeroVociCheUsanoNome(nome)
-            if (numVoci > soglia) {
-                antroponimo = Antroponimo.findByNome(nome)
-                if (antroponimo == null) {
-                    new Antroponimo(nome: nome, voci: numVoci, lunghezza: nome.length()).save()
+        if (nomeConEventualeAccento) {
+            numVoci = numeroVociCheUsanoNome(nomeConEventualeAccento)
+            if (nomeSenzaAccento(nomeConEventualeAccento)) {
+                if (numVoci > soglia) {
+                    registraSingoloNome(nomeConEventualeAccento, numVoci, true)
                 }// fine del blocco if
-            }// fine del blocco if
+            } else {
+                registraSingoloNome(nomeConEventualeAccento, numVoci, false)
+            }// fine del blocco if-else
         }// fine del blocco if
     }// fine del metodo
 
-    private static int numeroVociCheUsanoNome(String nome) {
-        int numVoci
+    /**
+     * Registra il singolo record
+     */
+    private static Antroponimo registraSingoloNome(String nome, int numVoci, boolean vocePrincipale) {
+        return registraSingoloNome(nome, numVoci, vocePrincipale, null)
+    }// fine del metodo
+
+    /**
+     * Registra il singolo record
+     */
+    private
+    static Antroponimo registraSingoloNome(String nome, int numVoci, boolean vocePrincipale, Antroponimo voceRiferimento) {
+        Antroponimo antroponimo = Antroponimo.findByNome(nome)
+
+        if (antroponimo == null) {
+            antroponimo = new Antroponimo()
+            antroponimo.nome = nome
+            antroponimo.voci = numVoci
+            antroponimo.lunghezza = nome.length()
+            antroponimo.voceRiferimento = voceRiferimento
+            antroponimo.isVocePrincipale = vocePrincipale
+            antroponimo.save()
+        }// fine del blocco if
+
+        return antroponimo
+    }// fine del metodo
+
+
+    private int numeroVociCheUsanoNome(String nome) {
+        return numeroVociCheUsanoNome(nome, null)
+    }// fine del metodo
+
+    private int numeroVociCheUsanoNome(String nome, Antroponimo antroponimo) {
+        int numVoci = 0
+        String query = ''
+        String sep = "'"
         String tagSpazio = ' '
         String tagWillCard = '%'
-        String nomeWillCardA = nome + tagSpazio + tagWillCard
-        String nomeWillCardB = tagWillCard + tagSpazio + nome
+        String nomeWillCardA
+        String nomeWillCardB = tagWillCard + tagSpazio + nome // non usato
 
-        numVoci = BioGrails.countByNomeLikeOrNomeLikeOrNomeLike(nome, nomeWillCardA, nomeWillCardB)
+        if (nome.contains(sep)) {
+            nome = nome.replace(sep, sep + sep)
+        }// fine del blocco if
+        nomeWillCardA = nome + tagSpazio + tagWillCard
+
+        if (antroponimo) {
+
+            query += "update BioGrails set nomeLink="
+            query += antroponimo.id
+            query += " where nome="
+            query += sep + nome + sep
+            query += " or nome like "
+            query += sep + nomeWillCardA + sep
+            try { // prova ad eseguire il codice
+                numVoci = BioGrails.executeUpdate(query)
+            } catch (Exception unErrore) { // intercetta l'errore
+                log.warn 'Errore numeroVociCheUsanoNome = ' + nome
+            }// fine del blocco try-catch
+        } else {
+            numVoci = BioGrails.countByNomeLikeOrNomeLike(nome, nomeWillCardA)
+        }// fine del blocco if-else
 
         return numVoci
     }// fine del metodo
 
     /**
+     * Aggiunge i riferimenti alla voce principale di ogni record
+     */
+    private static elaboraVocePrincipale() {
+        ArrayList<Antroponimo> lista = Antroponimo.list()
+        Antroponimo antroponimo
+        Antroponimo antroponimoPrincipale
+        String nomeNormalizzato
+        String nomeConAccento
+
+        lista?.each {
+            antroponimo = it
+            if (antroponimo.isVocePrincipale) {
+                antroponimo.voceRiferimento = antroponimo
+            } else {
+                nomeConAccento = antroponimo.nome
+                nomeNormalizzato = normalizza(nomeConAccento)
+                antroponimoPrincipale = Antroponimo.findByNome(nomeNormalizzato)
+                antroponimo.voceRiferimento = antroponimoPrincipale
+            }// fine del blocco if-else
+            antroponimo.save()
+        } // fine del ciclo each
+
+    }// fine del metodo
+
+    /**
      * Ricalcolo records esistenti
+     * Controllo della pagina Progetto:Antroponimi/Nomi doppi
      * Ricalcola il numero delle voci (bioGrails) che utilizzano ogni record (antroponimo)
      */
     public void ricalcola() {
-        ArrayList<Antroponimo> listaAntroponimi = Antroponimo.list(sort: 'nome')
+        ArrayList<Antroponimo> listaAntroponimi
 
+        listaNomiDoppi()
+
+        listaAntroponimi = Antroponimo.list(sort: 'nome')
         listaAntroponimi?.each {
             ricalcolaAntroponimo(it)
         } // fine del ciclo each
     }// fine del metodo
 
-    private static void ricalcolaAntroponimo(Antroponimo antroponimo) {
+    /**
+     * Controllo della pagina Progetto:Antroponimi/Nomi doppi
+     */
+    public void listaNomiDoppi() {
+        String titolo = TITOLO_LISTA_NOMI_DOPPI
+        String tagInizio = '*'
+        String tagRiga = '\\*'
+        ArrayList<String> righe = null
+        String testoPagina = QueryVoce.getPagina(titolo).getTesto()
+        int soglia = Pref.getInt(LibBio.SOGLIA_ANTROPONIMI)
+
+        if (testoPagina) {
+            testoPagina = testoPagina.substring(testoPagina.indexOf(tagInizio))
+            righe = testoPagina.split(tagRiga)
+        }// fine del blocco if
+
+        righe?.each {
+            elaboraRigaNomiDoppi(it.trim(), soglia)
+        } // fine del ciclo each
+
+    }// fine del metodo
+
+    /**
+     * Controllo della pagina Progetto:Antroponimi/Nomi doppi
+     */
+    public void elaboraRigaNomiDoppi(String riga, int soglia) {
+        String tagNome = ','
+        ArrayList<String> nomi = null
+        Antroponimo antroponimo = null
+
+        if (riga) {
+            nomi = riga.split(tagNome)
+        }// fine del blocco if
+
+        if (nomi) {
+            if (nomi.size() > 0) {
+                antroponimo = elaboraNomeDoppio(nomi[0].trim(), soglia, true, null)
+                if (antroponimo) {
+                    antroponimo.voceRiferimento = antroponimo
+                    antroponimo.save()
+                }// fine del blocco if
+                if (nomi.size() > 1) {
+                    for (int k = 1; k < nomi.size(); k++) {
+                        elaboraNomeDoppio(nomi[k].trim(), soglia, false, antroponimo)
+                    } // fine del ciclo for
+                }// fine del blocco if-else
+            }// fine del blocco if
+        }// fine del blocco if
+    }// fine del metodo
+
+    /**
+     * Controllo della pagina Progetto:Antroponimi/Nomi doppi
+     */
+    public Antroponimo elaboraNomeDoppio(String nome, int soglia, boolean vocePrincipale, Antroponimo antroponimo) {
+        int numVoci = numeroVociCheUsanoNome(nome)
+
+        if (vocePrincipale) {
+            if (numVoci > soglia) {
+                antroponimo = registraSingoloNome(nome.trim(), numVoci, vocePrincipale)
+            }// fine del blocco if
+        } else {
+            antroponimo = registraSingoloNome(nome.trim(), numVoci, vocePrincipale, antroponimo)
+        }// fine del blocco if-else
+
+        return antroponimo
+    }// fine del metodo
+
+    private void ricalcolaAntroponimo(Antroponimo antroponimo) {
         String nome
         int numVoci
 
         if (antroponimo) {
             nome = antroponimo.nome
-            numVoci = numeroVociCheUsanoNome(nome)
+            numVoci = numeroVociCheUsanoNome(nome, antroponimo)
             antroponimo.voci = numVoci
             antroponimo.save()
         }// fine del blocco if
@@ -509,7 +696,7 @@ class AntroponimoService {
         ArrayList<BioGrails> listaBiografie = new ArrayList()
         BioGrails bio
         String nomeBio
-        boolean confrontaSoloPrimo = Pref.getBool(LibBio.CONFRONTA_SOLO_PRIMO_NOME_ANTROPONIMI)
+        boolean confrontaSoloPrimo = Pref.getBool(LibBio.USA_SOLO_PRIMO_NOME_ANTROPONIMI)
         ArrayList<BioGrails> listaGrezza
 
         //--recupera una lista 'grezza' di tutti i nomi
@@ -544,7 +731,7 @@ class AntroponimoService {
 
     public String getNomeSingolo(String nomeIn) {
         String nomeOut = nomeIn
-        boolean confrontaSoloPrimo = Pref.getBool(LibBio.CONFRONTA_SOLO_PRIMO_NOME_ANTROPONIMI)
+        boolean confrontaSoloPrimo = Pref.getBool(LibBio.USA_SOLO_PRIMO_NOME_ANTROPONIMI)
         String tagSpazio = ' '
         int pos
 
@@ -1331,7 +1518,7 @@ class AntroponimoService {
      * Ritorna l'antroponimo dal link alla voce
      * Se non esiste, lo crea
      */
-    public static Antroponimo getAntroponimo(String nomeDaControllare) {
+    public Antroponimo getAntroponimo(String nomeDaControllare) {
         Antroponimo antroponimo = null
         String nome = ''
         int soglia = Pref.getInt(LibBio.SOGLIA_ANTROPONIMI)
@@ -1358,5 +1545,34 @@ class AntroponimoService {
         return antroponimo
     } // fine del metodo
 
+    /**
+     * Controlla eventuali accenti del nome
+     */
+    private static boolean nomeSenzaAccento(String nomeConEventualeAccento) {
+        boolean senzaAccento = false
+        String nomeNormalizzato
+
+        nomeNormalizzato = normalizza(nomeConEventualeAccento)
+        if (nomeNormalizzato.equals(nomeConEventualeAccento)) {
+            senzaAccento = true
+        }// fine del blocco if
+
+        return senzaAccento
+    }// fine del metodo
+
+    /**
+     * Elimina eventuali accenti dal nome
+     */
+    private static String normalizza(String nomeConEventualeAccento) {
+        String nomeNormalizzato = nomeConEventualeAccento
+
+        if (nomeConEventualeAccento) {
+            if (Pref.getBool(LibBio.USA_ACCENTI_NORMALIZZATI, false)) {
+                nomeNormalizzato = Normalizer.normalize(nomeConEventualeAccento, Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", "")
+            }// fine del blocco if
+        }// fine del blocco if
+
+        return nomeNormalizzato
+    }// fine del metodo
 
 } // fine della service classe

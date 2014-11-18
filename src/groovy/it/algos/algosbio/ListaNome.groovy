@@ -9,9 +9,6 @@ import it.algos.algoswiki.Login
  */
 class ListaNome extends ListaBio {
 
-    protected boolean usaNomeDoppio
-
-
     public ListaNome(Antroponimo antroponimo) {
         super(antroponimo)
     }// fine del costruttore
@@ -46,7 +43,6 @@ class ListaNome extends ListaBio {
         usaTitoloParagrafoConLink = true
         usaDoppiaColonna = false
         usaSottopagine = true
-        usaNomeDoppio = true
         maxVociParagrafo = Pref.getInt(LibBio.MAX_VOCI_PARAGRAFO_ANTROPONIMI, 50)
         tagLivelloParagrafo = '=='
         tagParagrafoNullo = 'Altre...'
@@ -271,13 +267,17 @@ class ListaNome extends ListaBio {
         String nomeWillCardA = nomeSemplice + tagSpazio + tagWillCard
         String nomeWillCardB = tagWillCard + tagSpazio + nomeSemplice
 
-        if (usaNomeDoppio) {
-            listaBiografie = BioGrails.findAllByNomeLikeOrNomeLikeOrNomeLike(nomeSemplice, nomeWillCardA, nomeWillCardB, [sort: 'forzaOrdinamento'])
-        } else {
-            if (antroponimo) {
-                listaBiografie = BioGrails.findAllByNomeLink(antroponimo, [sort: 'forzaOrdinamento'])
-            }// fine del blocco if
-        }// fine del blocco if-else
+        listaBiografie = BioGrails.findAllByNomeLink(antroponimo, [sort: 'forzaOrdinamento'])
+          def  listaBiografie2 = BioGrails.findAllByNomeLikeOrNomeLikeOrNomeLike(nomeSemplice, nomeWillCardA, nomeWillCardB, [sort: 'forzaOrdinamento'])
+
+//        if (usaNomeDoppio) {
+//            listaBiografie = BioGrails.findAllByNomeLikeOrNomeLikeOrNomeLike(nomeSemplice, nomeWillCardA, nomeWillCardB, [sort: 'forzaOrdinamento'])
+//        } else {
+//            if (antroponimo) {
+//            }// fine del blocco if
+//        }// fine del blocco if-else
+
+        def stop
     }// fine del metodo
 
 }// fine della classe

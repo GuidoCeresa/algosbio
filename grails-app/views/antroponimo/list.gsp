@@ -78,7 +78,11 @@
                 
                 <g:sortableColumn property="lunghezza"
                                   title="${message(code: 'antroponimo.lunghezza.label', default: 'Lunghezza')}"/>
-                
+
+                <g:sortableColumn property="isVocePrincipale"
+                                  title="${message(code: 'antroponimo.isVocePrincipale.label', default: 'Is Voce Principale')}"/>
+
+                <th><g:message code="antroponimo.voceRiferimento.label" default="Voce Riferimento"/></th>
             </tr>
         </g:else>
         </thead>
@@ -102,7 +106,14 @@
                     
                     <td><g:link action="show"
                                 id="${antroponimoInstance.id}">${fieldValue(bean: antroponimoInstance, field: "lunghezza")}</g:link></td>
-                    
+
+                    <g:if test="${antroponimoInstance.isVocePrincipale != null}">
+                        <td><g:checkBox name="isVocePrincipale" value="${antroponimoInstance.isVocePrincipale}"/></td>
+                    </g:if>
+
+                    <td><g:link action="show"
+                                id="${antroponimoInstance.id}">${fieldValue(bean: antroponimoInstance, field: "voceRiferimento")}</g:link></td>
+
                 </tr>
             </g:each>
         </g:else>

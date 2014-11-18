@@ -337,8 +337,8 @@ class VersioneBootStrap {
 
         //--spostate alcune preferenze da Preferenze a Pref
         if (versioneService && versioneService.installaVersione(50)) {
-            scambiaPreferenzeBooleane(LibBio.CONFRONTA_SOLO_PRIMO_NOME_ANTROPONIMI, 'differnza tra nomi singoli e composti')
-            versioneService.newVersione('Preferenze', 'Spostata CONFRONTA_SOLO_PRIMO_NOME_ANTROPONIMI')
+            scambiaPreferenzeBooleane(LibBio.USA_SOLO_PRIMO_NOME_ANTROPONIMI, 'differnza tra nomi singoli e composti')
+            versioneService.newVersione('Preferenze', 'Spostata USA_SOLO_PRIMO_NOME_ANTROPONIMI')
         }// fine del blocco if
 
         //--spostate alcune preferenze da Preferenze a Pref
@@ -605,10 +605,23 @@ class VersioneBootStrap {
             pref.code = LibBio.USA_ACCENTI_NORMALIZZATI
             pref.descrizione = "Sostituisce le lettere accentate con le corrispondenti 'neutre', nelle ricerche degli antroponimi. Trova uguali Aaron e Aaròn."
             pref.type = Type.booleano
-            pref.bool = true
+            pref.bool = false
             pref.save(flush: true)
             versioneService.newVersione('Preferenze', 'USA_ACCENTI_NORMALIZZATI di default true')
         }// fine del blocco if
+
+        //--creata una nuova preferenza
+        if (versioneService && versioneService.installaVersione(72)) {
+            Pref pref = new Pref()
+            pref.ordine = Pref.list().size() + 1
+            pref.code = LibBio.USA_LISTA_NOMI_DOPPI
+            pref.descrizione = "Legge la pagina Progetto:Antroponimi/Nomi doppi e aggiunge i records di Antroponimo"
+            pref.type = Type.booleano
+            pref.bool = false
+            pref.save(flush: true)
+            versioneService.newVersione('Preferenze', 'USA_LISTA_NOMI_DOPPI di default true')
+        }// fine del blocco if
+
 
     }// fine della closure
 

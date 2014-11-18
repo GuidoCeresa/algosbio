@@ -50,7 +50,7 @@ class LibBio {
     public static final String SOGLIA_ANTROPONIMI = 'sogliaAntroponimi'
     public static final String CICLO_ANTROPONIMI = 'cicloAntroponimi'
     public static final String USA_OCCORRENZE_ANTROPONIMI = 'usaOccorrenzeAntroponimi'
-    public static final String CONFRONTA_SOLO_PRIMO_NOME_ANTROPONIMI = 'confrontaSoloPrimoNomeAntroponimi'
+    public static final String USA_SOLO_PRIMO_NOME_ANTROPONIMI = 'confrontaSoloPrimoNomeAntroponimi'
     public static final String SUMMARY = 'summary'
     public static final String VOCI = 'numeroVociGestite'
     public static final String GIORNI = 'numeroGiorniGestiti'
@@ -78,6 +78,7 @@ class LibBio {
     public static final String BOT_NAME = 'botName'
     public static final String BOT_PASSWORD = 'botPassword'
     public static final String USA_ACCENTI_NORMALIZZATI = 'usaAccentiNormalizzati'
+    public static final String USA_LISTA_NOMI_DOPPI = 'usaListaNomiDoppi'
 
     // campi di una mappa
     public static final String MAPPA_TITOLO_PARAGRAFO = 'titoloParagrafo'

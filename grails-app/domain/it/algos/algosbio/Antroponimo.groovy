@@ -19,6 +19,8 @@ class Antroponimo {
     String nome
     int voci
     int lunghezza
+    boolean isVocePrincipale
+    Antroponimo voceRiferimento
 
     /**
      * regolazione delle proprietà di ogni campo
@@ -30,6 +32,8 @@ class Antroponimo {
         nome()
         voci()
         lunghezza()
+        isVocePrincipale()
+        voceRiferimento(nullable: true, blank: true)
     } // end of static constraints
 
     /**
