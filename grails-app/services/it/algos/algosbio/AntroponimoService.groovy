@@ -17,6 +17,7 @@ import grails.transaction.Transactional
 import it.algos.algoslib.LibTesto
 import it.algos.algoslib.LibTime
 import it.algos.algoslib.LibWiki
+import it.algos.algoslib.LibMat
 import it.algos.algospref.Pref
 import it.algos.algoswiki.Edit
 import it.algos.algoswiki.QueryVoce
@@ -257,20 +258,27 @@ class AntroponimoService {
         long fine
         long durata
         String mess
+        int k = 0
+        String info
 
-        for (int k = 0; k < 10000; k++) {
-            spazzolaNome(listaNomiUnici.get(k), soglia)
-        } // fine del ciclo for
+        listaNomiUnici?.each {
+            spazzolaNome(it, soglia)
+            k++
+            if (LibMat.avanzamento(k, 10)) {
+                fine = System.currentTimeMillis()
+                durata = fine - inizio
+                durata = durata / 1000
 
-//        listaNomiUnici?.each {
-//            spazzolaNome(it, soglia)
-//        } // fine del ciclo each
-
-        fine = System.currentTimeMillis()
-        durata = fine - inizio
-        durata = durata / 1000
-        mess = ' Spazzolati tutti i nuovi records in ' + durata + ' sec.'
-        println(mess)
+                info = 'Spazzolati '
+                info += LibTesto.formatNum(k)
+                info += ' nomi su '
+                info += LibTesto.formatNum(listaNomiUnici.size())
+                info += ' in '
+                info += LibTesto.formatNum(durata)
+                info += ' sec. totali'
+                log.info info
+            }// fine del blocco if
+        }
     }// fine del metodo
 
     /**

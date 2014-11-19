@@ -10,8 +10,8 @@
           <root url="file://$MODULE_DIR$/target/work/plugins/algoslogo-0.30/grails-app/views" relative="/" />
           <root url="file://$MODULE_DIR$/target/work/plugins/algosvers-0.36/grails-app/views" relative="/" />
           <root url="file://$MODULE_DIR$/target/work/plugins/algospref-0.73/grails-app/views" relative="/" />
-          <root url="file://$MODULE_DIR$/target/work/plugins/algos-1.42/grails-app/views" relative="/" />
           <root url="file://$MODULE_DIR$/target/work/plugins/algoswiki-0.94/grails-app/views" relative="/" />
+          <root url="file://$MODULE_DIR$/target/work/plugins/algos-1.43/grails-app/views" relative="/" />
         </webroots>
         <sourceRoots />
       </configuration>
@@ -27,18 +27,18 @@
   </component>
   <component name="NewModuleRootManager" inherit-compiler-output="true">
     <exclude-output />
-    <content url="file://$MODULE_DIR$/target/work/plugins/algos-1.42">
-      <sourceFolder url="file://$MODULE_DIR$/target/work/plugins/algos-1.42/src/java" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/target/work/plugins/algos-1.42/src/groovy" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/target/work/plugins/algos-1.42/grails-app/jobs" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/target/work/plugins/algos-1.42/grails-app/i18n" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/target/work/plugins/algos-1.42/grails-app/controllers" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/target/work/plugins/algos-1.42/grails-app/services" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/target/work/plugins/algos-1.42/grails-app/taglib" isTestSource="false" />
+    <content url="file://$MODULE_DIR$/target/work/plugins/algos-1.43">
+      <sourceFolder url="file://$MODULE_DIR$/target/work/plugins/algos-1.43/src/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/target/work/plugins/algos-1.43/src/groovy" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/target/work/plugins/algos-1.43/grails-app/jobs" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/target/work/plugins/algos-1.43/grails-app/i18n" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/target/work/plugins/algos-1.43/grails-app/controllers" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/target/work/plugins/algos-1.43/grails-app/services" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/target/work/plugins/algos-1.43/grails-app/taglib" isTestSource="false" />
     </content>
-    <content url="file://$MODULE_DIR$/target/work/plugins/algoslib-0.57">
-      <sourceFolder url="file://$MODULE_DIR$/target/work/plugins/algoslib-0.57/src/groovy" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/target/work/plugins/algoslib-0.57/grails-app/i18n" isTestSource="false" />
+    <content url="file://$MODULE_DIR$/target/work/plugins/algoslib-0.58">
+      <sourceFolder url="file://$MODULE_DIR$/target/work/plugins/algoslib-0.58/src/groovy" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/target/work/plugins/algoslib-0.58/grails-app/i18n" isTestSource="false" />
     </content>
     <content url="file://$MODULE_DIR$/target/work/plugins/algoslogo-0.30">
       <sourceFolder url="file://$MODULE_DIR$/target/work/plugins/algoslogo-0.30/src/groovy" isTestSource="false" />
