@@ -74,7 +74,7 @@ abstract class ListaAnno extends ListaBio {
      * Sovrascritto
      */
     @Override
-    protected String elaboraincipit() {
+    protected String elaboraIncipit() {
         String ritorno = ''
         Anno anno = this.getAnno()
 
