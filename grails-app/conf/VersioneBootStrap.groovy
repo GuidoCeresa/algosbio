@@ -622,6 +622,29 @@ class VersioneBootStrap {
             versioneService.newVersione('Preferenze', 'USA_LISTA_NOMI_DOPPI di default true')
         }// fine del blocco if
 
+        //--creata una nuova preferenza
+        if (versioneService && versioneService.installaVersione(73)) {
+            Pref pref = new Pref()
+            pref.ordine = Pref.list().size() + 1
+            pref.code = LibBio.NUM_VOCI_INFO_NOMI_RICALCOLA
+            pref.descrizione = 'Numero di voci per il blocco di stampa info nel ricalcolo degli antroponimi'
+            pref.type = Type.intero
+            pref.intero = 100
+            pref.save(flush: true)
+            versioneService.newVersione('Preferenze', 'NUM_VOCI_INFO_NOMI_RICALCOLA di default 100')
+        }// fine del blocco if
+
+        //--creata una nuova preferenza
+        if (versioneService && versioneService.installaVersione(74)) {
+            Pref pref = new Pref()
+            pref.ordine = Pref.list().size() + 1
+            pref.code = LibBio.NUM_VOCI_INFO_NOMI_UPLOAD
+            pref.descrizione = "Numero di voci per il blocco di stampa info nell'upload degli antroponimi"
+            pref.type = Type.intero
+            pref.intero = 20
+            pref.save(flush: true)
+            versioneService.newVersione('Preferenze', 'NUM_VOCI_INFO_NOMI_UPLOAD di default 20')
+        }// fine del blocco if
 
     }// fine della closure
 

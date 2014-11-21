@@ -31,17 +31,21 @@ import java.text.Normalizer
  * Gestione dei nomi (antroponimi)
  *
  * 1° fase da fare una tantum o ogni 6-12 mesi
+ * Costruisce
  * Annullamento del link tra BioGrails e gli Antroponimi
  * Creazione dei records di antroponimi leggendo i records BioGrails
  * Controllo della pagina Progetto:Antroponimi/Nomi doppi
  * Ricalcolo delle voci per ricostruire in ogni record di BioGrails il link verso il corretto record di Antroponimo
  *
  * 2° fase da fare una tantum
+ * Aggiunge
  * Aggiunta dei records di antroponimi leggendo i records BioGrails
  * Controllo della pagina Progetto:Antroponimi/Nomi doppi
  * Ricalcolo delle voci per ricostruire in ogni record di BioGrails il link verso il corretto record di Antroponimo
  *
  * 3° fase da fare ogni settimana
+ * Ricalcola
+ * Upload
  * Controllo della pagina Progetto:Antroponimi/Nomi doppi
  * Spazzolamento di tutti i records di Antroponimi per aggiornare il numero di voci linkate
  * Creazione della pagina/lista per ogni record di Antroponimi che supera la soglia
@@ -108,7 +112,7 @@ class AntroponimoService {
      * costruisce i records
      */
     public void costruisce() {
-//        cancellaTutto()
+        cancellaTutto()
         aggiunge()
 
         log.info 'Fine costruzione antroponimi'
@@ -257,14 +261,13 @@ class AntroponimoService {
         long inizio = System.currentTimeMillis()
         long fine
         long durata
-        String mess
         int k = 0
         String info
 
         listaNomiUnici?.each {
             spazzolaNome(it, soglia)
             k++
-            if (LibMat.avanzamento(k, 10)) {
+            if (LibMat.avanzamento(k, 1000)) {
                 fine = System.currentTimeMillis()
                 durata = fine - inizio
                 durata = durata / 1000
@@ -278,7 +281,7 @@ class AntroponimoService {
                 info += ' sec. totali'
                 log.info info
             }// fine del blocco if
-        }
+        } // fine del ciclo each
     }// fine del metodo
 
     /**
@@ -330,11 +333,11 @@ class AntroponimoService {
     }// fine del metodo
 
 
-    private int numeroVociCheUsanoNome(String nome) {
+    private  int numeroVociCheUsanoNome(String nome) {
         return numeroVociCheUsanoNome(nome, null)
     }// fine del metodo
 
-    private int numeroVociCheUsanoNome(String nome, Antroponimo antroponimo) {
+    private  numeroVociCheUsanoNome(String nome, Antroponimo antroponimo) {
         int numVoci = 0
         String query = ''
         String sep = "'"
@@ -349,7 +352,6 @@ class AntroponimoService {
         nomeWillCardA = nome + tagSpazio + tagWillCard
 
         if (antroponimo) {
-
             query += "update BioGrails set nomeLink="
             query += antroponimo.id
             query += " where nome="
@@ -400,12 +402,33 @@ class AntroponimoService {
      */
     public void ricalcola() {
         ArrayList<Antroponimo> listaAntroponimi
+        int numVociBlocco = Pref.getInt(LibBio.NUM_VOCI_INFO_NOMI_RICALCOLA)
+        long inizio = System.currentTimeMillis()
+        long fine
+        long durata
+        int k = 0
+        String info
 
         listaNomiDoppi()
 
         listaAntroponimi = Antroponimo.list(sort: 'nome')
         listaAntroponimi?.each {
             ricalcolaAntroponimo(it)
+            k++
+            if (LibMat.avanzamento(k, numVociBlocco)) {
+                fine = System.currentTimeMillis()
+                durata = fine - inizio
+                durata = durata / 1000
+
+                info = 'Ricalcolate '
+                info += LibTesto.formatNum(k)
+                info += ' voci di antroponimi su '
+                info += LibTesto.formatNum(listaAntroponimi.size())
+                info += ' in '
+                info += LibTesto.formatNum(durata)
+                info += ' sec. totali'
+                log.info info
+            }// fine del blocco if
         } // fine del ciclo each
     }// fine del metodo
 
@@ -512,6 +535,40 @@ class AntroponimoService {
         }// fine del ciclo each
         def stop
     }// fine del metodo
+
+    /**
+     * crea le pagine dei singoli nomi a blocchi
+     */
+    public void upload() {
+        def nonServe
+        ArrayList<String> listaNomi = getListaNomi()
+        int numVociBlocco = Pref.getInt(LibBio.NUM_VOCI_INFO_NOMI_UPLOAD)
+        long inizio = System.currentTimeMillis()
+        long fine
+        long durata
+        int k = 0
+        String info
+
+        listaNomi?.each {
+            nonServe = new ListaNome(it)
+            k++
+            if (LibMat.avanzamento(k, numVociBlocco)) {
+                fine = System.currentTimeMillis()
+                durata = fine - inizio
+                durata = durata / 1000
+
+                info = 'Caricate sul server '
+                info += LibTesto.formatNum(k)
+                info += ' voci di antroponimi su '
+                info += LibTesto.formatNum(listaNomi.size())
+                info += ' in '
+                info += LibTesto.formatNum(durata)
+                info += ' sec. totali'
+                log.info info
+            }// fine del blocco if
+        }// fine del blocco if
+    }// fine del metodo
+
 
     public creaPagineControllo() {
         //crea la pagina riepilogativa
@@ -635,6 +692,7 @@ class AntroponimoService {
 
     /**
      * Elabora la pagina per un singolo nome
+     * @deprecated
      */
     public void elaboraSingoloNome(String nome) {
         boolean debug = Pref.getBool(LibBio.DEBUG, false)
@@ -695,6 +753,13 @@ class AntroponimoService {
         listaNomi = (ArrayList<String>) Antroponimo.executeQuery(query)
 
         return listaNomi
+    }// fine del metodo
+
+    //--costruisce una lista di nomi
+    public static ArrayList<Antroponimo> getListaAntroponimi() {
+        int taglio = Pref.getInt(LibBio.TAGLIO_ANTROPONIMI)
+
+        return Antroponimo.findAllByVociGreaterThan(taglio, [sort: 'nome', order: 'asc'])
     }// fine del metodo
 
     //--costruisce una lista di biografie che 'usano' il nome
@@ -1404,25 +1469,25 @@ class AntroponimoService {
      * Crea la pagina riepilogativa
      */
     public creaPaginaRiepilogativa() {
-        ArrayList<String> listaVoci = getListaNomi()
+        ArrayList<Antroponimo> listaVoci = getListaAntroponimi()
         String testo = ''
         String titolo = progetto + 'Nomi'
         String summary = 'Biobot'
 
         if (listaVoci) {
             testo += getRiepilogoHead()
-            testo += getRiepilogoBody(listaVoci)
+//            testo += getRiepilogoBody(listaVoci)
             testo += getRiepilogoFooter()
 
             new Edit(titolo, testo, summary)
         }// fine del blocco if
+        def stop
     }// fine del metodo
 
 
     public String getRiepilogoHead() {
         String testo = ''
         String dataCorrente = LibTime.getGioMeseAnnoLungo(new Date())
-        String aCapo = '\n'
 
         testo += '__NOTOC__'
         testo += '<noinclude>'
@@ -1434,15 +1499,11 @@ class AntroponimoService {
     }// fine del metodo
 
 
-    public String getRiepilogoBody(ArrayList<String> listaVoci) {
+    public String getRiepilogoBody(ArrayList<Antroponimo> listaVoci) {
         String testo = ''
         int taglio = Pref.getInt(LibBio.TAGLIO_ANTROPONIMI)
-        LinkedHashMap mappa = null
-        String chiave
-        String nome
-        def lista
+        Antroponimo antro
         def ricorrenze = LibTesto.formatNum(taglio)
-        String aCapo = '\n'
 
         testo += '==Nomi=='
         testo += aCapo
@@ -1458,12 +1519,12 @@ class AntroponimoService {
         testo += aCapo
 
         testo += aCapo
-        testo += '{{Div col|cols=3}}'
+        testo += '{{Div col|cols=4}}'
         if (listaVoci) {
             listaVoci.each {
-                nome = it
+                antro = it
                 testo += aCapo
-                testo += this.getRiga(nome)
+                testo += this.getRiga(antro)
             }// fine del ciclo each
         }// fine del blocco if
         testo += aCapo
@@ -1473,25 +1534,22 @@ class AntroponimoService {
         return testo
     }// fine del metodo
 
-    public String getRiga(String nome) {
+    public String getRiga(Antroponimo antro) {
         String testo = ''
-        String tag
-        String aCapo = '\n'
-        String numVoci
+        String nome = antro.nome
+        String tag = tagTitolo + nome
 
         if (nome) {
-            tag = tagTitolo + nome
             testo += '*'
             testo += '[['
             testo += tag
             testo += '|'
             testo += nome
             testo += ']]'
-            if (Pref.getBool('usaOccorrenzeAntroponimi')) {
-                numVoci = numeroVociCheUsanoNome(nome)
+            if (Pref.getBool(LibBio.USA_OCCORRENZE_ANTROPONIMI)) {
                 testo += ' ('
                 testo += "'''"
-                testo += LibTesto.formatNum(numVoci)
+                testo += LibTesto.formatNum(antro.voci)
                 testo += "'''"
                 testo += ' )'
             }// fine del blocco if
@@ -1503,7 +1561,28 @@ class AntroponimoService {
 
     public String getRiepilogoFooter() {
         String testo = ''
-        String aCapo = '\n'
+        String tag = aCapo + '*'
+
+        testo += aCapo
+        testo += '==Criteri=='
+        testo += tag + "I nomi vengono estratti dal parametro ''nome'' del [[Template:Bio|template:Bio]] di ogni voce biografica"
+        testo += tag + "Vengono considerati solo i caratteri alfabetici (UTF8) più il trattino ('''-''') e l'apostrofo (''''''')"
+        testo += tag + "Viene considerato solo il primo nome presente nel template della voce"
+        testo += tag + "I nomi composti formati da una sola parola (tipo 'Gianpaolo') sono compresi"
+        testo += tag + "I nomi composti/doppi formati da più parole (tipo 'Maria Teresa') sono compresi '''solo''' se sono presenti nell'apposita [[Progetto:Antroponimi/Nomi doppi|lista]]"
+        testo += tag + "I nomi composti con trattino (tipo 'Jean-Baptiste') sono previsti"
+        testo += tag + "Per ogni nome viene creata una pagina con la lista di voci biografiche che riportano il nome stesso come primo nome, anche se poi seguito da altri nomi"
+        testo += tag + "Il numero di occorrenze di voci biografiche richiesto per avere una pagina è stato raggiunto per [[Discussioni progetto:Antroponimi|consenso]]"
+        testo += tag + "Le pagine sono suddivise per attività principale, come risulta dal parametro ''attività'' del [[Template:Bio|template:Bio]] di ogni voce biografica"
+        testo += tag + "Le persone sono riportate col titolo della voce, indipendentemente dal ''nome'' e ''cognome'' utilizzati"
+        testo += tag + "Le persone sono ordinate alfabeticamente per cognome, come risulta dal parametro ''cognome'' del [[Template:Bio|template:Bio]] di ogni voce biografica"
+        testo += tag + "La didascalia viene presentata come previsto in [[Progetto:Antroponimi/Didascalie]]"
+        testo += tag + "Se l'attività principale non risulta dalla voce, le persone vengono raggruppate in un paragrafo finale"
+        testo += tag + "I titolo dei paragrafi rispecchiano il genere (maschile o femminile) delle persone che elencano"
+        testo += tag + "Se nella stessa pagina ci sono persone di sesso diverso, anche con lo stesso nome (ad esempio ''Andrea''), la pagina stessa viene suddivisa"
+        testo += tag + "Se le voci in un paragrafo superano il numero di 50, viene creata una sottopagina"
+        testo += tag + "Nella sottopagina le voci sono suddivise per lettera alfabetica"
+        testo += tag + "L'aggiornamento delle pagine è ogni una-due settimane"
 
         testo += aCapo
         testo += '==Voci correlate=='
@@ -1526,7 +1605,7 @@ class AntroponimoService {
      * Ritorna l'antroponimo dal link alla voce
      * Se non esiste, lo crea
      */
-    public Antroponimo getAntroponimo(String nomeDaControllare) {
+    public  Antroponimo getAntroponimo(String nomeDaControllare) {
         Antroponimo antroponimo = null
         String nome = ''
         int soglia = Pref.getInt(LibBio.SOGLIA_ANTROPONIMI)

@@ -59,7 +59,7 @@ class AntroponimoController {
         params.avviso.add('Azzera (null) tutti i link tra BioGrails e Antroponimi')
         params.avviso.add('Cancella tutti i records di Antroponimi')
         params.avviso.add('Vengono creati nuovi records per i nomi presenti nelle voci (bioGrails) che superano la soglia minima')
-        params.avviso.add('Tempo indicativo: quindici ore')
+        params.avviso.add('Tempo indicativo: quattro ore')
         params.returnController = 'antroponimo'
         params.returnAction = 'costruisceDopoConferma'
         redirect(controller: 'dialogo', action: 'box', params: params)
@@ -97,7 +97,7 @@ class AntroponimoController {
         params.titolo = 'Aggiunta nuovi records'
         params.avviso = []
         params.avviso.add('Vengono creati nuovi records per i nomi presenti nelle voci (bioGrails) che superano la soglia minima')
-        params.avviso.add('Tempo indicativo: due ore')
+        params.avviso.add('Tempo indicativo: quattro ore')
         params.returnController = 'antroponimo'
         params.returnAction = 'aggiungeDopoConferma'
         redirect(controller: 'dialogo', action: 'box', params: params)
@@ -134,7 +134,7 @@ class AntroponimoController {
         params.titolo = 'Ricalcolo records esistenti'
         params.avviso = []
         params.avviso.add('Ricalcola il numero delle voci (bioGrails) che utilizzano ogni record (antroponimo)')
-        params.avviso.add('Tempo indicativo: quattro ore')
+        params.avviso.add('Tempo indicativo: una ora')
         params.returnController = 'antroponimo'
         params.returnAction = 'ricalcolaDopoConferma'
         redirect(controller: 'dialogo', action: 'box', params: params)
@@ -187,11 +187,11 @@ class AntroponimoController {
                 valore = (String) params.valore
                 if (valore.equals(DialogoController.DIALOGO_CONFERMA)) {
                     if (grailsApplication && grailsApplication.config.login) {
-                        elaboraBase()
+                        uploadBase()
                         flash.message = 'Operazione effettuata. Sono stati creati/aggiornate le pagine antroponimi'
                     } else {
                         if (debug) {
-                            elaboraBase()
+                            uploadBase()
                             flash.message = 'Operazione effettuata. Sono stati creati/aggiornate le pagine antroponimi'
                         } else {
                             flash.error = 'Devi essere loggato per poter caricare gli antroponimi'
@@ -204,36 +204,32 @@ class AntroponimoController {
         redirect(action: 'list')
     } // fine del metodo
 
-    private elaboraBase() {
-        def nonServe
+    private uploadBase() {
+        boolean debug = Pref.getBool(LibBio.DEBUG, false)
         ArrayList<String> listaNomi = null
+        antroponimoService.creaPagineControllo()
 
         //--ricontrolla la lista delle professioni
-        if (professioneService) {
+        if (!debug && professioneService) {
             professioneService.download()
         }// fine del blocco if
 
         //--ricontrolla la lista dei plurali per genere
-        if (genereService) {
+        if (!debug && genereService) {
             genereService.download()
         }// fine del blocco if
 
         //--aggiorna il numero di voci per ogni antroponimo della lista (semi-statica)
-        if (antroponimoService) {
+        if (!debug && antroponimoService) {
             antroponimoService.ricalcola()
         }// fine del blocco if
 
-        //--costruisce una lista di nomi (circa 600)
+        //--costruisce una lista di nomi (circa 900)
         if (antroponimoService) {
-            listaNomi = antroponimoService.getListaNomi()
+            antroponimoService.upload()
         }// fine del blocco if
 
-        //--crea le pagine dei singoli nomi a blocchi
-        listaNomi?.each {
-            nonServe = new ListaNome(it)
-        }// fine del blocco if
-
-        if (listaNomi) {
+        if (!debug && listaNomi) {
             antroponimoService.creaPagineControllo()
         }// fine del blocco if
     } // fine del metodo
@@ -241,11 +237,12 @@ class AntroponimoController {
     //--elabora e crea le liste del nome indicato e le uploada sul server wiki
     //--passa al metodo effettivo senza nessun dialogo di conferma
     def uploadSingoloNome(Long id) {
+        def nonServe
         def antroponimo = Antroponimo.get(id)
         String nome = antroponimo.nome
 
         if (grailsApplication && grailsApplication.config.login) {
-            antroponimoService.elaboraSingoloNome(nome)
+            nonServe = new ListaNome(nome)
             flash.info = "Eseguito upload delle liste del nome sul server wiki"
         } else {
             flash.error = 'Devi essere loggato per effettuare un upload di pagine sul server wiki'
@@ -377,36 +374,26 @@ class AntroponimoController {
     } // fine del metodo
 
     def show(Antroponimo antroponimoInstance) {
-        respond antroponimoInstance
+        ArrayList menuExtra
+        def noMenuCreate = true
+
+        //--selezione dei menu extra
+        //--solo azione e di default controller=questo; classe e titolo vengono uguali
+        //--mappa con [cont:'controller', action:'metodo', icon:'iconaImmagine', title:'titoloVisibile']
+        menuExtra = [
+                [cont: 'antroponimo', action: "uploadSingoloNome/${antroponimoInstance.id}", icon: 'database', title: 'UploadSingoloNome'],
+        ]
+        // fine della definizione
+
+        //--presentazione della view (show), secondo il modello
+        //--menuExtra può essere nullo o vuoto
+        render(view: 'show', model: [
+                antroponimoInstance: antroponimoInstance,
+                menuExtra          : menuExtra,
+                noMenuCreate       : noMenuCreate],
+                params: params)
     } // fine del metodo
 
-//    def show(Long id) {
-//        def antroponimoInstance = Antroponimo.get(id)
-//        ArrayList menuExtra
-//        def noMenuCreate = true
-//
-//        if (!antroponimoInstance) {
-//            flash.message = message(code: 'default.not.found.message', args: [message(code: 'antroponimo.label', default: 'Antroponimo'), id])
-//            redirect(action: 'list')
-//            return
-//        }// fine del blocco if e fine anticipata del metodo
-//
-//        //--selezione dei menu extra
-//        //--solo azione e di default controller=questo; classe e titolo vengono uguali
-//        //--mappa con [cont:'controller', action:'metodo', icon:'iconaImmagine', title:'titoloVisibile']
-//        menuExtra = [
-//                [cont: 'antroponimo', action: "uploadSingoloNome/${id}", icon: 'database', title: 'UploadSingoloNome'],
-//        ]
-//        // fine della definizione
-//
-//        //--presentazione della view (show), secondo il modello
-//        //--menuExtra può essere nullo o vuoto
-//        render(view: 'show', model: [
-//                antroponimoInstance: antroponimoInstance,
-//                menuExtra          : menuExtra,
-//                noMenuCreate       : noMenuCreate],
-//                params: params)
-//    } // fine del metodo
 
     def edit(Antroponimo antroponimoInstance) {
         respond antroponimoInstance
