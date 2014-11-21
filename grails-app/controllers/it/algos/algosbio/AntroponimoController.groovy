@@ -34,7 +34,7 @@ import static org.springframework.http.HttpStatus.OK
 class AntroponimoController {
 
     static allowedMethods = [save: 'POST', update: 'POST', delete: 'POST']
-    private static int MAX = 20
+    private static int MAX = 50
 
     // utilizzo di un service con la businessLogic per l'elaborazione dei dati
     // il service viene iniettato automaticamente
@@ -206,8 +206,6 @@ class AntroponimoController {
 
     private uploadBase() {
         boolean debug = Pref.getBool(LibBio.DEBUG, false)
-        ArrayList<String> listaNomi = null
-        antroponimoService.creaPagineControllo()
 
         //--ricontrolla la lista delle professioni
         if (!debug && professioneService) {
@@ -219,17 +217,14 @@ class AntroponimoController {
             genereService.download()
         }// fine del blocco if
 
-        //--aggiorna il numero di voci per ogni antroponimo della lista (semi-statica)
         if (!debug && antroponimoService) {
+            //--aggiorna il numero di voci per ogni antroponimo della lista (semi-statica)
             antroponimoService.ricalcola()
-        }// fine del blocco if
 
-        //--costruisce una lista di nomi (circa 900)
-        if (antroponimoService) {
+            //--costruisce una lista di nomi (circa 900)
             antroponimoService.upload()
-        }// fine del blocco if
 
-        if (!debug && listaNomi) {
+            //--pagine di controllo
             antroponimoService.creaPagineControllo()
         }// fine del blocco if
     } // fine del metodo
@@ -247,6 +242,40 @@ class AntroponimoController {
         } else {
             flash.error = 'Devi essere loggato per effettuare un upload di pagine sul server wiki'
         }// fine del blocco if-else
+        redirect(action: 'list')
+    } // fine del metodo
+
+    //--elabora e crea sul server wiki le pagine di servizio
+    //--mostra un avviso di spiegazione per l'operazione da compiere
+    //--passa al metodo effettivo
+    def controllo() {
+        params.tipo = TipoDialogo.conferma
+        params.titolo = 'Creazione pagine di servizio'
+        params.avviso = []
+        params.avviso.add('Crea Progetto:Antroponimi/Nomi, Progetto:Antroponimi/Liste, Progetto:Antroponimi/Didascalie')
+        params.returnController = 'antroponimo'
+        params.returnAction = 'controlloDopoConferma'
+        redirect(controller: 'dialogo', action: 'box', params: params)
+    } // fine del metodo
+
+    //--elabora e crea sul server wiki le pagine di servizio
+    //--passa al metodo effettivo
+    def controlloDopoConferma() {
+        String valore
+        flash.message = 'Operazione annullata. Pagine non create.'
+
+        if (params.valore) {
+            if (params.valore instanceof String) {
+                valore = (String) params.valore
+                if (valore.equals(DialogoController.DIALOGO_CONFERMA)) {
+                    if (antroponimoService) {
+                        antroponimoService.creaPagineControllo()
+                    }// fine del blocco if
+                    flash.message = 'Operazione effettuata. Sono state ricreate le pagine di servizio'
+                }// fine del blocco if
+            }// fine del blocco if
+        }// fine del blocco if
+
         redirect(action: 'list')
     } // fine del metodo
 
@@ -268,6 +297,7 @@ class AntroponimoController {
                 [cont: 'antroponimo', action: 'aggiunge', icon: 'frecciasu', title: 'Aggiungi records'],
                 [cont: 'antroponimo', action: 'ricalcola', icon: 'frecciasu', title: 'Ricalcolo voci'],
                 [cont: 'antroponimo', action: 'upload', icon: 'frecciasu', title: 'Upload antroponimi'],
+                [cont: 'antroponimo', action: 'controllo', icon: 'frecciasu', title: 'Pagine di servizio'],
         ]
         params.menuExtra = menuExtra
         // fine della definizione

@@ -1,7 +1,6 @@
 package it.algos.algosbio
 
 import it.algos.algoslib.Mese
-import it.algos.algoswiki.Login
 
 /**
  * Created by gac on 18/10/14.
@@ -128,13 +127,13 @@ abstract class ListaAnno extends ListaBio {
         int annoOrdinamento = anno + 2000
 
         testo += "<noinclude>"
-        testo += A_CAPO
+        testo += aCapo
         testo += '{{Portale|biografie}}'
-        testo += A_CAPO
+        testo += aCapo
         testo += "[[Categoria:${categoriaTxt}| ${annoOrdinamento}]]"
-        testo += A_CAPO
+        testo += aCapo
         testo += "[[Categoria:${natiMorti} nel ${anno}| ]]"
-        testo += A_CAPO
+        testo += aCapo
         testo += "</noinclude>"
 
         return testo

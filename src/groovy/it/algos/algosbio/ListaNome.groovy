@@ -3,6 +3,7 @@ package it.algos.algosbio
 import it.algos.algoslib.LibTesto
 import it.algos.algospref.Pref
 import it.algos.algoswiki.Login
+import it.algos.algoswiki.WikiLib
 
 /**
  * Created by gac on 18/10/14.
@@ -54,7 +55,7 @@ class ListaNome extends ListaBio {
     @Override
     protected elaboraTitolo() {
         if (!titoloPagina) {
-            titoloPagina = 'Persone di nome ' + soggetto
+            titoloPagina = 'Persone di nome ' + getNome()
         }// fine del blocco if
     }// fine del metodo
 
@@ -87,6 +88,65 @@ class ListaNome extends ListaBio {
         }// fine del blocco if
 
         return ritorno
+    }// fine del metodo
+
+    /**
+     * Corpo della pagina - didascalia
+     * Decide se c'è la suddivisione in paragrafi
+     * Costruisce una mappa in funzione della suddivisione in paragrafi
+     *  chiave=una chiave per ogni parametro/paragrafo
+     *  valore=una lista di BioGrails
+     * Se non c'è suddivisione, la mappa ha un unico valore con chiave vuota
+     * Decide se ci sono sottopagine
+     * Sovrascritto
+     */
+    @Override
+    protected String elaboraBodyDidascalie() {
+        if (Pref.getBool(LibBio.USA_SUDDIVISIONE_UOMO_DONNA, false)) {
+            return elaboraBodyDidascalieNome()
+        } else {
+            return super.elaboraBodyDidascalie()
+        }// fine del blocco if-else
+    }// fine del metodo
+
+    /**
+     * Corpo della pagina
+     * Controlla se ci sono voci differenziate uomini/donne
+     * Se ci sono divide in due la pagina
+     * Se non ci sono, procede come la superclasse
+     */
+    protected String elaboraBodyDidascalieNome() {
+        String testo = ''
+        ArrayList<BioGrails> listaVociMaschili
+        ArrayList<BioGrails> listaVociFemminili
+        String tagMaschio = 'M'
+        String tagFemmina = 'F'
+        LinkedHashMap<String, ArrayList<BioGrails>> mappa
+
+        listaVociMaschili = selezionaGenere(listaBiografie, tagMaschio)
+        listaVociFemminili = selezionaGenere(listaBiografie, tagFemmina)
+
+        if (listaVociMaschili && listaVociFemminili) {
+            testo += aCapo
+            testo += '=Uomini='
+            testo += aCapo
+            mappa = getMappa(listaVociMaschili)
+            mappa?.each {
+                testo += super.elaboraBodyParagrafo(it)
+            }// fine del ciclo each
+            testo += aCapo
+            testo += '=Donne='
+            testo += aCapo
+            mappa = getMappa(listaVociFemminili)
+            mappa?.each {
+                testo += super.elaboraBodyParagrafo(it)
+            }// fine del ciclo each
+        } else {
+            testo = super.elaboraBodyDidascalie()
+        }// fine del blocco if-else
+
+        def stop
+        return testo
     }// fine del metodo
 
     /**
@@ -184,7 +244,7 @@ class ListaNome extends ListaBio {
     @Override
     protected elaboraFooter() {
         String testo = ''
-        String nome = soggetto
+        String nome = getNome()
 
         testo += "<noinclude>"
         testo += "[[Categoria:Liste di persone per nome|${nome}]]"
@@ -215,7 +275,9 @@ class ListaNome extends ListaBio {
 
         if (antroponimo) {
             nome = antroponimo.nome
-        }// fine del blocco if
+        } else {
+            nome = soggetto
+        }// fine del blocco if-else
 
         return nome
     }// fine del metodo
@@ -255,27 +317,33 @@ class ListaNome extends ListaBio {
         return plurale
     }// fine del metodo
 
+    private static ArrayList<BioGrails> selezionaGenere(ArrayList<BioGrails> listaVoci, String tag) {
+        ArrayList<BioGrails> lista = null
+        BioGrails bio
+
+        if (listaVoci && listaVoci.size() > 0 && tag) {
+            lista = new ArrayList<BioGrails>()
+            listaVoci?.each {
+                bio = it
+                if (bio.sesso.equals(tag)) {
+                    lista.add(bio)
+                }// fine del blocco if
+            } // fine del ciclo each
+        }// fine del blocco if
+
+        return lista
+    }// fine del metodo
+
     /**
      * Costruisce una lista di biografie
      */
     @Override
     protected elaboraListaBiografie() {
         Antroponimo antroponimo = getAntroponimo()
-        String tagSpazio = ' '
-        String tagWillCard = '%'
-        String nomeSemplice = soggetto
-        String nomeWillCardA = nomeSemplice + tagSpazio + tagWillCard
-        String nomeWillCardB = tagWillCard + tagSpazio + nomeSemplice
 
-        listaBiografie = BioGrails.findAllByNomeLink(antroponimo, [sort: 'forzaOrdinamento'])
-          def  listaBiografie2 = BioGrails.findAllByNomeLikeOrNomeLikeOrNomeLike(nomeSemplice, nomeWillCardA, nomeWillCardB, [sort: 'forzaOrdinamento'])
-
-//        if (usaNomeDoppio) {
-//            listaBiografie = BioGrails.findAllByNomeLikeOrNomeLikeOrNomeLike(nomeSemplice, nomeWillCardA, nomeWillCardB, [sort: 'forzaOrdinamento'])
-//        } else {
-//            if (antroponimo) {
-//            }// fine del blocco if
-//        }// fine del blocco if-else
+        if (antroponimo) {
+            listaBiografie = BioGrails.findAllByNomeLink(antroponimo, [sort: 'forzaOrdinamento'])
+        }// fine del blocco if
 
         def stop
     }// fine del metodo

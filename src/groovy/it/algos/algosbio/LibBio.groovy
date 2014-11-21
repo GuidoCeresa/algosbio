@@ -81,6 +81,7 @@ class LibBio {
     public static final String USA_LISTA_NOMI_DOPPI = 'usaListaNomiDoppi'
     public static final String NUM_VOCI_INFO_NOMI_RICALCOLA = 'numVociInfoNomiRicalcola'
     public static final String NUM_VOCI_INFO_NOMI_UPLOAD = 'numVociInfoNomiUpload'
+    public static final String USA_NOME_COGNOMEPER_TITOLO = 'usaNomeCognomePerTitolo'
 
     // campi di una mappa
     public static final String MAPPA_TITOLO_PARAGRAFO = 'titoloParagrafo'

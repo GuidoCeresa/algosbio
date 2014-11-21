@@ -36,7 +36,6 @@ class LocalitaService {
         def stop
     }// fine del metodo
 
-
     /**
      * Elabora la pagina per una singola localita
      */
@@ -325,11 +324,11 @@ class LocalitaService {
      * Ritorna la località dal link alla voce
      * Se non esiste, la crea
      */
-    public static Localita getLuogoNascita(BioWiki bioWiki) {
+    public Localita getLuogoNascita(BioWiki bioWiki) {
         return getLocalita(bioWiki.luogoNascita, bioWiki.luogoNascitaLink, NatoMorto.nato)
     } // fine del metodo
 
-    public static Localita getLuogoMorte(BioWiki bioWiki) {
+    public Localita getLuogoMorte(BioWiki bioWiki) {
         return getLocalita(bioWiki.luogoMorte, bioWiki.luogoMorteLink, NatoMorto.morto)
     } // fine del metodo
 
@@ -337,7 +336,7 @@ class LocalitaService {
      * Ritorna la località dal link alla voce
      * Se non esiste, la crea
      */
-    private static Localita getLocalita(String luogo, String luogoLink, NatoMorto natoMorto) {
+    private Localita getLocalita(String luogo, String luogoLink, NatoMorto natoMorto) {
         Localita localita = null
 
         if (luogo || luogoLink) {
@@ -350,7 +349,11 @@ class LocalitaService {
                 luogoLink = luogo
             }// fine del blocco if-else
 
-            localita = Localita.findByNome(luogoLink)
+            try { // prova ad eseguire il codice
+                localita = Localita.findByNome(luogoLink)
+            } catch (Exception unErrore) { // intercetta l'errore
+                log.info('getLocalita errata - luogo: ' + luogo + ' e luogoLink ' + luogoLink)
+            }// fine del blocco try-catch
             if (!localita) {
                 localita = new Localita(nome: luogoLink)
             }// fine del blocco if

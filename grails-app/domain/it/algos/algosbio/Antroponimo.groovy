@@ -33,7 +33,7 @@ class Antroponimo {
         voci()
         lunghezza()
         isVocePrincipale()
-        voceRiferimento(nullable: true, blank: true)
+        voceRiferimento(nullable: true)
     } // end of static constraints
 
     /**

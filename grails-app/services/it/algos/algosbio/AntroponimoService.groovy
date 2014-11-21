@@ -333,11 +333,11 @@ class AntroponimoService {
     }// fine del metodo
 
 
-    private  int numeroVociCheUsanoNome(String nome) {
+    private int numeroVociCheUsanoNome(String nome) {
         return numeroVociCheUsanoNome(nome, null)
     }// fine del metodo
 
-    private  numeroVociCheUsanoNome(String nome, Antroponimo antroponimo) {
+    private numeroVociCheUsanoNome(String nome, Antroponimo antroponimo) {
         int numVoci = 0
         String query = ''
         String sep = "'"
@@ -541,7 +541,7 @@ class AntroponimoService {
      */
     public void upload() {
         def nonServe
-        ArrayList<String> listaNomi = getListaNomi()
+        ArrayList<Antroponimo> listaVoci = getListaAntroponimi()
         int numVociBlocco = Pref.getInt(LibBio.NUM_VOCI_INFO_NOMI_UPLOAD)
         long inizio = System.currentTimeMillis()
         long fine
@@ -549,7 +549,7 @@ class AntroponimoService {
         int k = 0
         String info
 
-        listaNomi?.each {
+        listaVoci?.each {
             nonServe = new ListaNome(it)
             k++
             if (LibMat.avanzamento(k, numVociBlocco)) {
@@ -560,7 +560,7 @@ class AntroponimoService {
                 info = 'Caricate sul server '
                 info += LibTesto.formatNum(k)
                 info += ' voci di antroponimi su '
-                info += LibTesto.formatNum(listaNomi.size())
+                info += LibTesto.formatNum(listaVoci.size())
                 info += ' in '
                 info += LibTesto.formatNum(durata)
                 info += ' sec. totali'
@@ -572,16 +572,16 @@ class AntroponimoService {
 
     public creaPagineControllo() {
         //crea la pagina riepilogativa
-        creaPaginaRiepilogativa()
+        paginaNomi()
 
         //crea le pagine di riepilogo di tutti i nomi
-        elencoNomi()
+        paginaListe()
 
         //crea la pagina di controllo didascalie
         creaPaginaDidascalie()
     }// fine del metodo
 
-    def elencoNomi() {
+    def paginaListe() {
         int taglio = Pref.getInt(LibBio.TAGLIO_ANTROPONIMI)
         int soglia = Pref.getInt(LibBio.SOGLIA_ANTROPONIMI)
         String testo = ''
@@ -610,14 +610,14 @@ class AntroponimoService {
             lista.add([k, nome, voci])
         } // fine del ciclo each
 
-        testo += getElencoHead(k)
-        testo += getElencoBody(lista)
-        testo += getElencoFooter()
+        testo += getListeHead(k)
+        testo += getListeBody(lista)
+        testo += getListeFooter()
 
         new Edit(titolo, testo, summary)
     }// fine del metodo
 
-    private static String getElencoHead(int numNomi) {
+    private static String getListeHead(int numNomi) {
         String testoTitolo = ''
         String dataCorrente = LibTime.getGioMeseAnnoLungo(new Date())
         int soglia = Pref.getInt(LibBio.SOGLIA_ANTROPONIMI)
@@ -632,15 +632,6 @@ class AntroponimoService {
         testoTitolo += "Elenco dei '''"
         testoTitolo += LibTesto.formatNum(numNomi)
         testoTitolo += "''' nomi '''differenti''' "
-        testoTitolo += "<ref>Gli apostrofi vengono rispettati. Pertanto: '''María, Marià, Maria, Mária, Marìa, Mariâ''' sono nomi diversi</ref>"
-        testoTitolo += "<ref>I nomi ''doppi'' ('''Maria Cristina'''), vengono considerati nella loro completezza</ref>"
-        testoTitolo += "<ref>Per motivi tecnici, non vengono riportati nomi che iniziano con '''apici''' od '''apostrofi'''</ref>"
-        testoTitolo += "<ref>Non vengono riportati nomi che iniziano con '''['''</ref>"
-        testoTitolo += "<ref>Non vengono riportati nomi che iniziano con '''{'''</ref>"
-        testoTitolo += "<ref>Non vengono riportati nomi che iniziano con '''('''</ref>"
-        testoTitolo += "<ref>Non vengono riportati nomi che iniziano con '''.'''</ref>"
-        testoTitolo += "<ref>Non vengono riportati nomi che iniziano con '''&'''</ref>"
-        testoTitolo += "<ref>Non vengono riportati nomi che iniziano con '''<'''</ref>"
         testoTitolo += " utilizzati nelle '''"
         testoTitolo += LibTesto.formatNum(numBio)
         testoTitolo += "''' voci biografiche con occorrenze maggiori di '''"
@@ -653,7 +644,7 @@ class AntroponimoService {
     }// fine del metodo
 
     //costruisce il testo della tabella
-    private static String getElencoBody(ArrayList listaVoci) {
+    private static String getListeBody(ArrayList listaVoci) {
         String testoTabella
         Map mappa = new HashMap()
 
@@ -665,11 +656,11 @@ class AntroponimoService {
         return testoTabella
     }// fine del metodo
 
-    private static String getElencoFooter() {
+    private String getListeFooter() {
         String testoFooter = ''
 
-        testoFooter += aCapo
-        testoFooter += '==Note=='
+        testoFooter += getCriteri()
+
         testoFooter += aCapo
         testoFooter += '<references/>'
         testoFooter += aCapo
@@ -679,6 +670,8 @@ class AntroponimoService {
         testoFooter += '*[[Progetto:Antroponimi]]'
         testoFooter += aCapo
         testoFooter += '*[[Progetto:Antroponimi/Nomi]]'
+        testoFooter += aCapo
+        testoFooter += '*[[Progetto:Antroponimi/Nomi doppi]]'
         testoFooter += aCapo
         testoFooter += '*[[Progetto:Antroponimi/Didascalie]]'
         testoFooter += aCapo
@@ -1468,24 +1461,23 @@ class AntroponimoService {
     /**
      * Crea la pagina riepilogativa
      */
-    public creaPaginaRiepilogativa() {
+    public paginaNomi() {
         ArrayList<Antroponimo> listaVoci = getListaAntroponimi()
         String testo = ''
         String titolo = progetto + 'Nomi'
         String summary = 'Biobot'
 
         if (listaVoci) {
-            testo += getRiepilogoHead()
-//            testo += getRiepilogoBody(listaVoci)
-            testo += getRiepilogoFooter()
+            testo += getNomiHead()
+            testo += getNomiBody(listaVoci)
+            testo += getNomiFooter()
 
             new Edit(titolo, testo, summary)
         }// fine del blocco if
-        def stop
     }// fine del metodo
 
 
-    public String getRiepilogoHead() {
+    public String getNomiHead() {
         String testo = ''
         String dataCorrente = LibTime.getGioMeseAnnoLungo(new Date())
 
@@ -1499,7 +1491,7 @@ class AntroponimoService {
     }// fine del metodo
 
 
-    public String getRiepilogoBody(ArrayList<Antroponimo> listaVoci) {
+    public String getNomiBody(ArrayList<Antroponimo> listaVoci) {
         String testo = ''
         int taglio = Pref.getInt(LibBio.TAGLIO_ANTROPONIMI)
         Antroponimo antro
@@ -1559,35 +1551,17 @@ class AntroponimoService {
         return testo.trim()
     }// fine del metodo
 
-    public String getRiepilogoFooter() {
+    public String getNomiFooter() {
         String testo = ''
-        String tag = aCapo + '*'
 
-        testo += aCapo
-        testo += '==Criteri=='
-        testo += tag + "I nomi vengono estratti dal parametro ''nome'' del [[Template:Bio|template:Bio]] di ogni voce biografica"
-        testo += tag + "Vengono considerati solo i caratteri alfabetici (UTF8) più il trattino ('''-''') e l'apostrofo (''''''')"
-        testo += tag + "Viene considerato solo il primo nome presente nel template della voce"
-        testo += tag + "I nomi composti formati da una sola parola (tipo 'Gianpaolo') sono compresi"
-        testo += tag + "I nomi composti/doppi formati da più parole (tipo 'Maria Teresa') sono compresi '''solo''' se sono presenti nell'apposita [[Progetto:Antroponimi/Nomi doppi|lista]]"
-        testo += tag + "I nomi composti con trattino (tipo 'Jean-Baptiste') sono previsti"
-        testo += tag + "Per ogni nome viene creata una pagina con la lista di voci biografiche che riportano il nome stesso come primo nome, anche se poi seguito da altri nomi"
-        testo += tag + "Il numero di occorrenze di voci biografiche richiesto per avere una pagina è stato raggiunto per [[Discussioni progetto:Antroponimi|consenso]]"
-        testo += tag + "Le pagine sono suddivise per attività principale, come risulta dal parametro ''attività'' del [[Template:Bio|template:Bio]] di ogni voce biografica"
-        testo += tag + "Le persone sono riportate col titolo della voce, indipendentemente dal ''nome'' e ''cognome'' utilizzati"
-        testo += tag + "Le persone sono ordinate alfabeticamente per cognome, come risulta dal parametro ''cognome'' del [[Template:Bio|template:Bio]] di ogni voce biografica"
-        testo += tag + "La didascalia viene presentata come previsto in [[Progetto:Antroponimi/Didascalie]]"
-        testo += tag + "Se l'attività principale non risulta dalla voce, le persone vengono raggruppate in un paragrafo finale"
-        testo += tag + "I titolo dei paragrafi rispecchiano il genere (maschile o femminile) delle persone che elencano"
-        testo += tag + "Se nella stessa pagina ci sono persone di sesso diverso, anche con lo stesso nome (ad esempio ''Andrea''), la pagina stessa viene suddivisa"
-        testo += tag + "Se le voci in un paragrafo superano il numero di 50, viene creata una sottopagina"
-        testo += tag + "Nella sottopagina le voci sono suddivise per lettera alfabetica"
-        testo += tag + "L'aggiornamento delle pagine è ogni una-due settimane"
+        testo += getCriteri()
 
         testo += aCapo
         testo += '==Voci correlate=='
         testo += aCapo
         testo += '*[[Progetto:Antroponimi]]'
+        testo += aCapo
+        testo += '*[[Progetto:Antroponimi/Nomi doppi]]'
         testo += aCapo
         testo += '*[[Progetto:Antroponimi/Liste]]'
         testo += aCapo
@@ -1601,11 +1575,48 @@ class AntroponimoService {
         return testo
     }// fine del metodo
 
+
+    public String getCriteri() {
+        String testo = ''
+        String tag = aCapo + '*'
+
+        testo += aCapo
+        testo += '==Criteri=='
+        testo += tag + "I nomi vengono estratti dal parametro ''nome'' del [[Template:Bio|template:Bio]] di ogni voce biografica"
+        testo += tag + "Vengono considerati solo i caratteri alfabetici (UTF8) più il '''trattino''' e '''apice''' iniziale (per i nomi arabi)"
+        testo += tag + "Non vengono riportati nomi che iniziano con '''['''"
+        testo += tag + "Non vengono riportati nomi che iniziano con '''{'''"
+        testo += tag + "Non vengono riportati nomi che iniziano con '''('''"
+        testo += tag + "Non vengono riportati nomi che iniziano con '''.'''"
+        testo += tag + "Non vengono riportati nomi che iniziano con '''&'''"
+        testo += tag + "Non vengono riportati nomi che iniziano con '''<'''"
+        testo += tag + "Non vengono riportati nomi di un solo carattere"
+        testo += tag + "Viene considerato solo il primo nome presente nel template della voce"
+        testo += tag + "Gli apostrofi vengono rispettati. Pertanto: '''María, Marià, Maria, Mária, Marìa, Mariâ''' sono nomi diversi"
+        testo += tag + "I nomi composti formati da una sola parola (tipo '''Gianpaolo''') sono compresi"
+        testo += tag + "I nomi composti/doppi formati da più parole (tipo '''Maria Teresa''') sono compresi '''solo''' se sono presenti nell'apposita [[Progetto:Antroponimi/Nomi doppi|lista]]"
+        testo += tag + "I nomi composti con trattino (tipo '''Jean-Baptiste''') sono previsti"
+        testo += tag + "Per ogni nome viene creata una pagina con la lista di voci biografiche che riportano il nome stesso come primo nome, anche se poi seguito da altri nomi"
+        testo += tag + "Il numero di occorrenze di voci biografiche richiesto per avere una pagina è stato raggiunto per [[Discussioni progetto:Antroponimi|consenso]]"
+        testo += tag + "Le pagine sono suddivise per attività principale, come risulta dal parametro ''attività'' del [[Template:Bio|template:Bio]] di ogni voce biografica"
+        testo += tag + "Le persone sono riportate col titolo della voce, indipendentemente dal ''nome'' e ''cognome'' utilizzati"
+        testo += tag + "Le persone sono ordinate alfabeticamente per cognome, come risulta dal parametro ''cognome'' del [[Template:Bio|template:Bio]] di ogni voce biografica"
+        testo += tag + "La didascalia viene presentata come previsto in [[Progetto:Antroponimi/Didascalie]]"
+        testo += tag + "Se l'attività principale non risulta dalla voce, le persone vengono raggruppate in un paragrafo finale"
+        testo += tag + "I titolo dei paragrafi rispecchiano il genere (maschile o femminile) delle persone che elencano"
+        testo += tag + "Se nella stessa pagina ci sono persone di sesso diverso, anche con lo stesso nome (ad esempio ''Andrea''), la pagina stessa viene suddivisa"
+        testo += tag + "Se le voci in un paragrafo superano il numero di 50, viene creata una sottopagina"
+        testo += tag + "Nella sottopagina le voci sono suddivise per lettera alfabetica"
+        testo += tag + "L'aggiornamento delle pagine è ogni una-due settimane"
+
+        return testo
+    }// fine del metodo
+
     /**
      * Ritorna l'antroponimo dal link alla voce
      * Se non esiste, lo crea
      */
-    public  Antroponimo getAntroponimo(String nomeDaControllare) {
+    public Antroponimo getAntroponimo(String nomeDaControllare) {
         Antroponimo antroponimo = null
         String nome = ''
         int soglia = Pref.getInt(LibBio.SOGLIA_ANTROPONIMI)

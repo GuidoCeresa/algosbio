@@ -1,6 +1,7 @@
 package it.algos.algosbio
 
 import it.algos.algoslib.LibWiki
+import it.algos.algospref.Pref
 import org.apache.commons.logging.LogFactory
 
 /**
@@ -642,39 +643,21 @@ class DidascaliaBio {
      */
     def getNomeCognome() {
         // variabili e costanti locali di lavoro
-        String nomeCognome = ''
+        String nomeCognome
         boolean continua = false
         String titoloVoce
         String tagPar = '('
         String tagPipe = '|'
         String nomePrimaDellaParentesi
         titoloVoce = this.titolo
-        boolean usaTitoloPerNomeCognome = false
+        boolean usaNomeCognomePerTitolo = Pref.getBool(LibBio.USA_NOME_COGNOMEPER_TITOLO, false)
 
-        switch (tipoDidascalia) {
-            case DidascaliaTipo.base:
-            case DidascaliaTipo.crono:
-            case DidascaliaTipo.cronoSimboli:
-            case DidascaliaTipo.semplice:
-            case DidascaliaTipo.completa:
-            case DidascaliaTipo.completaLista:
-            case DidascaliaTipo.completaSimboli:
-            case DidascaliaTipo.estesa:
-            case DidascaliaTipo.natiGiorno:
-            case DidascaliaTipo.natiAnno:
-            case DidascaliaTipo.mortiGiorno:
-            case DidascaliaTipo.mortiAnno:
-                usaTitoloPerNomeCognome = true
-                break
-            case DidascaliaTipo.estesaSimboli:
-                usaTitoloPerNomeCognome = false
-                break
-            default: // caso non definito
-                usaTitoloPerNomeCognome = true
-                break
-        } // fine del blocco switch
-
-        if (usaTitoloPerNomeCognome) {
+        if (usaNomeCognomePerTitolo) {
+            nomeCognome = this.nome + ' ' + this.cognome
+            if (!nomeCognome.equals(titoloVoce)) {
+                nomeCognome = titoloVoce + tagPipe + nomeCognome
+            }// fine del blocco if
+        } else {
             // se il titolo NON contiene la parentesi, il nome non va messo perché coincide col titolo della voce
             if (titoloVoce.contains(tagPar)) {
                 nomePrimaDellaParentesi = titoloVoce.substring(0, titoloVoce.indexOf(tagPar))
@@ -682,11 +665,6 @@ class DidascaliaBio {
             } else {
                 nomeCognome = titoloVoce
             }// fine del blocco if-else
-        } else {
-            nomeCognome = this.nome + ' ' + this.cognome
-            if (!nomeCognome.equals(titoloVoce)) {
-                nomeCognome = titoloVoce + tagPipe + nomeCognome
-            }// fine del blocco if
         }// fine del blocco if-else
 
         nomeCognome = nomeCognome.trim()

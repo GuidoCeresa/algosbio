@@ -1,8 +1,4 @@
 package it.algos.algosbio
-
-import it.algos.algoslib.Mese
-import it.algos.algoswiki.Login
-
 /**
  * Created by gac on 17/10/14.
  */
@@ -140,13 +136,13 @@ abstract class ListaGiorno extends ListaBio {
         String titoloPagina = getTitolo()
 
         testo += "<noinclude>"
-        testo += A_CAPO
+        testo += aCapo
         testo += '{{Portale|biografie}}'
-        testo += A_CAPO
+        testo += aCapo
         testo += "[[Categoria:${categoriaTxt}| ${giornoOrdinamento}]]"
-        testo += A_CAPO
+        testo += aCapo
         testo += "[[Categoria:${titoloPagina}| ]]"
-        testo += A_CAPO
+        testo += aCapo
         testo += "</noinclude>"
 
         return testo

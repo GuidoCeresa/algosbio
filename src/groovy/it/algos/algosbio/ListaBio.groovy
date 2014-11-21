@@ -1,13 +1,11 @@
 package it.algos.algosbio
 
 import grails.transaction.Transactional
-import grails.util.Holders
 import groovy.util.logging.Log4j
 import it.algos.algoslib.LibTesto
 import it.algos.algoslib.LibTime
 import it.algos.algoslib.Mese
 import it.algos.algospref.Pref
-import it.algos.algoswiki.Login
 import it.algos.algoswiki.Risultato
 import it.algos.algoswiki.WikiLib
 
@@ -27,7 +25,7 @@ abstract class ListaBio {
     protected static String TAG_INDICE = '__FORCETOC__'
     protected static String TAG_NO_INDICE = '__NOTOC__'
 
-    protected static String A_CAPO = '\n'
+    protected static String aCapo = '\n'
     protected static String SPAZIO = ' '
 
     protected Object oggetto    //Giorno, Anno, Antroponimo, Attivita, ecc
@@ -158,26 +156,26 @@ abstract class ListaBio {
         } else {
             testo += TAG_NO_INDICE
         }// fine del blocco if-else
-        testo += A_CAPO
+        testo += aCapo
 
         if (ritorno) {
             testo += ritorno
-            testo += A_CAPO
+            testo += aCapo
         }// fine del blocco if
 
         testo += "<noinclude>"
-        testo += A_CAPO
+        testo += aCapo
         testo += "{{${template}"
         testo += "|bio="
         testo += personeTxt
         testo += "|data="
         testo += dataCorrente.trim()
         testo += "}}"
-        testo += A_CAPO
+        testo += aCapo
 
         if (incipit) {
             testo += incipit
-            testo += A_CAPO
+            testo += aCapo
         }// fine del blocco if
         testo += "</noinclude>"
 
@@ -203,40 +201,64 @@ abstract class ListaBio {
 
     /**
      * Corpo della pagina
+     * Decide se c'è la doppia colonna
+     * Controlla eventuali template di rinvio
+     * Sovrascritto
+     */
+    protected String elaboraBody() {
+        String testo = elaboraBodyDidascalie()
+
+        if (usaDoppiaColonna) {
+            testo = WikiLib.listaDueColonne(testo.trim())
+        }// fine del blocco if
+        testo = elaboraTemplate(testo)
+
+        return testo
+    }// fine del metodo
+
+    /**
+     * Corpo della pagina - didascalia
      * Decide se c'è la suddivisione in paragrafi
      * Costruisce una mappa in funzione della suddivisione in paragrafi
      *  chiave=una chiave per ogni parametro/paragrafo
      *  valore=una lista di BioGrails
      * Se non c'è suddivisione, la mappa ha un unico valore con chiave vuota
      * Decide se ci sono sottopagine
-     * Decide se c'è la doppia colonna
      * Sovrascritto
      */
-    protected String elaboraBody() {
+    protected String elaboraBodyDidascalie() {
         String testo = ''
-        LinkedHashMap mappa = null
-        String chiaveSemplice
+        LinkedHashMap<String, ArrayList<BioGrails>> mappa
+
+        mappa = getMappa(listaBiografie)
+        mappa?.each {
+            testo += elaboraBodyParagrafo(it)
+        }// fine del ciclo each
+
+        return testo
+    }// fine del metodo
+
+    /**
+     * Singolo paragrafo
+     * Mappa in funzione della suddivisione in paragrafi
+     *  chiave=una chiave per ogni parametro/paragrafo
+     *  valore=una lista di BioGrails
+     * Decide se ci sono sottopagine
+     */
+    protected String elaboraBodyParagrafo(def mappa) {
+        String testo = ''
         String chiaveParagrafo
         String titoloParagrafo
         ArrayList<BioGrails> listaVoci
         ArrayList<BioGrails> listaVociOrdinate
         ArrayList<String> listaDidascalie
 
-        mappa = getMappa(listaBiografie)
-
-        mappa?.each {
-            chiaveParagrafo = it.key
-            listaVoci = (ArrayList<BioGrails>) mappa.get(chiaveParagrafo)
-            listaVociOrdinate = ordinaVoci(listaVoci)
-            listaDidascalie = estraeListaDidascalie(listaVociOrdinate)
-            titoloParagrafo = elaboraTitoloParagrafo(chiaveParagrafo, listaVociOrdinate)
-            testo += elaboraParagrafo(chiaveParagrafo, titoloParagrafo, listaVociOrdinate, listaDidascalie)
-        }// fine del ciclo each
-
-        if (usaDoppiaColonna) {
-            testo = WikiLib.listaDueColonne(testo.trim())
-        }// fine del blocco if
-        testo = elaboraTemplate(testo)
+        chiaveParagrafo = mappa.key
+        listaVoci = mappa.value
+        listaVociOrdinate = ordinaVoci(listaVoci)
+        listaDidascalie = estraeListaDidascalie(listaVociOrdinate)
+        titoloParagrafo = elaboraTitoloParagrafo(chiaveParagrafo, listaVociOrdinate)
+        testo += elaboraParagrafo(chiaveParagrafo, titoloParagrafo, listaVociOrdinate, listaDidascalie)
 
         return testo
     }// fine del metodo
@@ -251,13 +273,13 @@ abstract class ListaBio {
         int numVoci = listaBiografie.size()
 
         testoIni += "{{${titoloTemplate}"
-        testoIni += A_CAPO
+        testoIni += aCapo
         testoIni += "|titolo=${titoloPagina}"
-        testoIni += A_CAPO
+        testoIni += aCapo
         testoIni += "|voci=${numVoci}"
-        testoIni += A_CAPO
+        testoIni += aCapo
         testoIni += "|testo="
-        testoIni += A_CAPO
+        testoIni += aCapo
 
         testoOut = testoIni + testoBody + testoEnd
         return testoOut
@@ -282,7 +304,7 @@ abstract class ListaBio {
      * @param tipoMappa
      * @return mappa
      */
-    protected LinkedHashMap getMappa(ArrayList<BioGrails> listaVoci) {
+    protected LinkedHashMap<String, ArrayList<BioGrails>> getMappa(ArrayList<BioGrails> listaVoci) {
         LinkedHashMap<String, ArrayList<BioGrails>> mappa = null
         String chiaveOld = 'xyzpippoxyz'
         String chiave = ''
@@ -423,7 +445,7 @@ abstract class ListaBio {
         testo += elaboraTitoloParagrafo(titoloParagrafo)
         testo += getParagrafoDidascalia(listaDidascalie)
 
-        return testo + A_CAPO + A_CAPO
+        return testo + aCapo + aCapo
     }// fine del metodo
 
     /**
@@ -451,7 +473,7 @@ abstract class ListaBio {
         testo += elaboraTitoloParagrafo(titoloParagrafo)
         testo += "*{{Vedi anche|${titoloSottovoce}}}"
 
-        return testo + A_CAPO + A_CAPO
+        return testo + aCapo + aCapo
     }// fine del metodo
 
     /**
@@ -464,7 +486,7 @@ abstract class ListaBio {
             testo += tagLivelloParagrafo
             testo += titoloParagrafo
             testo += tagLivelloParagrafo
-            testo += A_CAPO
+            testo += aCapo
         }// fine del blocco if
 
         return testo
@@ -487,7 +509,7 @@ abstract class ListaBio {
             didascalia = it
             testo += '*'
             testo += didascalia
-            testo += A_CAPO
+            testo += aCapo
         }// fine del ciclo each
 
         return testo.trim()

@@ -617,7 +617,7 @@ class VersioneBootStrap {
             pref.code = LibBio.USA_LISTA_NOMI_DOPPI
             pref.descrizione = "Legge la pagina Progetto:Antroponimi/Nomi doppi e aggiunge i records di Antroponimo"
             pref.type = Type.booleano
-            pref.bool = false
+            pref.bool = true
             pref.save(flush: true)
             versioneService.newVersione('Preferenze', 'USA_LISTA_NOMI_DOPPI di default true')
         }// fine del blocco if
@@ -646,6 +646,17 @@ class VersioneBootStrap {
             versioneService.newVersione('Preferenze', 'NUM_VOCI_INFO_NOMI_UPLOAD di default 20')
         }// fine del blocco if
 
+        //--creata una nuova preferenza
+        if (versioneService && versioneService.installaVersione(75)) {
+            Pref pref = new Pref()
+            pref.ordine = Pref.list().size() + 1
+            pref.code = LibBio.USA_NOME_COGNOMEPER_TITOLO
+            pref.descrizione = "Legge la pagina Progetto:Antroponimi/Nomi doppi e aggiunge i records di Antroponimo"
+            pref.type = Type.booleano
+            pref.bool = false
+            pref.save(flush: true)
+            versioneService.newVersione('Preferenze', 'USA_NOME_COGNOMEPER_TITOLO di default false')
+        }// fine del blocco if
     }// fine della closure
 
 
