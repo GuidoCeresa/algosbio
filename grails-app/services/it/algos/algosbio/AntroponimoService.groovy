@@ -185,10 +185,6 @@ class AntroponimoService {
         String tagSpazio = ' '
         boolean usaNomeSingolo = Pref.getBool(LibBio.USA_SOLO_PRIMO_NOME_ANTROPONIMI)
 
-        listaTagContenuto.add('<ref')
-//        listaTagContenuto.add('-')
-        listaTagContenuto.add('"')
-//        listaTagContenuto.add("'")
         listaTagContenuto.add('(')
 
         listaTagIniziali.add('"')
@@ -199,15 +195,18 @@ class AntroponimoService {
         listaTagIniziali.add('[')
         listaTagIniziali.add('(')
         listaTagIniziali.add('.')
-        listaTagIniziali.add('<!--')
+        listaTagIniziali.add('<')
         listaTagIniziali.add('{')
         listaTagIniziali.add('&')
         listaTagIniziali.add('A.')
+        listaTagIniziali.add('Lady ') //titolo e spazio
+        listaTagIniziali.add('Sir ') //titolo e spazio
+        listaTagIniziali.add('Maestro ') //titolo e spazio
 
         String tag = ''
 
-        if (nomeIn.length() > 2 && nomeIn.length() < 100) {
-            nomeOut = nomeIn
+        if (nomeIn && nomeIn.length() > 2 && nomeIn.length() < 100) {
+            nomeOut = nomeIn.trim()
 
             // @todo Maria e Maria Cristina sono uguali
             if (usaNomeSingolo) {
@@ -282,6 +281,7 @@ class AntroponimoService {
                 log.info info
             }// fine del blocco if
         } // fine del ciclo each
+        log.info 'Spazzolati tutti'
     }// fine del metodo
 
     /**
@@ -430,6 +430,7 @@ class AntroponimoService {
                 log.info info
             }// fine del blocco if
         } // fine del ciclo each
+        log.info 'Ricalcolati tutti'
     }// fine del metodo
 
     /**
@@ -578,7 +579,7 @@ class AntroponimoService {
         paginaListe()
 
         //crea la pagina di controllo didascalie
-        creaPaginaDidascalie()
+        paginaDidascalie()
     }// fine del metodo
 
     def paginaListe() {
@@ -1296,7 +1297,7 @@ class AntroponimoService {
     }// fine del metodo
 
     // pagina di controllo/servizio
-    public creaPaginaDidascalie() {
+    public paginaDidascalie() {
         String titolo = progetto + 'Didascalie'
         String testo = ''
         String summary = 'Biobot'
@@ -1426,7 +1427,6 @@ class AntroponimoService {
 
     private static String getDidascalieFooter() {
         String testoFooter = ''
-        String aCapo = '\n'
 
         testoFooter += '==Note=='
         testoFooter += aCapo
@@ -1437,6 +1437,8 @@ class AntroponimoService {
         testoFooter += '*[[Progetto:Antroponimi]]'
         testoFooter += aCapo
         testoFooter += '*[[Progetto:Antroponimi/Nomi]]'
+        testoFooter += aCapo
+        testoFooter += '*[[Progetto:Antroponimi/Nomi doppi]]'
         testoFooter += aCapo
         testoFooter += '*[[Progetto:Antroponimi/Liste]]'
         testoFooter += aCapo
