@@ -9,6 +9,12 @@ class Cognome {
     String testo
     int voci = 0
     int lunghezza = 0
+    boolean isVocePrincipale
+    Cognome voceRiferimento
+
+    //--ridondante, costruito con il tag wikipedia + il title della pagina
+    //--serve per visualizzare un campo extra di link a wikipedia, senza modificare il ''list'' standard
+    String wikiUrl
 
     /**
      * regolazione delle proprietà di ogni campo
@@ -20,6 +26,9 @@ class Cognome {
         testo(blank: false, nullable: false, unique: true)
         voci()
         lunghezza()
+        isVocePrincipale()
+        voceRiferimento(nullable: true)
+        wikiUrl(nullable: true, blank: true)
     } // end of static constraints
 
     /**

@@ -47,3 +47,12 @@
 
 </div>
 
+<div class="fieldcontain ${hasErrors(bean: antroponimoInstance, field: 'wikiUrl', 'error')} ">
+	<label for="wikiUrl">
+		<g:message code="antroponimo.wikiUrl.label" default="Wiki Url" />
+		
+	</label>
+	<g:textField name="wikiUrl" value="${antroponimoInstance?.wikiUrl}"/>
+
+</div>
+

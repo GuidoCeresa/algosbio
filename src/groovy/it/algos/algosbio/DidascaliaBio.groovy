@@ -650,7 +650,7 @@ class DidascaliaBio {
         String tagPipe = '|'
         String nomePrimaDellaParentesi
         titoloVoce = this.titolo
-        boolean usaNomeCognomePerTitolo = Pref.getBool(LibBio.USA_NOME_COGNOMEPER_TITOLO, false)
+        boolean usaNomeCognomePerTitolo = Pref.getBool(LibBio.USA_NOME_COGNOME_PER_TITOLO, false)
 
         if (usaNomeCognomePerTitolo) {
             nomeCognome = this.nome + ' ' + this.cognome

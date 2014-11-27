@@ -199,9 +199,9 @@ class AntroponimoService {
         listaTagIniziali.add('{')
         listaTagIniziali.add('&')
         listaTagIniziali.add('A.')
-        listaTagIniziali.add('Lady ') //titolo e spazio
+        listaTagIniziali.add('Lady') //titolo
         listaTagIniziali.add('Sir ') //titolo e spazio
-        listaTagIniziali.add('Maestro ') //titolo e spazio
+        listaTagIniziali.add('Maestro') //titolo
 
         String tag = ''
 
@@ -679,6 +679,8 @@ class AntroponimoService {
         testoFooter += aCapo
         testoFooter += '<noinclude>'
         testoFooter += '[[Categoria:Liste di persone per nome| ]]'
+        testoFooter += aCapo
+        testoFooter += '[[Categoria:Progetto Antroponimi|Liste]]'
         testoFooter += '</noinclude>'
 
         return testoFooter
@@ -1445,6 +1447,8 @@ class AntroponimoService {
         testoFooter += aCapo
         testoFooter += '<noinclude>'
         testoFooter += '[[Categoria:Liste di persone per nome| ]]'
+        testoFooter += aCapo
+        testoFooter += '[[Categoria:Progetto Antroponimi|Didascalie]]'
         testoFooter += '</noinclude>'
 
         return testoFooter
@@ -1572,6 +1576,8 @@ class AntroponimoService {
         testo += aCapo
         testo += '<noinclude>'
         testo += '[[Categoria:Liste di persone per nome| ]]'
+        testo += aCapo
+        testo += '[[Categoria:Progetto Antroponimi|Nomi]]'
         testo += '</noinclude>'
 
         return testo

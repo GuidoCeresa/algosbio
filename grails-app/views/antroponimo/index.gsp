@@ -1,3 +1,4 @@
+
 <%@ page import="it.algos.algosbio.Antroponimo" %>
 <!DOCTYPE html>
 <html>
@@ -9,7 +10,7 @@
 
 <body>
 <a href="#list-antroponimo" class="skip" tabindex="-1"><g:message code="default.link.skip.label"
-                                                                  default="Skip to content&hellip;"/></a>
+                                                                                  default="Skip to content&hellip;"/></a>
 
 <div class="nav" role="navigation">
     <ul>
@@ -42,12 +43,7 @@
             <div class="errors" role="status">${singoloErrore}</div>
         </g:each>
     </g:if>
-    <g:if test="${titoloLista}">
-        <h1>${titoloLista}</h1>
-    </g:if>
-    <g:else>
-        <h1><g:message code="antroponimo.list.label" args="[entityName]" default="Elenco"/></h1>
-    </g:else>
+    <h1><g:message code="antroponimo.list.label" args="[entityName]" default="Elenco"/></h1>
 
     <table>
         <thead>
@@ -56,21 +52,24 @@
         </g:if>
         <g:else>
             <tr>
-
+                
                 <g:sortableColumn property="nome"
                                   title="${message(code: 'antroponimo.nome.label', default: 'Nome')}"/>
-
+                
                 <g:sortableColumn property="voci"
                                   title="${message(code: 'antroponimo.voci.label', default: 'Voci')}"/>
-
+                
                 <g:sortableColumn property="lunghezza"
                                   title="${message(code: 'antroponimo.lunghezza.label', default: 'Lunghezza')}"/>
-
+                
                 <g:sortableColumn property="isVocePrincipale"
                                   title="${message(code: 'antroponimo.isVocePrincipale.label', default: 'Is Voce Principale')}"/>
-
+                
                 <th><g:message code="antroponimo.voceRiferimento.label" default="Voce Riferimento"/></th>
-
+                
+                <g:sortableColumn property="wikiUrl"
+                                  title="${message(code: 'antroponimo.wikiUrl.label', default: 'Wiki Url')}"/>
+                
             </tr>
         </g:else>
         </thead>
@@ -85,23 +84,26 @@
         <g:else>
             <g:each in="${antroponimoInstanceList}" status="i" var="antroponimoInstance">
                 <tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
-
+                    
                     <td><g:link action="show"
                                 id="${antroponimoInstance.id}">${fieldValue(bean: antroponimoInstance, field: "nome")}</g:link></td>
-
+                    
                     <td><g:link action="show"
                                 id="${antroponimoInstance.id}">${fieldValue(bean: antroponimoInstance, field: "voci")}</g:link></td>
-
+                    
                     <td><g:link action="show"
                                 id="${antroponimoInstance.id}">${fieldValue(bean: antroponimoInstance, field: "lunghezza")}</g:link></td>
-
-                    <g:if test="${antroponimoInstance.isVocePrincipale != null}">
+                    
+                    <g:if test="${antroponimoInstance.isVocePrincipale!=null}">
                         <td><g:checkBox name="isVocePrincipale" value="${antroponimoInstance.isVocePrincipale}"/></td>
                     </g:if>
-
+                    
                     <td><g:link action="show"
                                 id="${antroponimoInstance.id}">${fieldValue(bean: antroponimoInstance, field: "voceRiferimento")}</g:link></td>
-
+                    
+                    <td><g:link action="show"
+                                id="${antroponimoInstance.id}">${fieldValue(bean: antroponimoInstance, field: "wikiUrl")}</g:link></td>
+                    
                 </tr>
             </g:each>
         </g:else>

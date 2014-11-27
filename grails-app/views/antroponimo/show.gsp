@@ -74,6 +74,15 @@
 				</li>
 				</g:if>
 			
+				<g:if test="${antroponimoInstance?.wikiUrl}">
+				<li class="fieldcontain">
+					<span id="wikiUrl-label" class="property-label"><g:message code="antroponimo.wikiUrl.label" default="Wiki Url" /></span>
+					
+						<span class="property-value" aria-labelledby="wikiUrl-label"><g:fieldValue bean="${antroponimoInstance}" field="wikiUrl"/></span>
+					
+				</li>
+				</g:if>
+			
 			</ol>
 			<g:form url="[resource:antroponimoInstance, action:'delete']" method="DELETE">
 				<fieldset class="buttons">

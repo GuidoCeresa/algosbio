@@ -83,6 +83,8 @@
                                   title="${message(code: 'antroponimo.isVocePrincipale.label', default: 'Is Voce Principale')}"/>
 
                 <th><g:message code="antroponimo.voceRiferimento.label" default="Voce Riferimento"/></th>
+                <g:sortableColumn property="wikiUrl"
+                                  title="${message(code: 'antroponimo.wikiUrl.label', default: 'Wiki lista')}"/>
             </tr>
         </g:else>
         </thead>
@@ -114,6 +116,8 @@
                     <td><g:link action="show"
                                 id="${antroponimoInstance.id}">${fieldValue(bean: antroponimoInstance, field: "voceRiferimento")}</g:link></td>
 
+                    <td><g:link action="show"
+                                id="${antroponimoInstance.id}">${fieldValue(bean: antroponimoInstance, field: "wikiUrl")}</g:link></td>
                 </tr>
             </g:each>
         </g:else>

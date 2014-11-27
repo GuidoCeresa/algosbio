@@ -54,6 +54,7 @@ class BioGrails {
     Localita luogoNatoLink = null
     Localita luogoMortoLink = null
     Antroponimo nomeLink = null
+    Cognome cognomeLink = null
 
     //--altri campi di controllo
 //    boolean meseNascitaValido = false
@@ -114,6 +115,7 @@ class BioGrails {
         luogoNatoLink(nullable: true)
         luogoMortoLink(nullable: true)
         nomeLink(nullable: true)
+        cognomeLink(nullable: true)
     } // end of static constraints
 
     /**

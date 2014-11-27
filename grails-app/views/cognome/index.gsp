@@ -62,6 +62,14 @@
                 <g:sortableColumn property="lunghezza"
                                   title="${message(code: 'cognome.lunghezza.label', default: 'Lunghezza')}"/>
                 
+                <g:sortableColumn property="isVocePrincipale"
+                                  title="${message(code: 'cognome.isVocePrincipale.label', default: 'Is Voce Principale')}"/>
+                
+                <th><g:message code="cognome.voceRiferimento.label" default="Voce Riferimento"/></th>
+                
+                <g:sortableColumn property="wikiUrl"
+                                  title="${message(code: 'cognome.wikiUrl.label', default: 'Wiki Url')}"/>
+                
             </tr>
         </g:else>
         </thead>
@@ -85,6 +93,16 @@
                     
                     <td><g:link action="show"
                                 id="${cognomeInstance.id}">${fieldValue(bean: cognomeInstance, field: "lunghezza")}</g:link></td>
+                    
+                    <g:if test="${cognomeInstance.isVocePrincipale!=null}">
+                        <td><g:checkBox name="isVocePrincipale" value="${cognomeInstance.isVocePrincipale}"/></td>
+                    </g:if>
+                    
+                    <td><g:link action="show"
+                                id="${cognomeInstance.id}">${fieldValue(bean: cognomeInstance, field: "voceRiferimento")}</g:link></td>
+                    
+                    <td><g:link action="show"
+                                id="${cognomeInstance.id}">${fieldValue(bean: cognomeInstance, field: "wikiUrl")}</g:link></td>
                     
                 </tr>
             </g:each>

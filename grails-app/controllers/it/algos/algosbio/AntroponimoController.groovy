@@ -279,6 +279,11 @@ class AntroponimoController {
         redirect(action: 'list')
     } // fine del metodo
 
+    //--apre le pagine di servizio sul server wiki
+    def linkPagineServizio() {
+        redirect(url: "https://it.wikipedia.org/wiki/Categoria:Progetto Antroponimi")
+    } // fine del metodo
+
     def index(Integer max) {
         if (!params.max) params.max = MAX
         ArrayList menuExtra = null
@@ -297,7 +302,8 @@ class AntroponimoController {
                 [cont: 'antroponimo', action: 'aggiunge', icon: 'frecciasu', title: 'Aggiungi records'],
                 [cont: 'antroponimo', action: 'ricalcola', icon: 'frecciasu', title: 'Ricalcolo voci'],
                 [cont: 'antroponimo', action: 'upload', icon: 'frecciasu', title: 'Upload antroponimi'],
-                [cont: 'antroponimo', action: 'controllo', icon: 'frecciasu', title: 'Pagine di servizio'],
+                [cont: 'antroponimo', action: 'controllo', icon: 'frecciasu', title: 'Ricrea pagine di servizio'],
+                [cont: 'antroponimo', action: 'linkPagineServizio', icon: 'frecciasu', title: 'Pagine di servizio wiki'],
         ]
         params.menuExtra = menuExtra
         // fine della definizione
@@ -307,7 +313,7 @@ class AntroponimoController {
         //--mappa con [campo:'nomeDelCampo', title:'titoloVisibile', sort:'ordinamento']
         //--se vuoto, mostra i primi n (stabilito nel templates:scaffoldinf:list)
         //--    nell'ordine stabilito nella constraints della DomainClass
-        campiLista = ['nome', 'voci', 'isVocePrincipale', 'voceRiferimento']
+        campiLista = ['nome', 'voci', 'isVocePrincipale', 'voceRiferimento', 'wikiUrl']
         // fine della definizione
 
         //--regolazione dei campo di ordinamento
@@ -429,6 +435,30 @@ class AntroponimoController {
         respond antroponimoInstance
     } // fine del metodo
 
+    def pippoz(Antroponimo antroponimoInstance) {
+        if (antroponimoInstance == null) {
+            notFound()
+            return
+        }// fine del blocco if
+
+        if (antroponimoInstance.hasErrors()) {
+            respond antroponimoInstance.errors, view: 'edit'
+            return
+        }// fine del blocco if
+
+        antroponimoInstance.save flush: true
+
+        request.withFormat {
+            form multipartForm {
+                flash.message = message(code: 'default.updated.message', args: [message(code: 'Antroponimo.label', default: 'Cognome'), antroponimoInstance.id])
+                redirect antroponimoInstance
+            }// fine di form
+            '*' { respond antroponimoInstance, [status: OK] }
+        }// fine di request
+    } // fine del metodo
+
+
+    @Transactional
     def update(Antroponimo antroponimoInstance) {
         if (antroponimoInstance == null) {
             notFound()

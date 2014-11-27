@@ -12,12 +12,18 @@
 		<div class="nav" role="navigation">
 			<ul>
 				<li><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
-				<li><g:link class="list" action="index"><g:message code="default.list.label" args="[entityName]" /></g:link></li>
-				<li><g:link class="create" action="create"><g:message code="default.new.label" args="[entityName]" /></g:link></li>
+                <li><g:link class="list" action="index"><g:message code="cognome.list.label"  default="Elenco"/></g:link></li>
+                <g:if test="${!noMenuCreate}">
+                    <li><g:link class="create" action="create"><g:message code="default.new.label"
+                                                                          args="[entityName]"/></g:link></li>
+                </g:if>
+                <g:if test="${menuExtra}">
+                    <algos:menuExtra menuExtra="${menuExtra}"></algos:menuExtra>
+                </g:if>
 			</ul>
 		</div>
 		<div id="show-cognome" class="content scaffold-show" role="main">
-			<h1><g:message code="default.show.label" args="[entityName]" /></h1>
+			<h1><g:message code="cognome.show.label" args="[entityName]" default="Mostra"/></h1>
 			<g:if test="${flash.message}">
 			<div class="message" role="status">${flash.message}</div>
 			</g:if>
@@ -46,6 +52,33 @@
 					<span id="lunghezza-label" class="property-label"><g:message code="cognome.lunghezza.label" default="Lunghezza" /></span>
 					
 						<span class="property-value" aria-labelledby="lunghezza-label"><g:fieldValue bean="${cognomeInstance}" field="lunghezza"/></span>
+					
+				</li>
+				</g:if>
+			
+				<g:if test="${cognomeInstance?.isVocePrincipale}">
+				<li class="fieldcontain">
+					<span id="isVocePrincipale-label" class="property-label"><g:message code="cognome.isVocePrincipale.label" default="Is Voce Principale" /></span>
+					
+						<span class="property-value" aria-labelledby="isVocePrincipale-label"><g:formatBoolean boolean="${cognomeInstance?.isVocePrincipale}" /></span>
+					
+				</li>
+				</g:if>
+			
+				<g:if test="${cognomeInstance?.voceRiferimento}">
+				<li class="fieldcontain">
+					<span id="voceRiferimento-label" class="property-label"><g:message code="cognome.voceRiferimento.label" default="Voce Riferimento" /></span>
+					
+						<span class="property-value" aria-labelledby="voceRiferimento-label"><g:link controller="cognome" action="show" id="${cognomeInstance?.voceRiferimento?.id}">${cognomeInstance?.voceRiferimento?.encodeAsHTML()}</g:link></span>
+					
+				</li>
+				</g:if>
+			
+				<g:if test="${cognomeInstance?.wikiUrl}">
+				<li class="fieldcontain">
+					<span id="wikiUrl-label" class="property-label"><g:message code="cognome.wikiUrl.label" default="Wiki Url" /></span>
+					
+						<span class="property-value" aria-labelledby="wikiUrl-label"><g:fieldValue bean="${cognomeInstance}" field="wikiUrl"/></span>
 					
 				</li>
 				</g:if>

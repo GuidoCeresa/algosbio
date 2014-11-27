@@ -36,8 +36,8 @@
 					<g:render template="form"/>
 				</fieldset>
 				<fieldset class="buttons">
-					<g:actionSubmit class="save" action="update" value="${message(code: 'default.button.update.label', default: 'Update')}" />
-                </fieldset>
+					<g:actionSubmit class="save" action="pippoz" value="${message(code: 'default.button.update.label', default: 'Update')}" />
+				</fieldset>
 			</g:form>
 		</div>
 	</body>

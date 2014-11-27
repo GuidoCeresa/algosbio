@@ -12,7 +12,46 @@ class CognomeController {
     def cognomeService
 
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
-    private static int MAX = 20
+    private static int MAX = 50
+
+    //--costruisce
+    //--mostra un avviso di spiegazione per l'operazione da compiere
+    //--passa al metodo effettivo
+    def costruisce() {
+        params.tipo = TipoDialogo.conferma
+        params.titolo = 'Costruisce tutti i nuovi records'
+        params.avviso = []
+        params.avviso.add('Azzera (null) tutti i link tra BioGrails e Cognomi')
+        params.avviso.add('Cancella tutti i records di Cognomi')
+        params.avviso.add('Vengono creati nuovi records per i nomi presenti nelle voci (bioGrails) che superano la soglia minima')
+        params.avviso.add('Tempo indicativo: quattro ore')
+        params.returnController = 'cognome'
+        params.returnAction = 'costruisceDopoConferma'
+        redirect(controller: 'dialogo', action: 'box', params: params)
+    } // fine del metodo
+
+    //--ritorno dal dialogo di conferma
+    //--a seconda del valore ritornato come parametro, esegue o meno l'operazione
+    //--crea i records estraendoli dalle voci esistenti (bioGrails)
+    def costruisceDopoConferma() {
+        String valore
+        flash.message = 'Operazione annullata. BioGrails e Cognomi non modificati.'
+
+        if (params.valore) {
+            if (params.valore instanceof String) {
+                valore = (String) params.valore
+                if (valore.equals(DialogoController.DIALOGO_CONFERMA)) {
+                    if (cognomeService) {
+                        cognomeService.cancellaTutto()
+                        cognomeService.aggiunge()
+                    }// fine del blocco if
+                    flash.message = 'Operazione effettuata. Sono stati creati i nuovi cognomi'
+                }// fine del blocco if
+            }// fine del blocco if
+        }// fine del blocco if
+
+        redirect(action: 'list')
+    } // fine del metodo
 
     //--mostra un avviso di spiegazione per l'operazione da compiere
     //--passa al metodo effettivo
@@ -104,8 +143,12 @@ class CognomeController {
         //--solo azione e di default controller=questo; classe e titolo vengono uguali
         //--mappa con [cont:'controller', action:'metodo', icon:'iconaImmagine', title:'titoloVisibile']
         menuExtra = [
-                [cont: 'cognome', action: 'elabora', icon: 'frecciasu', title: 'Elabora'],
-                [cont: 'cognome', action: 'upload', icon: 'frecciasu', title: 'Upload cognomi']
+                [cont: 'cognome', action: 'costruisce', icon: 'frecciasu', title: 'Ricrea tutti i records'],
+                [cont: 'cognome', action: 'aggiunge', icon: 'frecciasu', title: 'Aggiungi records'],
+                [cont: 'cognome', action: 'ricalcola', icon: 'frecciasu', title: 'Ricalcolo voci'],
+                [cont: 'cognome', action: 'upload', icon: 'frecciasu', title: 'Upload cognomi'],
+                [cont: 'cognome', action: 'controllo', icon: 'frecciasu', title: 'Ricrea pagine di servizio'],
+                [cont: 'cognome', action: 'linkPagineServizio', icon: 'frecciasu', title: 'Pagine di servizio wiki'],
         ]
         params.menuExtra = menuExtra
         // fine della definizione

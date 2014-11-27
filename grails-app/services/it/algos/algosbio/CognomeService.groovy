@@ -6,15 +6,301 @@ import it.algos.algoslib.LibTesto
 import it.algos.algoslib.LibTime
 import it.algos.algospref.Pref
 
+import java.text.Normalizer
+
 @Transactional
 class CognomeService {
 
-    // utilizzo di un service con la businessLogic
-    // il service NON viene iniettato automaticamente (perché è nel plugin)
-    AntroponimoService antroponimoService = new AntroponimoService()
 
     public static String PATH = 'Progetto:Biografie/Cognomi/Persone di cognome '
     private static String aCapo = '\n'
+
+    private tagTitolo = 'Persone di cognome '
+    private tagPunti = 'Altre...'
+    private boolean titoloParagrafoConLink = true
+    private String progetto = 'Progetto:Antroponimi/'
+
+    /**
+     * azzera i link tra BioGrails e Cognome
+     * cancella i records di antroponimi
+     */
+    public static void cancellaTutto() {
+        cancellaLink()
+        cancellaCognomi()
+    }// fine del metodo
+
+    /**
+     * azzera i link tra BioGrails e Cognome
+     */
+    public static void cancellaLink() {
+        String query = "update BioGrails set cognomeLink=null"
+        BioGrails.executeUpdate(query)
+
+        query = "update Cognome set voceRiferimento=null"
+        Cognome.executeUpdate(query)
+    }// fine del metodo
+
+    /**
+     * cancella i records di antroponimi
+     */
+    public static void cancellaCognomi() {
+        def recs = Cognome.list()
+
+        recs?.each {
+            it.delete(flush: true)
+        } // fine del ciclo each
+    }// fine del metodo
+
+    /**
+     * Aggiunta nuovi records
+     * Vengono creati nuovi records per i cognomi presenti nelle voci (bioGrails) che superano la soglia minima
+     * listaCognomiCompleta: circa 132.000
+     * listaCognomiUnici: circa 130.000
+     */
+    public void aggiunge() {
+        ArrayList<String> listaCognomiCompleta
+        ArrayList<String> listaCognomiUnici
+
+        //--recupera una lista 'grezza' di tutti i nomi
+        listaCognomiCompleta = creaListaCognomiCompleta()
+
+        //--elimina tutto ciò che compare oltre al cognome
+        listaCognomiUnici = elaboraCognomiUnici(listaCognomiCompleta)
+
+        //--(ri)costruisce i records di cognomi
+        spazzolaPacchetto(listaCognomiUnici)
+
+        //--aggiunge i riferimenti alla voce principale di ogni record
+//        elaboraVocePrincipale()
+    }// fine del metodo
+
+    /**
+     * Recupera una lista 'grezza' di tutti i cognomi
+     * Circa 130.000
+     */
+    private static ArrayList<String> creaListaCognomiCompleta() {
+        String query = "select distinct cognome from BioGrails where cognome <>'' order by cognome asc"
+        return (ArrayList<String>) BioGrails.executeQuery(query)
+    }// fine del metodo
+
+    /**
+     * Elabora tutti i cognomi
+     * Costruisce una lista di cognomi ''validi' e 'unici'
+     */
+    public static ArrayList<String> elaboraCognomiUnici(ArrayList<String> listaCognomiCompleta) {
+        ArrayList<String> listaCognomiUnici = new ArrayList<String>()
+        String cognomeDaControllare
+        String cognomeValido = ' '
+
+        //--costruisce una lista di nomi 'unici'
+        listaCognomiCompleta?.each {
+            cognomeDaControllare = (String) it
+            cognomeValido = check(cognomeDaControllare)
+            if (cognomeValido) {
+                if (!listaCognomiUnici.contains(cognomeValido)) {
+                    listaCognomiUnici.add(cognomeValido)
+                }// fine del blocco if
+            }// fine del blocco if
+        }// fine del ciclo each
+
+        return listaCognomiUnici
+    }// fine del metodo
+
+    /**
+     * Elabora il singolo cognome
+     * Elimina caratteri 'anomali' dal cognome
+     */
+    private static String check(String cognomeIn) {
+        String cognomeOut = ''
+        ArrayList listaTagContenuto = new ArrayList()
+        ArrayList listaTagIniziali = new ArrayList()
+        int pos
+        String tagSpazio = ' '
+
+        listaTagContenuto.add('(')
+
+        listaTagIniziali.add('"')
+        listaTagIniziali.add("''")//doppio apice
+        listaTagIniziali.add('ʿʿ')//doppio apostrofo
+        listaTagIniziali.add('‘')//altro tipo di apostrofo
+        listaTagIniziali.add('‛')//altro tipo di apostrofo
+        listaTagIniziali.add('[')
+        listaTagIniziali.add('(')
+        listaTagIniziali.add('.')
+        listaTagIniziali.add('<')
+        listaTagIniziali.add('{')
+        listaTagIniziali.add('&')
+        listaTagIniziali.add('A.')
+        listaTagIniziali.add('-')
+        listaTagIniziali.add('Al ') //arabo - Al più spazio
+
+        String tag = ''
+
+        if (cognomeIn && cognomeIn.length() > 2 && cognomeIn.length() < 100) {
+            cognomeOut = cognomeIn.trim()
+
+            // @todo Maria e Maria Cristina sono uguali
+            if (false) {
+                if (cognomeOut.contains(tagSpazio)) {
+                    pos = cognomeOut.indexOf(tagSpazio)
+                    cognomeOut = cognomeOut.substring(0, pos)
+                    cognomeOut = cognomeOut.trim()
+                }// fine del blocco if
+            }// fine del blocco if
+
+            listaTagContenuto?.each {
+                tag = (String) it
+                if (cognomeOut.contains(tag)) {
+                    pos = cognomeOut.indexOf((String) it)
+                    cognomeOut = cognomeOut.substring(0, pos)
+                    cognomeOut = cognomeOut.trim()
+                }// fine del blocco if
+            } // fine del ciclo each
+
+            listaTagIniziali?.each {
+                tag = (String) it
+
+                if (cognomeOut.startsWith(tag)) {
+                    cognomeOut = ''
+                }// fine del blocco if
+            } // fine del ciclo each
+
+            //nomeOut = nomeOut.toLowerCase()       //@todo va in errore per GianCarlo
+            cognomeOut = LibTesto.primaMaiuscola(cognomeOut)
+
+            //
+            if (false) {
+                cognomeOut = Normalizer.normalize(cognomeOut, Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", "")
+            }// fine del blocco if
+
+            if (cognomeOut.length() < 2) {
+                cognomeOut = ''
+            }// fine del blocco if
+        }// fine del blocco if
+
+        return cognomeOut
+    }// fine del metodo
+
+    /**
+     * Spazzola la lista di cognomi
+     */
+    public void spazzolaPacchetto(ArrayList<String> listaCognomiUnici) {
+        int soglia = Pref.getInt(LibBio.SOGLIA_COGNOMI)
+        long inizio = System.currentTimeMillis()
+        long fine
+        long durata
+        int k = 0
+        String info
+
+//        for (int j = 0; j < 2000; j++) {
+//            spazzolaCognome(listaCognomiUnici.get(j), soglia)
+//        } // fine del ciclo for
+
+        listaCognomiUnici?.each {
+            spazzolaCognome(it, soglia)
+            k++
+            if (LibMat.avanzamento(k, 1000)) {
+                fine = System.currentTimeMillis()
+                durata = fine - inizio
+                durata = durata / 1000
+
+                info = 'Spazzolati '
+                info += LibTesto.formatNum(k)
+                info += ' cognomi su '
+                info += LibTesto.formatNum(listaCognomiUnici.size())
+                info += ' in '
+                info += LibTesto.formatNum(durata)
+                info += ' sec. totali'
+                log.info info
+            }// fine del blocco if
+        } // fine del ciclo each
+        log.info 'Spazzolati tutti'
+    }// fine del metodo
+
+    /**
+     * Controlla il singolo cognome
+     * Controlla la soglia minima
+     * Crea un record per ogni cognome non ancora esistente (se supera la soglia)
+     */
+    private void spazzolaCognome(String cognome, int soglia) {
+        int numVoci
+
+//        if (cognome) {
+//            numVoci = numeroVociCheUsanoCognome(cognome)
+//            if (numVoci > soglia) {
+//                registraSingoloCognome(cognome, numVoci, true)
+//            }// fine del blocco if
+//        }// fine del blocco if
+
+        if (cognome) {
+            numVoci = -1
+            registraSingoloCognome(cognome, numVoci, true)
+        }// fine del blocco if
+    }// fine del metodo
+
+    /**
+     * Registra il singolo record
+     */
+    private static Cognome registraSingoloCognome(String cognome, int numVoci, boolean vocePrincipale) {
+        return registraSingoloCognome(cognome, numVoci, vocePrincipale, null)
+    }// fine del metodo
+
+    /**
+     * Registra il singolo record
+     */
+    private
+    static Cognome registraSingoloCognome(String testo, int numVoci, boolean vocePrincipale, Cognome voceRiferimento) {
+        Cognome cognome = Cognome.findByTesto(testo)
+
+        if (cognome == null) {
+            cognome = new Cognome()
+            cognome.testo = testo
+            cognome.voci = numVoci
+            cognome.lunghezza = testo.length()
+            cognome.voceRiferimento = voceRiferimento
+            cognome.isVocePrincipale = vocePrincipale
+            cognome.save()
+        }// fine del blocco if
+
+        return cognome
+    }// fine del metodo
+
+    private int numeroVociCheUsanoCognome(String testo) {
+        return numeroVociCheUsanoCognome(testo, null)
+    }// fine del metodo
+
+    private numeroVociCheUsanoCognome(String testo, Cognome cognome) {
+        int numVoci = 0
+        String query = ''
+        String sep = "'"
+        String tagSpazio = ' '
+        String tagWillCard = '%'
+        String testoWillCardA
+        String nomeWillCardB = tagWillCard + tagSpazio + testo // non usato
+
+        if (testo.contains(sep)) {
+            testo = testo.replace(sep, sep + sep)
+        }// fine del blocco if
+        testoWillCardA = testo + tagSpazio + tagWillCard
+
+        if (cognome) {
+            query += "update BioGrails set cognomeLink="
+            query += cognome.id
+            query += " where cognome="
+            query += sep + testo + sep
+//            query += " or nome like "
+//            query += sep + testoWillCardA + sep
+            try { // prova ad eseguire il codice
+                numVoci = BioGrails.executeUpdate(query)
+            } catch (Exception unErrore) { // intercetta l'errore
+                log.warn 'Errore numeroVociCheUsanoCognome = ' + testo
+            }// fine del blocco try-catch
+        } else {
+            numVoci = BioGrails.countByCognomeLikeOrCognomeLike(testo, testoWillCardA)
+        }// fine del blocco if-else
+
+        return numVoci
+    }// fine del metodo
 
     // Elabora tutte le pagine
     def elabora() {
@@ -73,7 +359,7 @@ class CognomeService {
 
     //--creazione ed upload sul server della singola pagina
     //--comprese eventuali sottopagine
-    public  upload(Cognome cognome) {
+    public upload(Cognome cognome) {
         boolean debug = Pref.getBool(LibBio.DEBUG, false)
         ArrayList<BioGrails> listaBiografie = getListaBiografie(cognome)
         String summary = LibBio.getSummary()
@@ -106,7 +392,7 @@ class CognomeService {
         def stop
     }// fine del metodo
 
-    public  String getHead(Cognome cognome, int num) {
+    public String getHead(Cognome cognome, int num) {
         String testo = ''
         String dataCorrente = LibTime.getGioMeseAnnoLungo(new Date())
         boolean usaTavolaContenuti = Pref.getBool(LibBio.USA_TAVOLA_CONTENUTI)

@@ -70,7 +70,9 @@ class LibBio {
     public static final String MAX_VOCI_PARAGRAFO_LOCALITA = 'maxVociParagrafoLocalita'
     public static final String USA_SUDDIVISIONE_UOMO_DONNA = 'usaSuddivisioneUomoDonna'
     public static final String MAX_CICLI_ELABORA_COGNOMI = 'maxCicliElaboraCognomi'
-    public static final String TAGLIO_COGNOMI = 'tagloCognomi'
+    public static final String TAGLIO_COGNOMI_DEPRECATO = 'tagloCognomi'
+    public static final String TAGLIO_COGNOMI = 'taglioCognomi'
+    public static final String SOGLIA_COGNOMI= 'sogliaCognomi'
     public static final String USA_CATEGORIA_SOTTOPAGINE_ANTROPONIMI = 'usaCategoriaSottopagineAntroponimi'
     public static final String USA_LISTE_BIO_GIORNI = 'usaListeBioGiorni'
     public static final String USA_LISTE_BIO_ANNI = 'usaListeBioAnni'
@@ -81,7 +83,7 @@ class LibBio {
     public static final String USA_LISTA_NOMI_DOPPI = 'usaListaNomiDoppi'
     public static final String NUM_VOCI_INFO_NOMI_RICALCOLA = 'numVociInfoNomiRicalcola'
     public static final String NUM_VOCI_INFO_NOMI_UPLOAD = 'numVociInfoNomiUpload'
-    public static final String USA_NOME_COGNOMEPER_TITOLO = 'usaNomeCognomePerTitolo'
+    public static final String USA_NOME_COGNOME_PER_TITOLO = 'usaNomeCognomePerTitolo'
 
     // campi di una mappa
     public static final String MAPPA_TITOLO_PARAGRAFO = 'titoloParagrafo'

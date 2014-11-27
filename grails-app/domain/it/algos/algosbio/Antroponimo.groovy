@@ -22,6 +22,10 @@ class Antroponimo {
     boolean isVocePrincipale
     Antroponimo voceRiferimento
 
+    //--ridondante, costruito con il tag wikipedia + il title della pagina
+    //--serve per visualizzare un campo extra di link a wikipedia, senza modificare il ''list'' standard
+    String wikiUrl
+
     /**
      * regolazione delle proprietà di ogni campo
      * l'ordine con cui vengono elencati qui,
@@ -34,6 +38,7 @@ class Antroponimo {
         lunghezza()
         isVocePrincipale()
         voceRiferimento(nullable: true)
+        wikiUrl(nullable: true, blank: true)
     } // end of static constraints
 
     /**
