@@ -6,16 +6,21 @@ import grails.transaction.Transactional
 @Transactional(readOnly = true)
 class ${className}Controller {
 
+    // utilizzo di un service con la businessLogic per l'elaborazione dei dati
+    // il service viene iniettato automaticamente
+    def exportService
+
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
     private static int MAX = 20
 
     def index(Integer max) {
         if (!params.max) params.max = MAX
-        ArrayList menuExtra = null
-        ArrayList campiLista = null
+        ArrayList menuExtra
+        ArrayList campiLista
         def campoSort
         int recordsTotali
         String titoloLista = ''
+        def noMenuCreate = true
 
         //--selezione dei menu extra
         //--solo azione e di default controller=questo; classe e titolo vengono uguali
@@ -59,7 +64,8 @@ class ${className}Controller {
                                             menuExtra         : menuExtra,
                                             campiLista        : campiLista,
                                             provaInstanceCount: recordsTotali,
-                                            params            : params]
+                                            noMenuCreate            : noMenuCreate,
+                                            params                  : params]
     } // fine del metodo
 
     def show(${className} ${propertyName}) {
