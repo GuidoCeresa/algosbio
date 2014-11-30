@@ -134,6 +134,7 @@ class AntroponimoService {
         //--elimina tutto ciò che compare oltre al nome
         listaNomiUnici = elaboraNomiUnici(listaNomiCompleta)
 
+        listaNomiUnici = listaNomiUnici.subList(0, 2000)
         //--(ri)costruisce i records di antroponimi
         spazzolaPacchetto(listaNomiUnici)
 
@@ -176,39 +177,24 @@ class AntroponimoService {
      * Elabora il singolo nome
      * Usa (secondo preferenze) i nomi singoli: Maria e Maria Cristina sono uguali
      * Elimina caratteri 'anomali' dal nome
+     * Gian, Lady, Sir, Maestro, Abd, 'Abd, Abu, Abū, Ibn, DJ, e J.
      */
     private static String check(String nomeIn) {
         String nomeOut = ''
         ArrayList listaTagContenuto = new ArrayList()
-        ArrayList listaTagIniziali = new ArrayList()
+//        ArrayList listaTagIniziali = new ArrayList()
         int pos
         String tagSpazio = ' '
         boolean usaNomeSingolo = Pref.getBool(LibBio.USA_SOLO_PRIMO_NOME_ANTROPONIMI)
 
         listaTagContenuto.add('(')
 
-        listaTagIniziali.add('"')
-        listaTagIniziali.add("''")//doppio apice
-        listaTagIniziali.add('ʿʿ')//doppio apostrofo
-        listaTagIniziali.add('‘')//altro tipo di apostrofo
-        listaTagIniziali.add('‛')//altro tipo di apostrofo
-        listaTagIniziali.add('[')
-        listaTagIniziali.add('(')
-        listaTagIniziali.add('.')
-        listaTagIniziali.add('<')
-        listaTagIniziali.add('{')
-        listaTagIniziali.add('&')
-        listaTagIniziali.add('A.')
-        listaTagIniziali.add('Lady') //titolo
-        listaTagIniziali.add('Sir ') //titolo e spazio
-        listaTagIniziali.add('Maestro') //titolo
-
         String tag = ''
 
         if (nomeIn && nomeIn.length() > 2 && nomeIn.length() < 100) {
             nomeOut = nomeIn.trim()
 
-            // @todo Maria e Maria Cristina sono uguali
+            // @todo Prende solo il primo
             if (usaNomeSingolo) {
                 if (nomeOut.contains(tagSpazio)) {
                     pos = nomeOut.indexOf(tagSpazio)
@@ -228,18 +214,12 @@ class AntroponimoService {
                 def stop
             } // fine del ciclo each
 
-            listaTagIniziali?.each {
-                tag = (String) it
+            if (!LibBio.checkNome(nomeOut)) {
+                nomeOut = ''
+            }// fine del blocco if
 
-                if (nomeOut.startsWith(tag)) {
-                    nomeOut = ''
-                }// fine del blocco if
-            } // fine del ciclo each
-
-            //nomeOut = nomeOut.toLowerCase()       //@todo va in errore per GianCarlo
             nomeOut = LibTesto.primaMaiuscola(nomeOut)
 
-            //
             if (Pref.getBool(LibBio.USA_ACCENTI_NORMALIZZATI, false)) {
                 nomeOut = Normalizer.normalize(nomeOut, Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", "")
             }// fine del blocco if
@@ -326,7 +306,7 @@ class AntroponimoService {
             antroponimo.lunghezza = nome.length()
             antroponimo.voceRiferimento = voceRiferimento
             antroponimo.isVocePrincipale = vocePrincipale
-            antroponimo.save()
+            antroponimo.save(flush: true)
         }// fine del blocco if
 
         return antroponimo
@@ -385,14 +365,49 @@ class AntroponimoService {
             if (antroponimo.isVocePrincipale) {
                 antroponimo.voceRiferimento = antroponimo
             } else {
-                nomeConAccento = antroponimo.nome
-                nomeNormalizzato = normalizza(nomeConAccento)
-                antroponimoPrincipale = Antroponimo.findByNome(nomeNormalizzato)
-                antroponimo.voceRiferimento = antroponimoPrincipale
+                if (Pref.getBool(LibBio.USA_ACCENTI_NORMALIZZATI, false)) {
+                    nomeConAccento = antroponimo.nome
+                    nomeNormalizzato = normalizza(nomeConAccento)
+                    antroponimoPrincipale = Antroponimo.findByNome(nomeNormalizzato)
+                    antroponimo.voceRiferimento = antroponimoPrincipale
+                }// fine del blocco if
             }// fine del blocco if-else
             antroponimo.save()
         } // fine del ciclo each
 
+    }// fine del metodo
+
+    //--riempimento del campo wikiUrl di Antroponimi
+    private static void regolaWikilink() {
+        Antroponimo antroponimo
+        Antroponimo antroponimoRiferimento
+        ArrayList<Antroponimo> lista = Antroponimo.list()
+        int taglio = Pref.getInt(LibBio.TAGLIO_ANTROPONIMI)
+        String url
+
+        lista?.each {
+            antroponimo = it
+            url = 'https://it.wikipedia.org/wiki/Persone di nome ' + antroponimo.nome
+            if (antroponimo.isVocePrincipale) {
+                if (antroponimo.wikiUrl) {
+                } else {
+                    if (antroponimo.voci > taglio) {
+                        antroponimo.wikiUrl = url
+                    } else {
+                        antroponimo.wikiUrl = ''
+                    }// fine del blocco if-else
+                    antroponimo.save(flush: true)
+                }// fine del blocco if-else
+            } else {
+                antroponimoRiferimento = antroponimo.voceRiferimento
+                if (antroponimoRiferimento) {
+                    antroponimo.wikiUrl = antroponimoRiferimento.wikiUrl
+                } else {
+                    antroponimo.wikiUrl = ''
+                }// fine del blocco if-else
+                antroponimo.save(flush: true)
+            }// fine del blocco if-else
+        } // fine del ciclo each
     }// fine del metodo
 
     /**
@@ -410,6 +425,7 @@ class AntroponimoService {
         String info
 
         listaNomiDoppi()
+
 
         listaAntroponimi = Antroponimo.list(sort: 'nome')
         listaAntroponimi?.each {
@@ -430,7 +446,11 @@ class AntroponimoService {
                 log.info info
             }// fine del blocco if
         } // fine del ciclo each
-        log.info 'Ricalcolati tutti'
+        log.info 'Ricalcolati tutti gli antroponimi'
+
+        //--riempimento del campo wikiUrl di Antroponimi
+        regolaWikilink()
+        log.info "Regolato il campo wikiUrl di tutti i records che non ce l' avevano"
     }// fine del metodo
 
     /**

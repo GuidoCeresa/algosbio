@@ -302,6 +302,58 @@ class CognomeService {
         return numVoci
     }// fine del metodo
 
+    /**
+     * Ricalcolo records esistenti <br>
+     * Controllo della pagina Progetto:Antroponimi/Nomi doppi <br>
+     * Ricalcola il numero delle voci (bioGrails) che utilizzano ogni record (antroponimo) <br>
+     * Cancella i records che non superano la soglia minima <br>
+     */
+    public void ricalcola() {
+        ArrayList<Cognome> listaCognomi
+        int numVociDaRicalcolare = Pref.getInt(LibBio.MAX_RICALCOLA_COGNOMI)
+        int soglia = Pref.getInt(LibBio.SOGLIA_COGNOMI)
+        long inizio = System.currentTimeMillis()
+        long fine
+        long durata
+        int k = 0
+        String info
+
+        listaCognomi = Cognome.listOrderByVoci([max: numVociDaRicalcolare, sort: 'voci',order: 'asc'])
+        listaCognomi?.each {
+            ricalcolaCognome(it, soglia)
+            k++
+            if (LibMat.avanzamento(k, 100)) {
+                fine = System.currentTimeMillis()
+                durata = fine - inizio
+                durata = durata / 1000
+
+                info = 'Ricalcolate '
+                info += LibTesto.formatNum(k)
+                info += ' voci di cognomi su '
+                info += LibTesto.formatNum(listaCognomi.size())
+                info += ' in '
+                info += LibTesto.formatNum(durata)
+                info += ' sec. totali'
+                log.info info
+            }// fine del blocco if
+        } // fine del ciclo each
+        log.info 'Ricalcolati tutti i cognomi'
+    }// fine del metodo
+
+    private void ricalcolaCognome(Cognome cognome, int soglia) {
+        int numVoci
+
+        if (cognome) {
+            numVoci = numeroVociCheUsanoCognome(cognome.testo)
+            if (numVoci > soglia) {
+                cognome.voci = numVoci
+                cognome.save()
+            } else {
+                cognome.delete()
+            }// fine del blocco if-else
+        }// fine del blocco if
+    }// fine del metodo
+
     // Elabora tutte le pagine
     def elabora() {
         ArrayList<String> listaCognomi

@@ -324,11 +324,11 @@ class LocalitaService {
      * Ritorna la località dal link alla voce
      * Se non esiste, la crea
      */
-    public Localita getLuogoNascita(BioWiki bioWiki) {
+    public  static Localita getLuogoNascita(BioWiki bioWiki) {
         return getLocalita(bioWiki.luogoNascita, bioWiki.luogoNascitaLink, NatoMorto.nato)
     } // fine del metodo
 
-    public Localita getLuogoMorte(BioWiki bioWiki) {
+    public  static Localita getLuogoMorte(BioWiki bioWiki) {
         return getLocalita(bioWiki.luogoMorte, bioWiki.luogoMorteLink, NatoMorto.morto)
     } // fine del metodo
 
@@ -336,7 +336,7 @@ class LocalitaService {
      * Ritorna la località dal link alla voce
      * Se non esiste, la crea
      */
-    private Localita getLocalita(String luogo, String luogoLink, NatoMorto natoMorto) {
+    private  static Localita getLocalita(String luogo, String luogoLink, NatoMorto natoMorto) {
         Localita localita = null
 
         if (luogo || luogoLink) {
@@ -352,7 +352,7 @@ class LocalitaService {
             try { // prova ad eseguire il codice
                 localita = Localita.findByNome(luogoLink)
             } catch (Exception unErrore) { // intercetta l'errore
-                log.info('getLocalita errata - luogo: ' + luogo + ' e luogoLink ' + luogoLink)
+//                log.info('getLocalita errata - luogo: ' + luogo + ' e luogoLink: ' + luogoLink)
             }// fine del blocco try-catch
             if (!localita) {
                 localita = new Localita(nome: luogoLink)

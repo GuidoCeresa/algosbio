@@ -659,47 +659,16 @@ class VersioneBootStrap {
             versioneService.newVersione('Preferenze', 'USA_NOME_COGNOME_PER_TITOLO di default false')
         }// fine del blocco if
 
-        //--riempimento del campo wikiUrl di Antroponimi
-        if (versioneService && versioneService.installaVersione(76)) {
-            Antroponimo antroponimo
-            Antroponimo antroponimoRiferimento
-            ArrayList<Antroponimo> lista = Antroponimo.list()
-            int taglio = Pref.getInt(LibBio.TAGLIO_ANTROPONIMI)
-            String url
-
-            lista?.each {
-                antroponimo = it
-                url = 'https://it.wikipedia.org/wiki/Persone di nome ' + antroponimo.nome
-                if (antroponimo.isVocePrincipale) {
-                    if (antroponimo.voci > taglio) {
-                        antroponimo.wikiUrl = url
-                    } else {
-                        antroponimo.wikiUrl = ''
-                    }// fine del blocco if-else
-                } else {
-                    antroponimoRiferimento = antroponimo.voceRiferimento
-                    if (antroponimoRiferimento) {
-                        antroponimo.wikiUrl = antroponimoRiferimento.wikiUrl
-                    } else {
-                        antroponimo.wikiUrl = ''
-                    }// fine del blocco if-else
-                }// fine del blocco if-else
-                antroponimo.save(flush: true)
-            } // fine del ciclo each
-
-            versioneService.newVersione('Antroponimi', 'Riempimento del campo wikiUrl per chi supera le 50 voci')
-        }// fine del blocco if
-
         //--modifica codice preferenza
-        if (versioneService && versioneService.installaVersione(77)) {
+        if (versioneService && versioneService.installaVersione(76)) {
             Pref pref = Pref.findByCode(LibBio.TAGLIO_COGNOMI_DEPRECATO)
             pref.code = LibBio.TAGLIO_COGNOMI
             pref.save(flush: true)
-            versioneService.newVersione('Preferenze', 'Corretta codifca TAGLIO_COGNOMI, precedentemente scritta errata')
+            versioneService.newVersione('Preferenze', 'Corretta codifica TAGLIO_COGNOMI, precedentemente scritta errata')
         }// fine del blocco if
 
         //--creata una nuova preferenza
-        if (versioneService && versioneService.installaVersione(78)) {
+        if (versioneService && versioneService.installaVersione(77)) {
             Pref pref = new Pref()
             pref.ordine = Pref.list().size() + 1
             pref.code = LibBio.SOGLIA_COGNOMI
@@ -707,8 +676,21 @@ class VersioneBootStrap {
             pref.type = Type.intero
             pref.intero = 50
             pref.save(flush: true)
-            versioneService.newVersione('Preferenze', 'SOGLIA_COGNOMI di default 20')
+            versioneService.newVersione('Preferenze', 'SOGLIA_COGNOMI di default 50')
         }// fine del blocco if
+
+        //--creata una nuova preferenza
+        if (versioneService && versioneService.installaVersione(78)) {
+            Pref pref = new Pref()
+            pref.ordine = Pref.list().size() + 1
+            pref.code = LibBio.MAX_RICALCOLA_COGNOMI
+            pref.descrizione = "numero di records di cognomi che vengono ricalcolati per controllare il numero di voci e cancellare quelli al di sotto della soglia"
+            pref.type = Type.intero
+            pref.intero = 1000
+            pref.save(flush: true)
+            versioneService.newVersione('Preferenze', 'MAX_RICALCOLA_COGNOMI di default 1000')
+        }// fine del blocco if
+
     }// fine della closure
 
 

@@ -43,7 +43,12 @@
             <div class="errors" role="status">${singoloErrore}</div>
         </g:each>
     </g:if>
-    <h1><g:message code="antroponimo.list.label" args="[entityName]" default="Elenco"/></h1>
+    <g:if test="${titoloLista}">
+        <h1>${titoloLista}</h1>
+    </g:if>
+    <g:else>
+        <h1><g:message code="antroponimo.list.label" args="[entityName]" default="Elenco"/></h1>
+    </g:else>
 
     <table>
         <thead>

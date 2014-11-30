@@ -2,6 +2,7 @@ package it.algos.algosbio
 
 import it.algos.algos.DialogoController
 import it.algos.algos.TipoDialogo
+import it.algos.algoslib.Lib
 
 import static org.springframework.http.HttpStatus.*
 import grails.transaction.Transactional
@@ -12,7 +13,7 @@ class CognomeController {
     def cognomeService
 
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
-    private static int MAX = 50
+    private static int MAX = 100
 
     //--costruisce
     //--mostra un avviso di spiegazione per l'operazione da compiere
@@ -23,7 +24,7 @@ class CognomeController {
         params.avviso = []
         params.avviso.add('Azzera (null) tutti i link tra BioGrails e Cognomi')
         params.avviso.add('Cancella tutti i records di Cognomi')
-        params.avviso.add('Vengono creati nuovi records per i nomi presenti nelle voci (bioGrails) che superano la soglia minima')
+        params.avviso.add('Vengono creati nuovi records per tutti i cognomi presenti nelle voci (bioGrails)')
         params.avviso.add('Tempo indicativo: quattro ore')
         params.returnController = 'cognome'
         params.returnAction = 'costruisceDopoConferma'
@@ -52,6 +53,83 @@ class CognomeController {
 
         redirect(action: 'list')
     } // fine del metodo
+
+    //--aggiunge
+    //--mostra un avviso di spiegazione per l'operazione da compiere
+    //--passa al metodo effettivo
+    def aggiunge() {
+        params.tipo = TipoDialogo.conferma
+        params.titolo = 'Aggiunta nuovi records'
+        params.avviso = []
+        params.avviso.add('Vengono creati nuovi records per tutti i cognomi presenti nelle voci (bioGrails)')
+        params.avviso.add('Ricalcola il numero delle voci (bioGrails) che utilizzano ogni record (cognome)')
+        params.avviso.add('Cancella i records che non superano la soglia minima')
+        params.avviso.add('Tempo indicativo: quattro ore')
+        params.returnController = 'cognome'
+        params.returnAction = 'aggiungeDopoConferma'
+        redirect(controller: 'dialogo', action: 'box', params: params)
+    } // fine del metodo
+
+    //--ritorno dal dialogo di conferma
+    //--a seconda del valore ritornato come parametro, esegue o meno l'operazione
+    //--crea i records estraendoli dalle voci esistenti (bioGrails)
+    def aggiungeDopoConferma() {
+        String valore
+        flash.message = 'Operazione annullata. Cognomi non modificati.'
+
+        if (params.valore) {
+            if (params.valore instanceof String) {
+                valore = (String) params.valore
+                if (valore.equals(DialogoController.DIALOGO_CONFERMA)) {
+                    if (cognomeService) {
+                        cognomeService.aggiunge()
+                        cognomeService.ricalcola()
+                    }// fine del blocco if
+                    flash.message = 'Operazione effettuata. Sono stati aggiunti tutti i nuovi cognomi e ricalcolati tutti i records'
+                }// fine del blocco if
+            }// fine del blocco if
+        }// fine del blocco if
+
+        redirect(action: 'list')
+    } // fine del metodo
+
+    //--ricalcola
+    //--mostra un avviso di spiegazione per l'operazione da compiere
+    //--passa al metodo effettivo
+    def ricalcola() {
+        params.tipo = TipoDialogo.conferma
+        params.titolo = 'Ricalcolo records esistenti'
+        params.avviso = []
+        params.avviso.add('Ricalcola il numero delle voci (bioGrails) che utilizzano ogni record (cognome)')
+        params.avviso.add('Nelle preferenze si regola il numero di records da ricalcolare (MAX_RICALCOLA_COGNOMI)')
+        params.avviso.add('Tempo indicativo: una ora')
+        params.returnController = 'cognome'
+        params.returnAction = 'ricalcolaDopoConferma'
+        redirect(controller: 'dialogo', action: 'box', params: params)
+    } // fine del metodo
+
+    //--ritorno dal dialogo di conferma
+    //--a seconda del valore ritornato come parametro, esegue o meno l'operazione
+    //--ricalcola il numero delle voci (bioGrails) che utilizzano ogni record (cognome)
+    def ricalcolaDopoConferma() {
+        String valore
+        flash.message = 'Operazione annullata. Cognomi non modificati.'
+
+        if (params.valore) {
+            if (params.valore instanceof String) {
+                valore = (String) params.valore
+                if (valore.equals(DialogoController.DIALOGO_CONFERMA)) {
+                    if (cognomeService) {
+                        cognomeService.ricalcola()
+                    }// fine del blocco if
+                    flash.message = 'Operazione effettuata. Sono stati ricalcolati i cognomi'
+                }// fine del blocco if
+            }// fine del blocco if
+        }// fine del blocco if
+
+        redirect(action: 'list')
+    } // fine del metodo
+
 
     //--mostra un avviso di spiegazione per l'operazione da compiere
     //--passa al metodo effettivo
@@ -132,11 +210,11 @@ class CognomeController {
 
     def index(Integer max) {
         if (!params.max) params.max = MAX
-        ArrayList menuExtra = null
-        ArrayList campiLista = null
+        ArrayList menuExtra
+        ArrayList campiLista
         def campoSort
         int recordsTotali
-        String titoloLista = ''
+        String titoloLista
         def noMenuCreate = true
 
         //--selezione dei menu extra
@@ -179,7 +257,23 @@ class CognomeController {
         }// fine del blocco if-else
 
         //--selezione dei records da mostrare
+        //--per una lista filtrata (parziale), modificare i parametri
+        //--oppure modificare il findAllByInteroGreaterThan()...
         recordsTotali = Cognome.count()
+
+        //--calcola il numero di record
+        //--titolo visibile sopra la table dei dati
+        titoloLista = 'Elenco di '
+        titoloLista += Lib.Txt.formatNum(Cognome.list(params).size())
+        titoloLista += ' records di cognomi su un totale di ' + Lib.Txt.formatNum(recordsTotali)
+
+        //--aggiunta specifica di questo controller
+        int numRecNonControllate = Cognome.countByVoci(-1)
+        int numRecControllate = Cognome.countByVociGreaterThan(0)
+        titoloLista += ' di cui ' + Lib.Txt.formatNum(numRecNonControllate)
+        titoloLista += ' non ancora controllati e '
+        titoloLista += Lib.Txt.formatNum(numRecControllate)
+        titoloLista += ' controllati.'
 
         //--presentazione della view (index), secondo il modello
         //--menuExtra e campiLista possono essere nulli o vuoti

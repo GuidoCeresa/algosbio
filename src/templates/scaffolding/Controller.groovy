@@ -2,6 +2,7 @@
 
 import static org.springframework.http.HttpStatus.*
 import grails.transaction.Transactional
+import it.algos.algoslib.Lib
 
 @Transactional(readOnly = true)
 class ${className}Controller {
@@ -20,7 +21,7 @@ class ${className}Controller {
         def campoSort
         int recordsTotali
         String titoloLista = ''
-        def noMenuCreate = true
+        def noMenuCreate = false
 
         //--selezione dei menu extra
         //--solo azione e di default controller=questo; classe e titolo vengono uguali
@@ -55,7 +56,15 @@ class ${className}Controller {
         }// fine del blocco if-else
 
         //--selezione dei records da mostrare
+        //--per una lista filtrata (parziale), modificare i parametri
+        //--oppure modificare il findAllByInteroGreaterThan()...
         recordsTotali = ${className}.count()
+
+        //--calcola il numero di record
+        //--titolo visibile sopra la table dei dati
+        titoloLista = 'Elenco di '
+        titoloLista += Lib.Txt.formatNum(${className}.list(params).size())
+        titoloLista += ' records di antroponimi su un totale di ' + Lib.Txt.formatNum(recordsTotali)
 
         //--presentazione della view (index), secondo il modello
         //--menuExtra e campiLista possono essere nulli o vuoti

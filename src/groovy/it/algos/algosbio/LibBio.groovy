@@ -72,7 +72,7 @@ class LibBio {
     public static final String MAX_CICLI_ELABORA_COGNOMI = 'maxCicliElaboraCognomi'
     public static final String TAGLIO_COGNOMI_DEPRECATO = 'tagloCognomi'
     public static final String TAGLIO_COGNOMI = 'taglioCognomi'
-    public static final String SOGLIA_COGNOMI= 'sogliaCognomi'
+    public static final String SOGLIA_COGNOMI = 'sogliaCognomi'
     public static final String USA_CATEGORIA_SOTTOPAGINE_ANTROPONIMI = 'usaCategoriaSottopagineAntroponimi'
     public static final String USA_LISTE_BIO_GIORNI = 'usaListeBioGiorni'
     public static final String USA_LISTE_BIO_ANNI = 'usaListeBioAnni'
@@ -84,6 +84,7 @@ class LibBio {
     public static final String NUM_VOCI_INFO_NOMI_RICALCOLA = 'numVociInfoNomiRicalcola'
     public static final String NUM_VOCI_INFO_NOMI_UPLOAD = 'numVociInfoNomiUpload'
     public static final String USA_NOME_COGNOME_PER_TITOLO = 'usaNomeCognomePerTitolo'
+    public static final String MAX_RICALCOLA_COGNOMI = 'maxRicalcolaCognomi'
 
     // campi di una mappa
     public static final String MAPPA_TITOLO_PARAGRAFO = 'titoloParagrafo'
@@ -101,6 +102,13 @@ class LibBio {
     public static final String MAPPA_DIDASCALIA = 'didascalia'
 
     private static String TAG_BIO = '\\{\\{ ?([Tt]emplate:)? ?[Bb]io[ \\|\n\r\t]'
+    private static String[] TAG_INI_NUMERI = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0']
+    private static String[] TAG_INI_CHAR = ['*', '&', '!', '&nbsp', '.', '(', ',', '?', '{', '[', '<', '-']
+    private static String[] TAG_INI_APICI = ['‘', '‛', '"', "''"]
+    private static String[] TAG_INI_NOMI = ['A.', 'DJ', 'J.']
+    private static String[] TAG_ALL_ARABI = ['Abd', "'Abd", 'Abu', "'Abu", 'Abū', "'Abū", 'Ibn', "'Ibn"]
+    private static String[] TAG_ALL_TITOLI = ['Lady', 'Sir', 'Maestro']
+    private static String[] TAG_ALL_NOMI = ['Gian']
 
     /**
      * Recupera la mappa dalla pagina wiki
@@ -1274,16 +1282,41 @@ class LibBio {
         return nomeOut
     } // fine del metodo
 
-    // elimina subito nomi strani
-    public static boolean checkNome(String cognome) {
+    /**
+     * Controllo di validità di un nome <br>
+     * Elimina parti iniziali con caratteri/prefissi non accettati <br>
+     * Elimina sempre il nome esattamente uguale al tag-iniziale o al tag-all <br>
+     * Elimina sempre il nome che inizia col tag-iniziale <br>
+     * Elimina il nome che inizia col tag-all se il tag è seguito da spazio <br>
+     */
+    public static boolean checkNome(String nome) {
         boolean accettato = true
-        ArrayList<String> listaIniziale = ['!', '&nbsp', '.', '(', '<!--', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '?', '[', '"', '<', "'", '-']
+        String[] tagIniziale = TAG_INI_NUMERI + TAG_INI_CHAR + TAG_INI_APICI + TAG_INI_NOMI
+        String[] tagAll = TAG_ALL_ARABI + TAG_ALL_TITOLI + TAG_ALL_NOMI
+        String[] tag = tagIniziale + tagAll
+        String spazio = ' '
 
-        listaIniziale?.each {
-            if (cognome.startsWith(it)) {
+        tag?.each {
+            if (nome.equals(it)) {
                 accettato = false
             }// fine del blocco if
         } // fine del ciclo each
+
+        if (accettato) {
+            tagIniziale?.each {
+                if (nome.startsWith(it)) {
+                    accettato = false
+                }// fine del blocco if
+            } // fine del ciclo each
+        }// fine del blocco if
+
+        if (accettato) {
+            tagAll?.each {
+                if (nome.startsWith(it + spazio)) {
+                    accettato = false
+                }// fine del blocco if
+            } // fine del ciclo each
+        }// fine del blocco if
 
         return accettato
     }// fine del metodo

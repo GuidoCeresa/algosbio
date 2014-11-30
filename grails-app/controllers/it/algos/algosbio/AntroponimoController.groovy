@@ -34,7 +34,7 @@ import static org.springframework.http.HttpStatus.OK
 class AntroponimoController {
 
     static allowedMethods = [save: 'POST', update: 'POST', delete: 'POST']
-    private static int MAX = 50
+    private static int MAX = 100
 
     // utilizzo di un service con la businessLogic per l'elaborazione dei dati
     // il service viene iniettato automaticamente
@@ -286,13 +286,12 @@ class AntroponimoController {
 
     def index(Integer max) {
         if (!params.max) params.max = MAX
-        ArrayList menuExtra = null
-        ArrayList campiLista = null
+        ArrayList menuExtra
+        ArrayList campiLista
         def campoSort
         int recordsTotali
-        String titoloLista = ''
+        String titoloLista
         def noMenuCreate = true
-        def lista
 
         //--selezione dei menu extra
         //--solo azione e di default controller=questo; classe e titolo vengono uguali
