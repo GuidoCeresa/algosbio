@@ -4,14 +4,14 @@ import static org.springframework.http.HttpStatus.*
 import grails.transaction.Transactional
 import it.algos.algoslib.Lib
 
-@Transactional(readOnly = true)
+@Transactional(readOnly = false)
 class ${className}Controller {
 
     // utilizzo di un service con la businessLogic per l'elaborazione dei dati
     // il service viene iniettato automaticamente
     def exportService
 
-    static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
+    static allowedMethods = [save: 'POST', update: 'PUT', delete: 'DELETE']
     private static int MAX = 20
 
     def index(Integer max) {

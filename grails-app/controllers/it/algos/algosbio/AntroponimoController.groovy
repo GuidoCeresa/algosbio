@@ -33,7 +33,7 @@ import static org.springframework.http.HttpStatus.OK
 @Transactional(readOnly = false)
 class AntroponimoController {
 
-    static allowedMethods = [save: 'POST', update: 'POST', delete: 'POST']
+    static allowedMethods = [save: 'POST', update: 'PUT', delete: 'DELETE']
     private static int MAX = 100
 
     // utilizzo di un service con la businessLogic per l'elaborazione dei dati
@@ -415,9 +415,14 @@ class AntroponimoController {
         //--selezione dei menu extra
         //--solo azione e di default controller=questo; classe e titolo vengono uguali
         //--mappa con [cont:'controller', action:'metodo', icon:'iconaImmagine', title:'titoloVisibile']
-        menuExtra = [
-                [cont: 'antroponimo', action: "uploadSingoloNome/${antroponimoInstance.id}", icon: 'database', title: 'UploadSingoloNome'],
-        ]
+        if (antroponimoInstance.isVocePrincipale && antroponimoInstance.wikiUrl) {
+            menuExtra = [
+                    [cont: 'antroponimo', action: "uploadSingoloNome/${antroponimoInstance.id}", icon: 'database', title: 'UploadSingoloNome'],
+            ]
+        } else {
+            menuExtra = []
+        }// fine del blocco if-else
+
         // fine della definizione
 
         //--presentazione della view (show), secondo il modello
@@ -434,27 +439,27 @@ class AntroponimoController {
         respond antroponimoInstance
     } // fine del metodo
 
-    def pippoz(Antroponimo antroponimoInstance) {
-        if (antroponimoInstance == null) {
-            notFound()
-            return
-        }// fine del blocco if
-
-        if (antroponimoInstance.hasErrors()) {
-            respond antroponimoInstance.errors, view: 'edit'
-            return
-        }// fine del blocco if
-
-        antroponimoInstance.save flush: true
-
-        request.withFormat {
-            form multipartForm {
-                flash.message = message(code: 'default.updated.message', args: [message(code: 'Antroponimo.label', default: 'Cognome'), antroponimoInstance.id])
-                redirect antroponimoInstance
-            }// fine di form
-            '*' { respond antroponimoInstance, [status: OK] }
-        }// fine di request
-    } // fine del metodo
+//    def pippoz(Antroponimo antroponimoInstance) {
+//        if (antroponimoInstance == null) {
+//            notFound()
+//            return
+//        }// fine del blocco if
+//
+//        if (antroponimoInstance.hasErrors()) {
+//            respond antroponimoInstance.errors, view: 'edit'
+//            return
+//        }// fine del blocco if
+//
+//        antroponimoInstance.save flush: true
+//
+//        request.withFormat {
+//            form multipartForm {
+//                flash.message = message(code: 'default.updated.message', args: [message(code: 'Antroponimo.label', default: 'Cognome'), antroponimoInstance.id])
+//                redirect antroponimoInstance
+//            }// fine di form
+//            '*' { respond antroponimoInstance, [status: OK] }
+//        }// fine di request
+//    } // fine del metodo
 
 
     @Transactional

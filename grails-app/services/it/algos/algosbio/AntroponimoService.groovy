@@ -134,7 +134,6 @@ class AntroponimoService {
         //--elimina tutto ciò che compare oltre al nome
         listaNomiUnici = elaboraNomiUnici(listaNomiCompleta)
 
-        listaNomiUnici = listaNomiUnici.subList(0, 2000)
         //--(ri)costruisce i records di antroponimi
         spazzolaPacchetto(listaNomiUnici)
 
@@ -323,29 +322,56 @@ class AntroponimoService {
         String sep = "'"
         String tagSpazio = ' '
         String tagWillCard = '%'
-        String nomeWillCardA
-        String nomeWillCardB = tagWillCard + tagSpazio + nome // non usato
+        String nomeWillCard
+        ArrayList<Antroponimo> lista
 
         if (nome.contains(sep)) {
             nome = nome.replace(sep, sep + sep)
         }// fine del blocco if
-        nomeWillCardA = nome + tagSpazio + tagWillCard
+        nomeWillCard = nome + tagSpazio + tagWillCard
 
         if (antroponimo) {
-            query += "update BioGrails set nomeLink="
-            query += antroponimo.id
-            query += " where nome="
-            query += sep + nome + sep
-            query += " or nome like "
-            query += sep + nomeWillCardA + sep
-            try { // prova ad eseguire il codice
-                numVoci = BioGrails.executeUpdate(query)
-            } catch (Exception unErrore) { // intercetta l'errore
-                log.warn 'Errore numeroVociCheUsanoNome = ' + nome
-            }// fine del blocco try-catch
+            lista = Antroponimo.findAllByVoceRiferimento(antroponimo)
+            lista?.each {
+                numVoci += numeroVociCheUsanoAntroponimo(it.nome, antroponimo)
+            } // fine del ciclo each
+//            query += "update BioGrails set nomeLink="
+//            query += antroponimo.id
+//            query += " where nome="
+//            query += sep + nome + sep
+//            query += " or nome like "
+//            query += sep + nomeWillCard + sep
+//            try { // prova ad eseguire il codice
+//                numVoci = BioGrails.executeUpdate(query)
+//            } catch (Exception unErrore) { // intercetta l'errore
+//                log.warn 'Errore numeroVociCheUsanoNome = ' + nome
+//            }// fine del blocco try-catch
         } else {
-            numVoci = BioGrails.countByNomeLikeOrNomeLike(nome, nomeWillCardA)
+            numVoci = BioGrails.countByNomeLikeOrNomeLike(nome, nomeWillCard)
         }// fine del blocco if-else
+
+        return numVoci
+    }// fine del metodo
+
+    private numeroVociCheUsanoAntroponimo(String nome, Antroponimo antroponimo) {
+        int numVoci = 0
+        String query = ''
+        String sep = "'"
+        String tagSpazio = ' '
+        String tagWillCard = '%'
+        String nomeWillCard = nome + tagSpazio + tagWillCard
+
+        query += "update BioGrails set nomeLink="
+        query += antroponimo.id
+        query += " where nome="
+        query += sep + nome + sep
+        query += " or nome like "
+        query += sep + nomeWillCard + sep
+        try { // prova ad eseguire il codice
+            numVoci = BioGrails.executeUpdate(query)
+        } catch (Exception unErrore) { // intercetta l'errore
+            log.warn 'Errore numeroVociCheUsanoNome = ' + nome
+        }// fine del blocco try-catch
 
         return numVoci
     }// fine del metodo
@@ -425,7 +451,6 @@ class AntroponimoService {
         String info
 
         listaNomiDoppi()
-
 
         listaAntroponimi = Antroponimo.list(sort: 'nome')
         listaAntroponimi?.each {
@@ -569,10 +594,16 @@ class AntroponimoService {
         long durata
         int k = 0
         String info
+        Antroponimo antroponimo
 
         listaVoci?.each {
-            nonServe = new ListaNome(it)
-            k++
+            antroponimo = (Antroponimo) it
+
+            if (antroponimo.isVocePrincipale) {
+                nonServe = new ListaNome(antroponimo)
+                k++
+            }// fine del blocco if
+
             if (LibMat.avanzamento(k, numVociBlocco)) {
                 fine = System.currentTimeMillis()
                 durata = fine - inizio
