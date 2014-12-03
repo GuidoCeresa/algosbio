@@ -81,7 +81,7 @@ class ListaNome extends ListaBio {
     @Override
     protected String elaboraIncipit() {
         String ritorno = ''
-        String nome = this.getNome()
+        String nome = soggettoMadre
 
         if (nome) {
             ritorno = "{{incipit lista nomi|nome=${nome}}}"
@@ -218,6 +218,7 @@ class ListaNome extends ListaBio {
         sottoVoce = new ListaNomeAttivita(elaboraSoggettoSpecifico(chiaveParagrafo), false)
         sottoVoce.listaBiografie = listaVociOrdinate
         sottoVoce.titoloPaginaMadre = titoloPagina
+        sottoVoce.soggettoMadre = soggetto
         sottoVoce.elaboraPagina()
     }// fine del metodo
 
@@ -269,7 +270,7 @@ class ListaNome extends ListaBio {
     /**
      * Recupera il singolo nome
      */
-    private String getNome() {
+    protected String getNome() {
         String nome = ''
         Antroponimo antroponimo = getAntroponimo()
 

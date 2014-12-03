@@ -38,6 +38,7 @@ class ListaNomeAttivita extends ListaNome {
         tagParagrafoNullo = '...'
     }// fine del metodo
 
+
     /**
      * Chiave di selezione del paragrafo
      * Sovrascritto

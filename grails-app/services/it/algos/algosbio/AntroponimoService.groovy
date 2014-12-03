@@ -362,7 +362,11 @@ class AntroponimoService {
         String nomeWillCard = nome + tagSpazio + tagWillCard
 
         query += "update BioGrails set nomeLink="
-        query += antroponimo.id
+        if (antroponimo) {
+            query += antroponimo.id
+        } else {
+            query += " null"
+        }// fine del blocco if-else
         query += " where nome="
         query += sep + nome + sep
         query += " or nome like "
@@ -545,15 +549,29 @@ class AntroponimoService {
         return antroponimo
     }// fine del metodo
 
+    /**
+     * Check del nome
+     * Se valido, regola i link di tutte le biografie
+     * Se non valido, annulla i link di tutte le biografie e cancella il record
+     */
     private void ricalcolaAntroponimo(Antroponimo antroponimo) {
         String nome
         int numVoci
+        boolean nomeValido
 
         if (antroponimo) {
             nome = antroponimo.nome
-            numVoci = numeroVociCheUsanoNome(nome, antroponimo)
-            antroponimo.voci = numVoci
-            antroponimo.save()
+            nomeValido = LibBio.checkNome(nome)
+
+            if (nomeValido) {
+                numVoci = numeroVociCheUsanoNome(nome, antroponimo)
+                antroponimo.voci = numVoci
+                antroponimo.save()
+            } else {
+                //@todo non riesco a far funzionare la poulizia dei links e successiva cancellazione del record
+//                numeroVociCheUsanoAntroponimo(nome, null)
+//                antroponimo.delete()
+            }// fine del blocco if-else
         }// fine del blocco if
     }// fine del metodo
 
@@ -713,8 +731,6 @@ class AntroponimoService {
 
         testoFooter += getCriteri()
 
-        testoFooter += aCapo
-        testoFooter += '<references/>'
         testoFooter += aCapo
         testoFooter += aCapo
         testoFooter += '==Voci correlate=='
@@ -1643,17 +1659,17 @@ class AntroponimoService {
         testo += '==Criteri=='
         testo += tag + "I nomi vengono estratti dal parametro ''nome'' del [[Template:Bio|template:Bio]] di ogni voce biografica"
         testo += tag + "Vengono considerati solo i caratteri alfabetici (UTF8) più il '''trattino''' e '''apice''' iniziale (per i nomi arabi)"
-        testo += tag + "Non vengono riportati nomi che iniziano con '''['''"
-        testo += tag + "Non vengono riportati nomi che iniziano con '''{'''"
-        testo += tag + "Non vengono riportati nomi che iniziano con '''('''"
-        testo += tag + "Non vengono riportati nomi che iniziano con '''.'''"
-        testo += tag + "Non vengono riportati nomi che iniziano con '''&'''"
-        testo += tag + "Non vengono riportati nomi che iniziano con '''<'''"
+        testo += tag + "Non vengono riportati nomi che iniziano con caratteri numerici '''1, 2, 3, 4, 5, 6, 7, 8, 9, 0'''"
+        testo += tag + "Non vengono riportati nomi che iniziano con i caratteri '''[ { ( . , & < ? ! * % -'''"
+        testo += tag + "Non vengono riportati nomi che iniziano con le varianti tipografiche di apice '''‘ ‛ ʿ'''"
+        testo += tag + "Non vengono riportati titoli o prefissi tipo '''Lady, Sir, Maestro'''"
+        testo += tag + "Non vengono riportati titoli o prefissi arabi tipo '''Abd, Abu, Abū, Ibn'''"
+        testo += tag + "Non vengono riportati nomi considerati diminutivi impropri di altro nome, tipo '''Gian'''"
         testo += tag + "Non vengono riportati nomi di un solo carattere"
         testo += tag + "Viene considerato solo il primo nome presente nel template della voce"
         testo += tag + "Gli apostrofi vengono rispettati. Pertanto: '''María, Marià, Maria, Mária, Marìa, Mariâ''' sono nomi diversi"
         testo += tag + "I nomi composti formati da una sola parola (tipo '''Gianpaolo''') sono compresi"
-        testo += tag + "I nomi composti/doppi formati da più parole (tipo '''Maria Teresa''') sono compresi '''solo''' se sono presenti nell'apposita [[Progetto:Antroponimi/Nomi doppi|lista]]"
+        testo += tag + "I nomi composti/doppi formati da più parole (tipo '''Maria Teresa''') sono compresi '''solo''' se sono presenti nell' '''[[Progetto:Antroponimi/Nomi doppi|apposita lista]]'''"
         testo += tag + "I nomi composti con trattino (tipo '''Jean-Baptiste''') sono previsti"
         testo += tag + "Per ogni nome viene creata una pagina con la lista di voci biografiche che riportano il nome stesso come primo nome, anche se poi seguito da altri nomi"
         testo += tag + "Il numero di occorrenze di voci biografiche richiesto per avere una pagina è stato raggiunto per [[Discussioni progetto:Antroponimi|consenso]]"

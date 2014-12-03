@@ -106,7 +106,7 @@ class LibBio {
     private static String[] TAG_INI_CHAR = ['*', '&', '!', '&nbsp', '.', '(', ',', '?', '{', '[', '<', '-']
     private static String[] TAG_INI_APICI = ['‘', '‛', '"', "''"]
     private static String[] TAG_INI_NOMI = ['A.', 'DJ', 'J.']
-    private static String[] TAG_ALL_ARABI = ['Abd', "'Abd", 'Abu', "'Abu", 'Abū', "'Abū", 'Ibn', "'Ibn"]
+    private static String[] TAG_ALL_ARABI = ['Abd', "'Abd","ʿAbd", 'Abu', "'Abu", 'Abū', "'Abū", 'Ibn', "'Ibn", "ʿAbd"]
     private static String[] TAG_ALL_TITOLI = ['Lady', 'Sir', 'Maestro']
     private static String[] TAG_ALL_NOMI = ['Gian']
 

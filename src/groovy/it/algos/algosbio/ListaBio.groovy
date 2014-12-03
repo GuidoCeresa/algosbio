@@ -30,6 +30,7 @@ abstract class ListaBio {
 
     protected Object oggetto    //Giorno, Anno, Antroponimo, Attivita, ecc
     protected String soggetto   //9 marzo, 1934, Mario, Politici, ecc
+    protected String soggettoMadre
     protected String titoloPagina
     //Nati il 9 marzo, Nati nel 1934, Persone di nome Mario, Progetto:Biografie/Attività/Politici, ecc
     protected String titoloPaginaMadre = ''
@@ -60,6 +61,7 @@ abstract class ListaBio {
 
     public ListaBio(String soggetto, boolean iniziaSubito) {
         this.soggetto = soggetto
+        this.soggettoMadre = soggetto
         elaboraOggetto(soggetto)
         this.inizia(iniziaSubito)
     }// fine del costruttore
@@ -192,7 +194,7 @@ abstract class ListaBio {
     }// fine del metodo
 
     /**
-     * Pagina principale a cui tornare
+     * Frase inziale della pagina (incipit)
      * Sovrascritto
      */
     protected String elaboraIncipit() {
