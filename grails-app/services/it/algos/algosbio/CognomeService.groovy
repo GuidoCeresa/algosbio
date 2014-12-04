@@ -19,6 +19,8 @@ class CognomeService {
     private tagPunti = 'Altre...'
     private boolean titoloParagrafoConLink = true
     private String progetto = 'Progetto:Antroponimi/'
+    public static int TAG_DA_CONTROLLARE = -1
+    public static int TAG_CONTROLLATE = -2
 
     /**
      * azzera i link tra BioGrails e Cognome
@@ -233,7 +235,7 @@ class CognomeService {
 //        }// fine del blocco if
 
         if (cognome) {
-            numVoci = -1
+            numVoci = TAG_DA_CONTROLLARE
             registraSingoloCognome(cognome, numVoci, true)
         }// fine del blocco if
     }// fine del metodo
@@ -339,6 +341,13 @@ class CognomeService {
             }// fine del blocco if
         } // fine del ciclo each
         log.info 'Ricalcolati tutti i cognomi'
+
+        cancellaControllati()
+    }// fine del metodo
+
+    private static void cancellaControllati() {
+        String query = 'delete from Cognome where voci=' + TAG_CONTROLLATE
+        Cognome.executeUpdate(query)
     }// fine del metodo
 
     private void ricalcolaCognome(Cognome cognome, int soglia, int taglio) {
@@ -350,7 +359,8 @@ class CognomeService {
                 cognome.voci = numVoci
                 cognome.save()
             } else {
-                cognome.delete()
+                cognome.voci = TAG_CONTROLLATE
+                cognome.save()
             }// fine del blocco if-else
 
             //--riempimento del campo wikiUrl di Cognomi

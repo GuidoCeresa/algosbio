@@ -268,8 +268,8 @@ class CognomeController {
         titoloLista += ' records di cognomi su un totale di ' + Lib.Txt.formatNum(recordsTotali)
 
         //--aggiunta specifica di questo controller
-        int numRecNonControllate = Cognome.countByVoci(-1)
-        int numRecControllate = Cognome.countByVociGreaterThan(0)
+        int numRecNonControllate = Cognome.countByVoci(CognomeService.TAG_DA_CONTROLLARE)
+        int numRecControllate = Cognome.countByVociNotEqual(CognomeService.TAG_DA_CONTROLLARE)
         titoloLista += ' di cui ' + Lib.Txt.formatNum(numRecNonControllate)
         titoloLista += ' non ancora controllati e '
         titoloLista += Lib.Txt.formatNum(numRecControllate)
