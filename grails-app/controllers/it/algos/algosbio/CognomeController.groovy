@@ -236,7 +236,7 @@ class CognomeController {
         //--mappa con [campo:'nomeDelCampo', title:'titoloVisibile', sort:'ordinamento']
         //--se vuoto, mostra i primi n (stabilito nel templates:scaffoldinf:list)
         //--    nell'ordine stabilito nella constraints della DomainClass
-        campiLista = []
+        campiLista = ['testo', 'voci', 'isVocePrincipale', 'voceRiferimento', 'wikiUrl']
         // fine della definizione
 
         //--regolazione dei campo di ordinamento

@@ -312,15 +312,16 @@ class CognomeService {
         ArrayList<Cognome> listaCognomi
         int numVociDaRicalcolare = Pref.getInt(LibBio.MAX_RICALCOLA_COGNOMI)
         int soglia = Pref.getInt(LibBio.SOGLIA_COGNOMI)
+        int taglio = Pref.getInt(LibBio.TAGLIO_COGNOMI)
         long inizio = System.currentTimeMillis()
         long fine
         long durata
         int k = 0
         String info
 
-        listaCognomi = Cognome.listOrderByVoci([max: numVociDaRicalcolare, sort: 'voci',order: 'asc'])
+        listaCognomi = Cognome.listOrderByVoci([max: numVociDaRicalcolare, sort: 'voci', order: 'asc'])
         listaCognomi?.each {
-            ricalcolaCognome(it, soglia)
+            ricalcolaCognome(it, soglia, taglio)
             k++
             if (LibMat.avanzamento(k, 100)) {
                 fine = System.currentTimeMillis()
@@ -340,7 +341,7 @@ class CognomeService {
         log.info 'Ricalcolati tutti i cognomi'
     }// fine del metodo
 
-    private void ricalcolaCognome(Cognome cognome, int soglia) {
+    private void ricalcolaCognome(Cognome cognome, int soglia, int taglio) {
         int numVoci
 
         if (cognome) {
@@ -351,6 +352,10 @@ class CognomeService {
             } else {
                 cognome.delete()
             }// fine del blocco if-else
+
+            //--riempimento del campo wikiUrl di Cognomi
+            regolaWikilink(cognome, taglio)
+
         }// fine del blocco if
     }// fine del metodo
 
@@ -565,6 +570,33 @@ class CognomeService {
         }// fine del blocco if
 
         return listaBiografie
+    }// fine del metodo
+
+    //--riempimento del campo wikiUrl di Cognomi
+    private static void regolaWikilink(Cognome cognome, int taglio) {
+        Cognome cognomeRiferimento
+        String url
+
+        url = 'https://it.wikipedia.org/wiki/Persone di cognome ' + cognome.testo
+        if (cognome.isVocePrincipale) {
+            if (cognome.wikiUrl) {
+            } else {
+                if (cognome.voci > taglio) {
+                    cognome.wikiUrl = url
+                } else {
+                    cognome.wikiUrl = ''
+                }// fine del blocco if-else
+                cognome.save(flush: true)
+            }// fine del blocco if-else
+        } else {
+            cognomeRiferimento = cognome.voceRiferimento
+            if (cognomeRiferimento) {
+                cognome.wikiUrl = cognomeRiferimento.wikiUrl
+            } else {
+                cognome.wikiUrl = ''
+            }// fine del blocco if-else
+            cognome.save(flush: true)
+        }// fine del blocco if-else
     }// fine del metodo
 
 } // fine della service classe
