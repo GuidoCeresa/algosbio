@@ -3,6 +3,7 @@ package it.algos.algosbio
 import it.algos.algos.DialogoController
 import it.algos.algos.TipoDialogo
 import it.algos.algoslib.Lib
+import it.algos.algospref.Pref
 
 import static org.springframework.http.HttpStatus.*
 import grails.transaction.Transactional
@@ -130,7 +131,6 @@ class CognomeController {
         redirect(action: 'list')
     } // fine del metodo
 
-
     //--mostra un avviso di spiegazione per l'operazione da compiere
     //--passa al metodo effettivo
     def elabora() {
@@ -212,7 +212,7 @@ class CognomeController {
         if (!params.max) params.max = MAX
         ArrayList menuExtra
         ArrayList campiLista
-        def campoSort
+        def campoSort = 'voci'
         int recordsTotali
         String titoloLista
         def noMenuCreate = true
@@ -253,7 +253,11 @@ class CognomeController {
                 params.order = 'asc'
             }// fine del blocco if-else
         } else {
-            params.order = 'asc'
+            if (campoSort && campoSort.equals('voci')) {
+                params.order = 'desc'
+            } else {
+                params.order = 'asc'
+            }// fine del blocco if-else
         }// fine del blocco if-else
 
         //--selezione dei records da mostrare
@@ -269,7 +273,7 @@ class CognomeController {
 
         //--aggiunta specifica di questo controller
         int numRecNonControllate = Cognome.countByVoci(CognomeService.TAG_DA_CONTROLLARE)
-        int numRecControllate = Cognome.countByVociNotEqual(CognomeService.TAG_DA_CONTROLLARE)
+        int numRecControllate = Cognome.countByVociGreaterThan(Pref.getInt(LibBio.SOGLIA_COGNOMI, 20))
         titoloLista += ' di cui ' + Lib.Txt.formatNum(numRecNonControllate)
         titoloLista += ' non ancora controllati e '
         titoloLista += Lib.Txt.formatNum(numRecControllate)
