@@ -378,7 +378,6 @@ class CognomeService {
             cognome.delete()
         }// fine del blocco if-else
 
-
     }// fine del metodo
 
     // Elabora tutte le pagine
