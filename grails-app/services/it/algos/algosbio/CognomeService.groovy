@@ -92,12 +92,15 @@ class CognomeService {
     public static ArrayList<String> elaboraCognomiUnici(ArrayList<String> listaCognomiCompleta) {
         ArrayList<String> listaCognomiUnici = new ArrayList<String>()
         String cognomeDaControllare
-        String cognomeValido = ' '
+        String cognomeValido
 
         //--costruisce una lista di nomi 'unici'
         listaCognomiCompleta?.each {
+            cognomeValido = ' '
             cognomeDaControllare = (String) it
-            cognomeValido = check(cognomeDaControllare)
+            if (checkCognome(cognomeDaControllare)) {
+                cognomeValido = cognomeDaControllare
+            }// fine del blocco if
             if (cognomeValido) {
                 if (!listaCognomiUnici.contains(cognomeValido)) {
                     listaCognomiUnici.add(cognomeValido)
@@ -108,11 +111,15 @@ class CognomeService {
         return listaCognomiUnici
     }// fine del metodo
 
+    private static boolean checkCognome(String cognomeIn) {
+        return LibBio.checkNome(cognomeIn)
+    }// fine del metodo
+
     /**
      * Elabora il singolo cognome
      * Elimina caratteri 'anomali' dal cognome
      */
-    private static String check(String cognomeIn) {
+    private static String checkCognomeOld(String cognomeIn) {
         String cognomeOut = ''
         ArrayList listaTagContenuto = new ArrayList()
         ArrayList listaTagIniziali = new ArrayList()
@@ -308,6 +315,7 @@ class CognomeService {
      * Ricalcolo records esistenti <br>
      * Controllo della pagina Progetto:Antroponimi/Nomi doppi <br>
      * Ricalcola il numero delle voci (bioGrails) che utilizzano ogni record (antroponimo) <br>
+     * Cancella i records che non superano il check di validità <br>
      * Cancella i records che non superano la soglia minima <br>
      */
     public void ricalcola() {
@@ -353,7 +361,7 @@ class CognomeService {
     private void ricalcolaCognome(Cognome cognome, int soglia, int taglio) {
         int numVoci
 
-        if (cognome) {
+        if (checkCognome(cognome.testo)) {
             numVoci = numeroVociCheUsanoCognome(cognome.testo)
             if (numVoci > soglia) {
                 cognome.voci = numVoci
@@ -366,7 +374,11 @@ class CognomeService {
             //--riempimento del campo wikiUrl di Cognomi
             regolaWikilink(cognome, taglio)
 
-        }// fine del blocco if
+        } else {
+            cognome.delete()
+        }// fine del blocco if-else
+
+
     }// fine del metodo
 
     // Elabora tutte le pagine
@@ -394,7 +406,7 @@ class CognomeService {
         numCicli = LibMat.minimoPositivo(numListaCognomi, numCicliMax)
         for (int k = 0; k < numCicli; k++) {
             cognome = listaCognomi.get(k)
-            if (cognome && LibBio.checkNome(cognome)) {
+            if (cognome && checkCognome(cognome)) {
                 elaboraCognome(cognome)
             }// fine del blocco if
         } // fine del ciclo for
