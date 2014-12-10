@@ -569,8 +569,10 @@ class AntroponimoService {
                 antroponimo.save()
             } else {
                 //@todo non riesco a far funzionare la poulizia dei links e successiva cancellazione del record
-//                numeroVociCheUsanoAntroponimo(nome, null)
-//                antroponimo.delete()
+                numeroVociCheUsanoAntroponimo(nome, null)
+                antroponimo.voceRiferimento = null
+                antroponimo.save()
+                antroponimo.delete()
             }// fine del blocco if-else
         }// fine del blocco if
     }// fine del metodo
