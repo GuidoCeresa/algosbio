@@ -34,7 +34,7 @@ import static org.springframework.http.HttpStatus.OK
 class AntroponimoController {
 
     static allowedMethods = [save: 'POST', update: 'PUT', delete: 'DELETE']
-    private static int MAX = 100
+    private static int MAX = 1000
 
     // utilizzo di un service con la businessLogic per l'elaborazione dei dati
     // il service viene iniettato automaticamente

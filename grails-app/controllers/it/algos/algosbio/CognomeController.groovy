@@ -14,7 +14,7 @@ class CognomeController {
     def cognomeService
 
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
-    private static int MAX = 100
+    private static int MAX = 1000
 
     //--costruisce
     //--mostra un avviso di spiegazione per l'operazione da compiere

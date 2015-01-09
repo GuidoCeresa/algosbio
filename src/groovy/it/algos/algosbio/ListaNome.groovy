@@ -53,7 +53,7 @@ class ListaNome extends ListaBio {
      * Costruisce il titolo della pagina
      */
     @Override
-    protected elaboraTitolo() {
+    protected void elaboraTitolo() {
         if (!titoloPagina) {
             titoloPagina = 'Persone di nome ' + getNome()
         }// fine del blocco if

@@ -83,5 +83,25 @@ class ListaAnnoNato extends ListaAnno {
         }// fine del blocco if
     }// fine del metodo
 
+    /**
+     * Elabora e crea la lista dell'anno indicato e la uploada sul server wiki
+     */
+    public static boolean uploadAnno(Anno anno) {
+        boolean registrata = false
+        ListaAnno listaAnno
+
+        if (anno) {
+            if (anno.sporcoNato) {
+                listaAnno = new ListaAnnoNato(anno)
+                if (listaAnno.registrata || listaAnno.listaBiografie.size() == 0) {
+                    anno.sporcoNato = false
+                    anno.save(flush: true)
+                    registrata = true
+                }// fine del blocco if
+            }// fine del blocco if
+        }// fine del blocco if
+
+        return registrata
+    }// fine del metodo
 
 }// fine della classe

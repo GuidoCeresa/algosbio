@@ -8,6 +8,8 @@ class UploadJob {
     // utilizzo di un service con la businessLogic per l'elaborazione dei dati
     // il service viene iniettato automaticamente
     def bioGrailsService
+    def giornoService
+    def annoService
     def statisticheService
 
     //--codifica dell'orario di attivazione
@@ -22,9 +24,30 @@ class UploadJob {
     def execute() {
         //--flag di attivazione
         if (Pref.getBool(LibBio.USA_CRONO_UPLOAD)) {
-            if (bioGrailsService) {
-                bioGrailsService.uploadAll()
-            }// fine del blocco if
+
+            if (Pref.getBool(LibBio.USA_LISTE_BIO_GIORNI)) {
+                if (giornoService) {
+                    giornoService.uploadGiorniNascita()
+                    giornoService.uploadGiorniMorte()
+                }// fine del blocco if
+            } else {
+                if (bioGrailsService) {
+                    bioGrailsService.uploadGiorniNascita()
+                    bioGrailsService.uploadGiorniMorte()
+                }// fine del blocco if
+            }// fine del blocco if-else
+
+            if (Pref.getBool(LibBio.USA_LISTE_BIO_ANNI)) {
+                if (annoService) {
+                    annoService.uploadAnniNascita()
+                    annoService.uploadAnniMorte()
+                }// fine del blocco if
+            } else {
+                if (bioGrailsService) {
+                    bioGrailsService.uploadAnniNascita()
+                    bioGrailsService.uploadAnniMorte()
+                }// fine del blocco if
+            }// fine del blocco if-else
 
             if (statisticheService) {
                 statisticheService.paginaSintesi()

@@ -659,8 +659,13 @@ class VersioneBootStrap {
             versioneService.newVersione('Preferenze', 'USA_NOME_COGNOME_PER_TITOLO di default false')
         }// fine del blocco if
 
-        //--modifica codice preferenza
+        //--intervento una tantum
         if (versioneService && versioneService.installaVersione(76)) {
+            versioneService.newVersione('Antroponimi', 'Riempimento del campo wikiUrl per chi supera le 50 voci')
+        }// fine del blocco if
+
+        //--modifica codice preferenza
+        if (versioneService && versioneService.installaVersione(77)) {
             Pref pref = Pref.findByCode(LibBio.TAGLIO_COGNOMI_DEPRECATO)
             pref.code = LibBio.TAGLIO_COGNOMI
             pref.save(flush: true)
@@ -668,7 +673,7 @@ class VersioneBootStrap {
         }// fine del blocco if
 
         //--creata una nuova preferenza
-        if (versioneService && versioneService.installaVersione(77)) {
+        if (versioneService && versioneService.installaVersione(78)) {
             Pref pref = new Pref()
             pref.ordine = Pref.list().size() + 1
             pref.code = LibBio.SOGLIA_COGNOMI
@@ -680,7 +685,7 @@ class VersioneBootStrap {
         }// fine del blocco if
 
         //--creata una nuova preferenza
-        if (versioneService && versioneService.installaVersione(78)) {
+        if (versioneService && versioneService.installaVersione(79)) {
             Pref pref = new Pref()
             pref.ordine = Pref.list().size() + 1
             pref.code = LibBio.MAX_RICALCOLA_COGNOMI
@@ -691,6 +696,29 @@ class VersioneBootStrap {
             versioneService.newVersione('Preferenze', 'MAX_RICALCOLA_COGNOMI di default 1000')
         }// fine del blocco if
 
+        //--creata una nuova preferenza
+        if (versioneService && versioneService.installaVersione(80)) {
+            Pref pref = new Pref()
+            pref.ordine = Pref.list().size() + 1
+            pref.code = LibBio.USA_LISTE_BIO_GIORNI
+            pref.descrizione = "usa le nuove liste"
+            pref.type = Type.booleano
+            pref.bool = false
+            pref.save(flush: true)
+            versioneService.newVersione('Preferenze', 'USA_LISTE_BIO_GIORNI di default false')
+        }// fine del blocco if
+
+        //--creata una nuova preferenza
+        if (versioneService && versioneService.installaVersione(81)) {
+            Pref pref = new Pref()
+            pref.ordine = Pref.list().size() + 1
+            pref.code = LibBio.USA_LISTE_BIO_ANNI
+            pref.descrizione = "usa le nuove liste"
+            pref.type = Type.booleano
+            pref.bool = false
+            pref.save(flush: true)
+            versioneService.newVersione('Preferenze', 'USA_LISTE_BIO_ANNI di default false')
+        }// fine del blocco if
     }// fine della closure
 
 

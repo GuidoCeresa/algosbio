@@ -42,11 +42,10 @@ abstract class ListaAnno extends ListaBio {
     }// fine del metodo
 
     /**
-     * Costruisce il titolo della pagina
+     * Titolo della pagina da creare/caricare su wikipedia
+     * Sovrascritto
      */
-    @Override
-    protected String getTitolo() {
-        // variabili e costanti locali di lavoro
+    protected void elaboraTitolo() {
         String titolo = ''
         String tag = getTagTitolo()
         String articolo = 'nel'
@@ -57,9 +56,28 @@ abstract class ListaAnno extends ListaBio {
             titolo = tag + articolo + SPAZIO + titolo
         }// fine del blocco if
 
-        // valore di ritorno
-        return titolo
+        titoloPagina = titolo
     }// fine del metodo
+
+//    /**
+//     * Costruisce il titolo della pagina
+//     */
+//    @Override
+//    protected String getTitolo() {
+//        // variabili e costanti locali di lavoro
+//        String titolo = ''
+//        String tag = getTagTitolo()
+//        String articolo = 'nel'
+//        Anno anno = getAnno()
+//
+//        if (anno) {
+//            titolo = anno.titolo
+//            titolo = tag + articolo + SPAZIO + titolo
+//        }// fine del blocco if
+//
+//        // valore di ritorno
+//        return titolo
+//    }// fine del metodo
 
     /**
      * Recupera il tag specifico nati/morti
@@ -173,24 +191,28 @@ abstract class ListaAnno extends ListaBio {
      * Elabora e crea le liste dell'anno indicato (nascita e morte) e le uploada sul server wiki
      */
     public static void uploadAnno(String titolo) {
-        def nonServe
+        Anno anno
 
         if (titolo) {
-            nonServe = new ListaAnnoNato(titolo)
-            nonServe = new ListaAnnoMorto(titolo)
+            anno = Anno.findByTitolo(titolo)
+            if (anno) {
+                uploadAnno(anno)
+            }// fine del blocco if
         }// fine del blocco if
     }// fine del metodo
 
     /**
      * Elabora e crea le liste dell'anno indicato (nascita e morte) e le uploada sul server wiki
      */
-    public static void uploadAnno(Anno anno) {
-        def nonServe
+    public static boolean uploadAnno(Anno anno) {
+        boolean nonUsato = false
 
         if (anno) {
-            nonServe = new ListaAnnoNato(anno)
-            nonServe = new ListaAnnoMorto(anno)
+            ListaAnnoNato.uploadAnno(anno)
+            ListaAnnoMorto.uploadAnno(anno)
         }// fine del blocco if
+
+        return nonUsato
     }// fine del metodo
 
 }// fine della classe

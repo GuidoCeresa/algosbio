@@ -45,7 +45,7 @@ abstract class ListaBio {
     protected String tagTemplateBio = 'ListaBio'
     protected String tagLivelloParagrafo = '=='
     protected String tagParagrafoNullo = 'Altre...'
-    public registrata
+    public boolean registrata = false
 
 
     public ListaBio(Object oggetto) {
@@ -68,6 +68,7 @@ abstract class ListaBio {
 
     protected inizia(boolean iniziaSubito) {
         elaboraParametri()
+        elaboraTitolo()
 
         if (iniziaSubito) {
             elaboraListaBiografie()
@@ -90,6 +91,21 @@ abstract class ListaBio {
     }// fine del metodo
 
     /**
+     * Titolo della pagina da creare/caricare su wikipedia
+     * Sovrascritto
+     */
+    protected void elaboraTitolo() {
+    }// fine del metodo
+
+    /**
+     * Titolo della pagina da creare/caricare su wikipedia
+     * Sovrascritto
+     */
+    protected String getTitolo() {
+        return ''
+    }// fine del metodo
+
+    /**
      * Elaborazione principale della pagina
      */
     protected elaboraPagina() {
@@ -99,45 +115,28 @@ abstract class ListaBio {
         EditBio paginaModificata
         Risultato risultato
 
-        //titolo della pagina
-        elaboraTitolo()
+        if (listaBiografie) {
+            //header
+            testo += this.elaboraHead()
 
-        //header
-        testo += this.elaboraHead()
+            //body
+            testo += this.elaboraBody()
 
-        //body
-        testo += this.elaboraBody()
-
-        //footer
-        testo += this.elaboraFooter()
+            //footer
+            testo += this.elaboraFooter()
+        }// fine del blocco if
 
         //registra la pagina
-        testo = testo.trim()
-        if (debug) {
-            paginaModificata = new EditBio('Utente:Biobot/2', testo, summary)
-            registrata = paginaModificata.registrata
-        } else {
-            paginaModificata = new EditBio(titoloPagina, testo, summary)
-            registrata = paginaModificata.registrata
-        }// fine del blocco if-else
-
-        def stop
-    }// fine del metodo
-
-    /**
-     * Titolo della pagina da creare/caricare su wikipedia
-     * Sovrascritto
-     */
-    protected elaboraTitolo() {
-        return ''
-    }// fine del metodo
-
-    /**
-     * Titolo della pagina da creare/caricare su wikipedia
-     * Sovrascritto
-     */
-    protected String getTitolo() {
-        return ''
+        if (testo) {
+            testo = testo.trim()
+            if (debug) {
+                paginaModificata = new EditBio('Utente:Biobot/2', testo, summary)
+                registrata = paginaModificata.registrata
+            } else {
+                paginaModificata = new EditBio(titoloPagina, testo, summary)
+                registrata = paginaModificata.registrata
+            }// fine del blocco if-else
+        }// fine del blocco if
     }// fine del metodo
 
     /**
@@ -283,7 +282,10 @@ abstract class ListaBio {
         testoIni += "|testo="
         testoIni += aCapo
 
-        testoOut = testoIni + testoBody + testoEnd
+        if (testoBody) {
+            testoOut = testoIni + testoBody + testoEnd
+        }// fine del blocco if
+
         return testoOut
     }// fine del metodo
 

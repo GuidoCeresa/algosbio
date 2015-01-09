@@ -13,6 +13,7 @@
 
 package it.algos.algosbio
 
+import it.algos.algoslib.LibArray
 import it.algos.algospref.Pref
 
 class AnnoService {
@@ -143,7 +144,6 @@ class AnnoService {
     def int uploadAnniNascita() {
         int anniiModificati = 0
         ArrayList<Anno> listaAnniModificati
-        ListaBio listaBio
 
         if (Pref.getBool(LibBio.REGISTRA_ALL_GIORNI_ANNI, false)) {
             listaAnniModificati = Anno.list()
@@ -152,8 +152,7 @@ class AnnoService {
         }// fine del blocco if-else
 
         listaAnniModificati?.each {
-            listaBio = new ListaAnnoNato(it)
-            if (listaBio.registrata) {
+            if (ListaAnnoNato.uploadAnno(it)) {
                 anniiModificati++
             }// fine del blocco if
         } // fine del ciclo each
@@ -168,7 +167,6 @@ class AnnoService {
     def int uploadAnniMorte() {
         int anniiModificati = 0
         ArrayList<Anno> listaAnniModificati
-        ListaBio listaBio
 
         if (Pref.getBool(LibBio.REGISTRA_ALL_GIORNI_ANNI, false)) {
             listaAnniModificati = Anno.list()
@@ -177,14 +175,12 @@ class AnnoService {
         }// fine del blocco if-else
 
         listaAnniModificati?.each {
-            listaBio = new ListaAnnoMorto(it)
-            if (listaBio.registrata) {
+            if (ListaAnnoMorto.uploadAnno(it)) {
                 anniiModificati++
             }// fine del blocco if
         } // fine del ciclo each
 
         return anniiModificati
     } // fine del metodo
-
 
 } // fine della service classe
