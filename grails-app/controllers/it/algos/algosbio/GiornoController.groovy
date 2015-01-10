@@ -25,7 +25,7 @@ import org.springframework.dao.DataIntegrityViolationException
 import static org.springframework.http.HttpStatus.NOT_FOUND
 import static org.springframework.http.HttpStatus.OK
 
-@Transactional(readOnly = true)
+@Transactional(readOnly = false)
 class GiornoController {
 
     static allowedMethods = [save: 'POST', update: 'POST', delete: 'POST']
@@ -37,7 +37,6 @@ class GiornoController {
     def eventoService
     def giornoService
     def bioGrailsService
-    def bioService
 
     def index() {
         redirect(action: 'list', params: params)

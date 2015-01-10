@@ -15,9 +15,10 @@ package it.algos.algosbio
 
 import it.algos.algoslib.LibTime
 import it.algos.algospref.Pref
-import it.algos.algoswiki.Login
 
 class GiornoService {
+
+    boolean transactional = false
 
     /**
      * Crea tutti i records
@@ -147,7 +148,6 @@ class GiornoService {
     public int uploadGiorniNascita() {
         int giorniModificati = 0
         ArrayList<Giorno> listaGiorniModificati
-        ListaBio listaBio
 
         if (Pref.getBool(LibBio.REGISTRA_ALL_GIORNI_ANNI, false)) {
             listaGiorniModificati = Giorno.list()
@@ -156,8 +156,7 @@ class GiornoService {
         }// fine del blocco if-else
 
         listaGiorniModificati?.each {
-            listaBio = new ListaGiornoNato(it)
-            if (listaBio.registrata) {
+            if (ListaGiornoNato.uploadGiorno(it)) {
                 giorniModificati++
             }// fine del blocco if
         } // fine del ciclo each
@@ -172,7 +171,6 @@ class GiornoService {
     def int uploadGiorniMorte() {
         int giorniModificati = 0
         ArrayList<Giorno> listaGiorniModificati
-        ListaBio listaBio
 
         if (Pref.getBool(LibBio.REGISTRA_ALL_GIORNI_ANNI, false)) {
             listaGiorniModificati = Giorno.list()
@@ -181,8 +179,7 @@ class GiornoService {
         }// fine del blocco if-else
 
         listaGiorniModificati?.each {
-            listaBio = new ListaGiornoMorto(it)
-            if (listaBio.registrata) {
+            if (ListaGiornoMorto.uploadGiorno(it)) {
                 giorniModificati++
             }// fine del blocco if
         } // fine del ciclo each

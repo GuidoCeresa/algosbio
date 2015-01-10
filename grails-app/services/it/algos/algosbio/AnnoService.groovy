@@ -13,13 +13,11 @@
 
 package it.algos.algosbio
 
-import it.algos.algoslib.LibArray
 import it.algos.algospref.Pref
 
 class AnnoService {
 
     boolean transactional = false
-    def sessionFactory
 
     //--usato nell'ordinamento delle categorie
     public static int ANNO_INIZIALE = 2000

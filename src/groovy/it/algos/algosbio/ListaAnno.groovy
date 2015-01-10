@@ -1,6 +1,7 @@
 package it.algos.algosbio
 
 import it.algos.algoslib.Mese
+import it.algos.algospref.Pref
 
 /**
  * Created by gac on 18/10/14.
@@ -33,7 +34,7 @@ abstract class ListaAnno extends ListaBio {
     @Override
     protected elaboraParametri() {
         usaTavolaContenuti = false
-        usaSuddivisioneParagrafi = true
+        usaSuddivisioneParagrafi = Pref.getBool(LibBio.USA_SUDDIVISIONE_PARAGRAFI_ANNI, false)
         usaTitoloParagrafoConLink = false
         usaDoppiaColonna = true
         usaSottopagine = false
@@ -58,26 +59,6 @@ abstract class ListaAnno extends ListaBio {
 
         titoloPagina = titolo
     }// fine del metodo
-
-//    /**
-//     * Costruisce il titolo della pagina
-//     */
-//    @Override
-//    protected String getTitolo() {
-//        // variabili e costanti locali di lavoro
-//        String titolo = ''
-//        String tag = getTagTitolo()
-//        String articolo = 'nel'
-//        Anno anno = getAnno()
-//
-//        if (anno) {
-//            titolo = anno.titolo
-//            titolo = tag + articolo + SPAZIO + titolo
-//        }// fine del blocco if
-//
-//        // valore di ritorno
-//        return titolo
-//    }// fine del metodo
 
     /**
      * Recupera il tag specifico nati/morti

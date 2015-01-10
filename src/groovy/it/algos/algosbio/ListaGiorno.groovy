@@ -1,4 +1,7 @@
 package it.algos.algosbio
+
+import it.algos.algospref.Pref
+
 /**
  * Created by gac on 17/10/14.
  */
@@ -31,7 +34,7 @@ abstract class ListaGiorno extends ListaBio {
     @Override
     protected elaboraParametri() {
         usaTavolaContenuti = false
-        usaSuddivisioneParagrafi = true
+        usaSuddivisioneParagrafi = Pref.getBool(LibBio.USA_SUDDIVISIONE_PARAGRAFI_GIORNI, false)
         usaTitoloParagrafoConLink = false
         usaDoppiaColonna = true
         usaSottopagine = false
@@ -40,12 +43,11 @@ abstract class ListaGiorno extends ListaBio {
     }// fine del metodo
 
     /**
-     * Costruisce il titolo della pagina
+     * Titolo della pagina da creare/caricare su wikipedia
+     * Sovrascritto
      */
-    @Override
-    protected String getTitolo() {
-        // variabili e costanti locali di lavoro
-        String titolo
+    protected void elaboraTitolo() {
+        String titolo = ''
         String tag = getTagTitolo()
         String articolo = 'il'
         String articoloBis = "l'"
@@ -63,9 +65,9 @@ abstract class ListaGiorno extends ListaBio {
             }// fine del blocco if-else
         }// fine del blocco if
 
-        // valore di ritorno
-        return titolo
+        titoloPagina = titolo
     }// fine del metodo
+
 
     /**
      * Recupera il tag specifico nati/morti
@@ -210,25 +212,29 @@ abstract class ListaGiorno extends ListaBio {
      * Elabora e crea le liste del giorno indicato (nascita e morte) e le uploada sul server wiki
      */
     public static void uploadGiorno(String titolo) {
-        def nonServe
+        Giorno giorno
 
         if (titolo) {
-            nonServe = new ListaGiornoNato(titolo)
-            nonServe = new ListaGiornoMorto(titolo)
+            giorno = Giorno.findByTitolo(titolo)
+            if (giorno) {
+                uploadGiorno(giorno)
+            }// fine del blocco if
         }// fine del blocco if
+
     }// fine del metodo
 
     /**
      * Elabora e crea le liste del giorno indicato (nascita e morte) e le uploada sul server wiki
      */
-    public static void uploadGiorno(Giorno giorno) {
-        def nonServe
+    public static boolean uploadGiorno(Giorno giorno) {
+        boolean nonUsato = false
 
         if (giorno) {
-            nonServe = new ListaGiornoNato(giorno)
-            nonServe = new ListaGiornoMorto(giorno)
+            ListaGiornoNato.uploadGiorno(giorno)
+            ListaGiornoMorto.uploadGiorno(giorno)
         }// fine del blocco if
-    }// fine del metodo
 
+        return nonUsato
+    }// fine del metodo
 
 }// fine della classe

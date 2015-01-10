@@ -83,4 +83,25 @@ class ListaGiornoMorto extends ListaGiorno {
         }// fine del blocco if
     }// fine del metodo
 
+    /**
+     * Elabora e crea le liste del giorno indicato (nascita e morte) e le uploada sul server wiki
+     */
+    public static boolean uploadGiorno(Giorno giorno) {
+        boolean registrata = false
+        ListaGiorno listaGiorno
+
+        if (giorno) {
+            if (giorno.sporcoMorto) {
+                listaGiorno = new ListaGiornoMorto(giorno)
+                if (listaGiorno.registrata || listaGiorno.listaBiografie.size() == 0) {
+                    giorno.sporcoMorto = false
+                    giorno.save(flush: true)
+                    registrata = true
+                }// fine del blocco if
+            }// fine del blocco if
+        }// fine del blocco if
+
+        return registrata
+    }// fine del metodo
+
 }// fine della classe

@@ -719,6 +719,30 @@ class VersioneBootStrap {
             pref.save(flush: true)
             versioneService.newVersione('Preferenze', 'USA_LISTE_BIO_ANNI di default false')
         }// fine del blocco if
+
+        //--creata una nuova preferenza
+        if (versioneService && versioneService.installaVersione(82)) {
+            Pref pref = new Pref()
+            pref.ordine = Pref.list().size() + 1
+            pref.code = LibBio.USA_SUDDIVISIONE_PARAGRAFI_GIORNI
+            pref.descrizione = "Suddivisione in paragrafi (secoli) delle liste per anno di nati nel giorno"
+            pref.type = Type.booleano
+            pref.bool = false
+            pref.save(flush: true)
+            versioneService.newVersione('Preferenze', 'USA_SUDDIVISIONE_PARAGRAFI_GIORNI di default false')
+        }// fine del blocco if
+
+        //--creata una nuova preferenza
+        if (versioneService && versioneService.installaVersione(83)) {
+            Pref pref = new Pref()
+            pref.ordine = Pref.list().size() + 1
+            pref.code = LibBio.USA_SUDDIVISIONE_PARAGRAFI_ANNI
+            pref.descrizione = "Suddivisione in paragrafi (mesi) delle liste per giorno di nati nel anno"
+            pref.type = Type.booleano
+            pref.bool = false
+            pref.save(flush: true)
+            versioneService.newVersione('Preferenze', 'USA_SUDDIVISIONE_PARAGRAFI_ANNI di default false')
+        }// fine del blocco if
     }// fine della closure
 
 
