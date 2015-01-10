@@ -135,7 +135,7 @@ abstract class ListaGiorno extends ListaBio {
     protected elaboraFooter(String categoriaTxt) {
         String testo = ''
         String giornoOrdinamento = getGiornoOrdinamento()
-        String titoloPagina = getTitolo()
+        String titoloPagina = titoloPagina
 
         testo += "<noinclude>"
         testo += aCapo
