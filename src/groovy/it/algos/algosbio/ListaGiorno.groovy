@@ -8,6 +8,10 @@ import it.algos.algospref.Pref
 abstract class ListaGiorno extends ListaBio {
 
 
+    public ListaGiorno(Giorno giorno, BioService bioService) {
+        super(giorno, bioService)
+    }// fine del costruttore
+
     public ListaGiorno(Giorno giorno) {
         super(giorno)
     }// fine del costruttore
@@ -67,7 +71,6 @@ abstract class ListaGiorno extends ListaBio {
 
         titoloPagina = titolo
     }// fine del metodo
-
 
     /**
      * Recupera il tag specifico nati/morti
@@ -226,12 +229,12 @@ abstract class ListaGiorno extends ListaBio {
     /**
      * Elabora e crea le liste del giorno indicato (nascita e morte) e le uploada sul server wiki
      */
-    public static boolean uploadGiorno(Giorno giorno) {
+    public static boolean uploadGiorno(Giorno giorno, BioService bioService) {
         boolean nonUsato = false
 
         if (giorno) {
-            ListaGiornoNato.uploadGiorno(giorno)
-            ListaGiornoMorto.uploadGiorno(giorno)
+            ListaGiornoNato.uploadGiorno(giorno, bioService)
+            ListaGiornoMorto.uploadGiorno(giorno, bioService)
         }// fine del blocco if
 
         return nonUsato

@@ -48,6 +48,12 @@ abstract class ListaBio {
     public boolean registrata = false
 
 
+    public ListaBio(Object oggetto, BioService bioService) {
+        this.oggetto = oggetto
+        this.bioService = bioService
+        inizia(true)
+    }// fine del costruttore
+
     public ListaBio(Object oggetto) {
         this.oggetto = oggetto
         inizia(true)

@@ -11,6 +11,7 @@ class UploadJob {
     def giornoService
     def annoService
     def statisticheService
+    def bioService
 
     //--codifica dell'orario di attivazione
     //--MON, TUE, WED, THU, FRI, SAT, SUN
@@ -26,9 +27,9 @@ class UploadJob {
         if (Pref.getBool(LibBio.USA_CRONO_UPLOAD)) {
 
             if (Pref.getBool(LibBio.USA_LISTE_BIO_GIORNI)) {
-                if (giornoService) {
-                    giornoService.uploadGiorniNascita()
-                    giornoService.uploadGiorniMorte()
+                if (bioService && giornoService) {
+                    giornoService.uploadGiorniNascita(bioService)
+                    giornoService.uploadGiorniMorte(bioService)
                 }// fine del blocco if
             } else {
                 if (bioGrailsService) {
@@ -38,9 +39,9 @@ class UploadJob {
             }// fine del blocco if-else
 
             if (Pref.getBool(LibBio.USA_LISTE_BIO_ANNI)) {
-                if (annoService) {
-                    annoService.uploadAnniNascita()
-                    annoService.uploadAnniMorte()
+                if (bioService && annoService) {
+                    annoService.uploadAnniNascita(bioService)
+                    annoService.uploadAnniMorte(bioService)
                 }// fine del blocco if
             } else {
                 if (bioGrailsService) {

@@ -9,6 +9,10 @@ import org.grails.datastore.mapping.query.api.Criteria
 class ListaGiornoMorto extends ListaGiorno {
 
 
+    public ListaGiornoMorto(Giorno giorno, BioService bioService) {
+        super(giorno, bioService)
+    }// fine del costruttore
+
     public ListaGiornoMorto(Giorno giorno) {
         super(giorno)
     }// fine del costruttore
@@ -86,13 +90,13 @@ class ListaGiornoMorto extends ListaGiorno {
     /**
      * Elabora e crea le liste del giorno indicato (nascita e morte) e le uploada sul server wiki
      */
-    public static boolean uploadGiorno(Giorno giorno) {
+    public static boolean uploadGiorno(Giorno giorno, BioService bioService) {
         boolean registrata = false
         ListaGiorno listaGiorno
 
         if (giorno) {
             if (giorno.sporcoMorto) {
-                listaGiorno = new ListaGiornoMorto(giorno)
+                listaGiorno = new ListaGiornoMorto(giorno, bioService)
                 if (listaGiorno.registrata || listaGiorno.listaBiografie.size() == 0) {
                     giorno.sporcoMorto = false
                     giorno.save(flush: true)

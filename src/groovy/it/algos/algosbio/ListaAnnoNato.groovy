@@ -10,8 +10,8 @@ import org.grails.datastore.mapping.query.api.Criteria
 class ListaAnnoNato extends ListaAnno {
 
 
-    public ListaAnnoNato(Anno anno) {
-        super(anno)
+    public ListaAnnoNato(Anno anno, BioService bioService) {
+        super(anno, bioService)
     }// fine del costruttore
 
     public ListaAnnoNato(String soggetto) {
@@ -86,13 +86,13 @@ class ListaAnnoNato extends ListaAnno {
     /**
      * Elabora e crea la lista dell'anno indicato e la uploada sul server wiki
      */
-    public static boolean uploadAnno(Anno anno) {
+    public static boolean uploadAnno(Anno anno, BioService bioService) {
         boolean registrata = false
         ListaAnno listaAnno
 
         if (anno) {
             if (anno.sporcoNato) {
-                listaAnno = new ListaAnnoNato(anno)
+                listaAnno = new ListaAnnoNato(anno, bioService)
                 if (listaAnno.registrata || listaAnno.listaBiografie.size() == 0) {
                     anno.sporcoNato = false
                     anno.save(flush: true)

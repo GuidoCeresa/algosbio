@@ -35,6 +35,7 @@ class AnnoController {
     def eventoService
     def annoService
     def bioGrailsService
+    def bioService
 
     def index() {
         redirect(action: 'list', params: params)
@@ -153,8 +154,8 @@ class AnnoController {
     //--passa al metodo effettivo senza nessun dialogo di conferma
     def uploadAnniNascita() {
         if (grailsApplication && grailsApplication.config.login && grailsApplication.config.login.isValido()) {
-            if (Pref.getBool(LibBio.USA_LISTE_BIO_ANNI)) {
-                annoService.uploadAnniNascita()
+            if (bioService && Pref.getBool(LibBio.USA_LISTE_BIO_ANNI)) {
+                annoService.uploadAnniNascita(bioService)
             } else {
                 bioGrailsService.uploadAnniNascita()
             }// fine del blocco if-else
@@ -170,8 +171,8 @@ class AnnoController {
     //--passa al metodo effettivo senza nessun dialogo di conferma
     def uploadAnniMorte() {
         if (grailsApplication && grailsApplication.config.login && grailsApplication.config.login.isValido()) {
-            if (Pref.getBool(LibBio.USA_LISTE_BIO_ANNI)) {
-                annoService.uploadAnniMorte()
+            if (bioService && Pref.getBool(LibBio.USA_LISTE_BIO_ANNI)) {
+                annoService.uploadAnniMorte(bioService)
             } else {
                 bioGrailsService.uploadAnniMorte()
             }// fine del blocco if-else
@@ -187,9 +188,9 @@ class AnnoController {
     //--passa al metodo effettivo senza nessun dialogo di conferma
     def uploadAllAnni() {
         if (grailsApplication && grailsApplication.config.login && grailsApplication.config.login.isValido()) {
-            if (Pref.getBool(LibBio.USA_LISTE_BIO_ANNI)) {
-                annoService.uploadAnniNascita()
-                annoService.uploadAnniMorte()
+            if (bioService && Pref.getBool(LibBio.USA_LISTE_BIO_ANNI)) {
+                annoService.uploadAnniNascita(bioService)
+                annoService.uploadAnniMorte(bioService)
             } else {
                 bioGrailsService.uploadAnniNascita()
                 bioGrailsService.uploadAnniMorte()
@@ -207,10 +208,8 @@ class AnnoController {
         Anno anno = Anno.get(id)
 
         if (grailsApplication && grailsApplication.config.login && grailsApplication.config.login.isValido()) {
-            if (anno) {
-                ListaAnno listaAnno = new ListaAnnoMorto(anno)
-
-                ListaAnno.uploadAnno(anno)
+            if (anno && bioService) {
+                ListaAnno.uploadAnno(anno, bioService)
                 flash.message = "Eseguito upload sul server wiki delle pagine con le liste delle voci nati e morti per l'anno ${anno.titolo}"
             } else {
                 flash.error = "Non ho trovato l'anno indicato"

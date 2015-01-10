@@ -37,6 +37,7 @@ class GiornoController {
     def eventoService
     def giornoService
     def bioGrailsService
+    def bioService
 
     def index() {
         redirect(action: 'list', params: params)
@@ -155,8 +156,8 @@ class GiornoController {
     //--passa al metodo effettivo senza nessun dialogo di conferma
     def uploadGiorniNascita() {
         if (grailsApplication && grailsApplication.config.login && grailsApplication.config.login.isValido()) {
-            if (Pref.getBool(LibBio.USA_LISTE_BIO_GIORNI)) {
-                giornoService.uploadGiorniNascita()
+            if (bioService && Pref.getBool(LibBio.USA_LISTE_BIO_GIORNI)) {
+                giornoService.uploadGiorniNascita(bioService)
             } else {
                 bioGrailsService.uploadGiorniNascita()
             }// fine del blocco if-else
@@ -172,8 +173,8 @@ class GiornoController {
     //--passa al metodo effettivo senza nessun dialogo di conferma
     def uploadGiorniMorte() {
         if (grailsApplication && grailsApplication.config.login && grailsApplication.config.login.isValido()) {
-            if (Pref.getBool(LibBio.USA_LISTE_BIO_GIORNI)) {
-                giornoService.uploadGiorniMorte()
+            if (bioService && Pref.getBool(LibBio.USA_LISTE_BIO_GIORNI)) {
+                giornoService.uploadGiorniMorte(bioService)
             } else {
                 bioGrailsService.uploadGiorniMorte()
             }// fine del blocco if-else
@@ -189,9 +190,9 @@ class GiornoController {
     //--passa al metodo effettivo senza nessun dialogo di conferma
     def uploadAllGiorni() {
         if (grailsApplication && grailsApplication.config.login && grailsApplication.config.login.isValido()) {
-            if (Pref.getBool(LibBio.USA_LISTE_BIO_GIORNI)) {
-                giornoService.uploadGiorniNascita()
-                giornoService.uploadGiorniMorte()
+            if (bioService && Pref.getBool(LibBio.USA_LISTE_BIO_GIORNI)) {
+                giornoService.uploadGiorniNascita(bioService)
+                giornoService.uploadGiorniMorte(bioService)
             } else {
                 bioGrailsService.uploadGiorniNascita()
                 bioGrailsService.uploadGiorniMorte()
@@ -209,8 +210,8 @@ class GiornoController {
         Giorno giorno = Giorno.get(id)
 
         if (grailsApplication && grailsApplication.config.login && grailsApplication.config.login.isValido()) {
-            if (giorno) {
-                ListaGiorno.uploadGiorno(giorno)
+            if (giorno && bioService) {
+                ListaGiorno.uploadGiorno(giorno, bioService)
                 flash.message = "Eseguito upload sul server wiki delle pagine con le liste delle voci nati e morti per il giorno ${giorno.titolo}"
             } else {
                 flash.error = 'Non ho trovato il giorno indicato'

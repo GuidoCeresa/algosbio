@@ -145,7 +145,7 @@ class GiornoService {
      * creazione delle liste partendo da BioGrails
      * elabora e crea tutti i giorni di nascita modificati
      */
-    public int uploadGiorniNascita() {
+    public int uploadGiorniNascita(BioService bioService) {
         int giorniModificati = 0
         ArrayList<Giorno> listaGiorniModificati
 
@@ -156,7 +156,7 @@ class GiornoService {
         }// fine del blocco if-else
 
         listaGiorniModificati?.each {
-            if (ListaGiornoNato.uploadGiorno(it)) {
+            if (ListaGiornoNato.uploadGiorno(it, bioService)) {
                 giorniModificati++
             }// fine del blocco if
         } // fine del ciclo each
@@ -168,7 +168,7 @@ class GiornoService {
      * creazione delle liste partendo da BioGrails
      * elabora e crea tutti i giorni di nascita modificati
      */
-    def int uploadGiorniMorte() {
+    def int uploadGiorniMorte(BioService bioService) {
         int giorniModificati = 0
         ArrayList<Giorno> listaGiorniModificati
 
@@ -179,7 +179,7 @@ class GiornoService {
         }// fine del blocco if-else
 
         listaGiorniModificati?.each {
-            if (ListaGiornoMorto.uploadGiorno(it)) {
+            if (ListaGiornoMorto.uploadGiorno(it, bioService)) {
                 giorniModificati++
             }// fine del blocco if
         } // fine del ciclo each

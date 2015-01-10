@@ -139,7 +139,7 @@ class AnnoService {
      * creazione delle liste partendo da BioGrails
      * elabora e crea tutti gli di nascita modificati
      */
-    def int uploadAnniNascita() {
+    def int uploadAnniNascita(BioService bioService) {
         int anniiModificati = 0
         ArrayList<Anno> listaAnniModificati
 
@@ -150,7 +150,7 @@ class AnnoService {
         }// fine del blocco if-else
 
         listaAnniModificati?.each {
-            if (ListaAnnoNato.uploadAnno(it)) {
+            if (ListaAnnoNato.uploadAnno(it, bioService)) {
                 anniiModificati++
             }// fine del blocco if
         } // fine del ciclo each
@@ -162,7 +162,7 @@ class AnnoService {
      * creazione delle liste partendo da BioGrails
      * elabora e crea tutti gli di nascita modificati
      */
-    def int uploadAnniMorte() {
+    def int uploadAnniMorte(BioService bioService) {
         int anniiModificati = 0
         ArrayList<Anno> listaAnniModificati
 
@@ -173,7 +173,7 @@ class AnnoService {
         }// fine del blocco if-else
 
         listaAnniModificati?.each {
-            if (ListaAnnoMorto.uploadAnno(it)) {
+            if (ListaAnnoMorto.uploadAnno(it, bioService)) {
                 anniiModificati++
             }// fine del blocco if
         } // fine del ciclo each

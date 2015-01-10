@@ -9,6 +9,10 @@ import it.algos.algospref.Pref
 abstract class ListaAnno extends ListaBio {
 
 
+    public ListaAnno(Anno anno, BioService bioService) {
+        super(anno, bioService)
+    }// fine del costruttore
+
     public ListaAnno(Anno anno) {
         super(anno)
     }// fine del costruttore
@@ -177,7 +181,7 @@ abstract class ListaAnno extends ListaBio {
         if (titolo) {
             anno = Anno.findByTitolo(titolo)
             if (anno) {
-                uploadAnno(anno)
+                uploadAnno(anno, null)
             }// fine del blocco if
         }// fine del blocco if
     }// fine del metodo
@@ -185,12 +189,12 @@ abstract class ListaAnno extends ListaBio {
     /**
      * Elabora e crea le liste dell'anno indicato (nascita e morte) e le uploada sul server wiki
      */
-    public static boolean uploadAnno(Anno anno) {
+    public static boolean uploadAnno(Anno anno, BioService bioService) {
         boolean nonUsato = false
 
         if (anno) {
-            ListaAnnoNato.uploadAnno(anno)
-            ListaAnnoMorto.uploadAnno(anno)
+            ListaAnnoNato.uploadAnno(anno, bioService)
+            ListaAnnoMorto.uploadAnno(anno, bioService)
         }// fine del blocco if
 
         return nonUsato
