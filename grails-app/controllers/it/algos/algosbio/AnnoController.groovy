@@ -208,6 +208,8 @@ class AnnoController {
 
         if (grailsApplication && grailsApplication.config.login && grailsApplication.config.login.isValido()) {
             if (anno) {
+                ListaAnno listaAnno = new ListaAnnoMorto(anno)
+
                 ListaAnno.uploadAnno(anno)
                 flash.message = "Eseguito upload sul server wiki delle pagine con le liste delle voci nati e morti per l'anno ${anno.titolo}"
             } else {
