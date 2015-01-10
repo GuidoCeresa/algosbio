@@ -205,6 +205,11 @@ class BioService {
         return listaRecordsElaborati
     } // fine del metodo
 
+//    public static elaboraStratico(int pageid) {
+//        BioWiki bioWiki = BioWiki.findByPageid(pageid)
+//        BioGrails bioGrails = elaboraGrails(bioWiki)
+//    } // fine del metodo
+
     //--Elaborazione dei dati da BioWiki a BioGrails
     //--Spazzola la lista e crea un record di BioGrails per ogni record di Bio
     //--Cancella il flag 'elaborata' per tutti i recordas elaborati
