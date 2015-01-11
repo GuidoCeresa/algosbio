@@ -494,7 +494,7 @@ public class WrapBio {
         }// fine del blocco if
 
         if (continua) {
-            if (!checkValiditàTemplate(mappaBio)) {
+            if (isTemplateIncompleto(mappaBio)) {
                 continua = false
                 valida = false
             }// fine del blocco if
@@ -532,31 +532,31 @@ public class WrapBio {
 
     /**
      * Controlla che il template contenga tutti i campi obbligatori:
-     *  Nome
-     *  Sesso
+     * Nome
+     * Sesso
      * Controlla che i siano alcuni campi alternativi, quando mancano quelli normali:
-     *  Attività e Nazionalità, sostituiti da Categorie e FineIncipit
+     * Attività e Nazionalità, sostituiti da Categorie e FineIncipit
      */
-    public boolean checkValiditàTemplate(LinkedHashMap mappaBio) {
-        boolean incompleta = false
+    public boolean isTemplateIncompleto(LinkedHashMap mappaBio) {
+        boolean incompleto = false
         ArrayList chiavi
         String titoloVoce = this.getTitoloVoce()
 
         chiavi = mappaBio.keySet().toArray()
+
         if (!chiavi.contains('Nome')) {
-            incompleta = true
-//            logWikiService.error "Nella voce [[${titoloVoce}]] manca il parametro Nome che è indispensabile per il corretto funzionamento del template"
-        }// fine del blocco if
-        if (!chiavi.contains('Sesso')) {
-            incompleta = true
-//            logWikiService.error "Nella voce [[${titoloVoce}]] manca il parametro Sesso che è indispensabile per il corretto funzionamento del template"
+            incompleto = true
         }// fine del blocco if
 
-        if (incompleta) {
+        if (!chiavi.contains('Sesso')) {
+            incompleto = true
+        }// fine del blocco if
+
+        if (incompleto) {
             this.setStatoBio(StatoBio.bioIncompleto)
         }// fine del blocco if-else
 
-        return incompleta
+        return incompleto
     } // fine del metodo
 
     /**
@@ -1297,7 +1297,7 @@ public class WrapBio {
         continua = (testoOld && oldTemplate && newTemplate)
 
         if (continua) {
-            testoNew = LibTesto.sostituisce(testoOld, oldTemplate,  newTemplate)
+            testoNew = LibTesto.sostituisce(testoOld, oldTemplate, newTemplate)
             continua == (testoNew)
         }// fine del blocco if
 
@@ -1313,12 +1313,12 @@ public class WrapBio {
         // variabili e costanti locali di lavoro
         boolean registrata = false
         boolean continua = false
-        def bioRegistrata = null
+        BioWiki bioRegistrata = null
         BioWiki bioOriginale = this.getBioOriginale() //@todo ATTENZIONE
         String avviso = ''
 
         if (bioOriginale) {
-            avviso = "Mancata registrazione sul database BioWiki" + " della voce  " + "'''[[" + bioOriginale.title + "]]'''"
+            avviso = "Mancata registrazione sul database BioWiki della voce  " + "'''[[" + bioOriginale.title + "]]'''"
             try { // prova ad eseguire il codice
                 bioRegistrata = bioOriginale.save(flush: true)
             } catch (Exception unErrore) { // intercetta l'errore
@@ -1329,14 +1329,13 @@ public class WrapBio {
                 }// fine del blocco try-catch
 
             }// fine del blocco try-catch
-            if (bioRegistrata == null) {
-                log.error(avviso)
-                logWikiService.warn(avviso)
-            } else {
+            if (bioRegistrata != null) {
                 registrata = true
             }// fine del blocco if-else
         } else {
             avviso = "Fallita registrazione sul database BioWiki" + " della voce  " + titoloVoce
+            log.error(avviso)
+            logWikiService.warn(avviso)
         }// fine del blocco if-else
 
         // valore di ritorno
