@@ -126,16 +126,16 @@ abstract class ListaAnno extends ListaBio {
      */
     protected elaboraFooter(String categoriaTxt, String natiMorti) {
         String testo = ''
-        int anno = getAnnoNumero()
-        int annoOrdinamento = anno + 2000
+        int progressivoCategoria = getAnnoProgressivo()
+        String titoloPagina = titoloPagina
 
         testo += "<noinclude>"
         testo += aCapo
         testo += '{{Portale|biografie}}'
         testo += aCapo
-        testo += "[[Categoria:${categoriaTxt}| ${annoOrdinamento}]]"
+        testo += "[[Categoria:${categoriaTxt}| ${progressivoCategoria}]]"
         testo += aCapo
-        testo += "[[Categoria:${natiMorti} nel ${anno}| ]]"
+        testo += "[[Categoria:${titoloPagina}| ]]"
         testo += aCapo
         testo += "</noinclude>"
 
@@ -157,6 +157,20 @@ abstract class ListaAnno extends ListaBio {
         }// fine del blocco if
 
         return annoNumero
+    }// fine del metodo
+
+    /**
+     * Recupera il singolo Anno come progressivo dall'inizio
+     */
+    protected int getAnnoProgressivo() {
+        int annoProgressivo = 0
+        Anno anno = getAnno()
+
+        if (anno) {
+            annoProgressivo = anno.progressivoCategoria
+        }// fine del blocco if
+
+        return annoProgressivo
     }// fine del metodo
 
     /**
