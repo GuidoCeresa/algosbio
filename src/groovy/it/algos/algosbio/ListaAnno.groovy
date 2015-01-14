@@ -50,7 +50,7 @@ abstract class ListaAnno extends ListaBio {
      * Titolo della pagina da creare/caricare su wikipedia
      * Sovrascritto
      */
-    protected void elaboraTitolo() {
+    protected void elaboraTitoloOld() {
         String titolo = ''
         String tag = getTagTitolo()
         String articolo = 'nel'
@@ -59,6 +59,36 @@ abstract class ListaAnno extends ListaBio {
         if (anno) {
             titolo = anno.titolo
             titolo = tag + articolo + SPAZIO + titolo
+        }// fine del blocco if
+
+        titoloPagina = titolo
+    }// fine del metodo
+
+    /**
+     * Titolo della pagina da creare/caricare su wikipedia
+     * Sovrascritto
+     */
+    protected void elaboraTitolo() {
+        String titolo = ''
+        Anno anno = getAnno()
+        String tag = getTagTitolo()
+        String spazio = ' '
+        String articolo = 'nel'
+        String articoloBis = "nell'"
+        String tagAC = ' a.C.'
+
+        if (anno) {
+            titolo = anno.titolo
+            if (titolo == '1'
+                    || titolo == '1' + tagAC
+                    || titolo == '11'
+                    || titolo == '11' + tagAC
+                    || titolo.startsWith('8')
+            ) {
+                titolo = tag  + articoloBis + titolo
+            } else {
+                titolo = tag + articolo + spazio + titolo
+            }// fine del blocco if-else
         }// fine del blocco if
 
         titoloPagina = titolo

@@ -213,11 +213,15 @@ abstract class ListaBio {
      * Sovrascritto
      */
     protected String elaboraBody() {
+        int numPersone = listaBiografie.size()
+        boolean usaColonne = usaDoppiaColonna
+        int maxRigheColonne = Pref.getInt(LibBio.MAX_RIGHE_COLONNE)
         String testo = elaboraBodyDidascalie()
 
-        if (usaDoppiaColonna) {
+        if (usaColonne && (numPersone > maxRigheColonne)) {
             testo = WikiLib.listaDueColonne(testo.trim())
         }// fine del blocco if
+
         testo = elaboraTemplate(testo)
 
         return testo
@@ -242,6 +246,9 @@ abstract class ListaBio {
             testo += elaboraBodyParagrafo(it)
         }// fine del ciclo each
 
+        testo = testo.trim()
+        testo += aCapo
+
         return testo
     }// fine del metodo
 
@@ -253,7 +260,6 @@ abstract class ListaBio {
      * Decide se ci sono sottopagine
      */
     protected String elaboraBodyParagrafo(def mappa) {
-        String testo = ''
         String chiaveParagrafo
         String titoloParagrafo
         ArrayList<BioGrails> listaVoci
@@ -265,9 +271,8 @@ abstract class ListaBio {
         listaVociOrdinate = ordinaVoci(listaVoci)
         listaDidascalie = estraeListaDidascalie(listaVociOrdinate)
         titoloParagrafo = elaboraTitoloParagrafo(chiaveParagrafo, listaVociOrdinate)
-        testo += elaboraParagrafo(chiaveParagrafo, titoloParagrafo, listaVociOrdinate, listaDidascalie)
 
-        return testo
+        return elaboraParagrafo(chiaveParagrafo, titoloParagrafo, listaVociOrdinate, listaDidascalie)
     }// fine del metodo
 
     /**
@@ -318,7 +323,7 @@ abstract class ListaBio {
         LinkedHashMap<String, ArrayList<BioGrails>> mappa = null
         String chiaveOld = 'xyzpippoxyz'
         String chiave = ''
-        ArrayList<BioGrails> lista
+        ArrayList<BioGrails> lista = null
         BioGrails bio
 
         if (usaSuddivisioneParagrafi) {
@@ -344,9 +349,12 @@ abstract class ListaBio {
                 }// fine del ciclo each
             }// fine del blocco if
 
-            if (mappa) {
+            if (mappa.size() > 1) {
                 mappa = ordinaMappa(mappa)
-            }// fine del blocco if
+            } else {
+                mappa = new LinkedHashMap<String, ArrayList<BioGrails>>()
+                mappa.put('', lista)
+            }// fine del blocco if-else
         } else {
             mappa = new LinkedHashMap<String, ArrayList<BioGrails>>()
             mappa.put('', listaVoci)
@@ -492,7 +500,7 @@ abstract class ListaBio {
     protected String elaboraTitoloParagrafo(String titoloParagrafo) {
         String testo = ''
 
-        if (usaSuddivisioneParagrafi) {
+        if (usaSuddivisioneParagrafi && titoloParagrafo) {
             testo += tagLivelloParagrafo
             testo += titoloParagrafo
             testo += tagLivelloParagrafo
