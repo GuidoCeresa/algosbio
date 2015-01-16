@@ -203,6 +203,19 @@ class BioGrailsController {
         redirect(action: 'list')
     } // fine del metodo
 
+    //--aggiornamento della pagina di statistica
+    def statistiche() {
+
+        if (grailsApplication && grailsApplication.config.login) {
+            if (statisticheService) {
+                statisticheService.paginaSintesi()
+            }// fine del blocco if
+        } else {
+            flash.message = 'Devi essere loggato per poter modificare le pagine sul server wiki'
+        }// fine del blocco if-else
+
+        redirect(action: 'list')
+    } // fine del metodo
 
     def list(Integer max) {
         params.max = Math.min(max ?: 100, 100)
@@ -221,6 +234,7 @@ class BioGrailsController {
                 [cont: 'bioGrails', action: 'resetElabora', icon: 'database', title: 'Reset elabora'],
                 [cont: 'bioGrails', action: 'elaboraAll', icon: 'database', title: 'Elabora'],
                 [cont: 'bioGrails', action: 'uploadAll', icon: 'frecciasu', title: 'Upload all'],
+                [cont: 'bioGrails', action: 'statistiche', icon: 'frecciasu', title: 'Statistiche'],
                 [cont: 'bioWiki', action: 'list', icon: 'scambia', title: 'BioWiki']
         ]
         // fine della definizione
