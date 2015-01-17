@@ -137,7 +137,7 @@ class AnnoService {
 
     /**
      * creazione delle liste partendo da BioGrails
-     * elabora e crea tutti gli di nascita modificati
+     * elabora e crea tutti gli di anni di nascita modificati
      */
     def int uploadAnniNascita(BioService bioService) {
         int anniiModificati = 0
@@ -160,7 +160,7 @@ class AnnoService {
 
     /**
      * creazione delle liste partendo da BioGrails
-     * elabora e crea tutti gli di nascita modificati
+     * elabora e crea tutti gli di anni di nascita modificati
      */
     def int uploadAnniMorte(BioService bioService) {
         int anniiModificati = 0

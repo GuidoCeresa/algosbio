@@ -37,6 +37,7 @@ abstract class ListaBio {
     protected ArrayList<BioGrails> listaBiografie
 
     protected boolean usaTavolaContenuti = Pref.getBool(LibBio.USA_TAVOLA_CONTENUTI, true)
+    protected boolean usaSuddivisioneUomoDonna = false
     protected boolean usaSuddivisioneParagrafi = false
     protected boolean usaTitoloParagrafoConLink = false
     protected boolean usaDoppiaColonna = false
@@ -227,6 +228,33 @@ abstract class ListaBio {
         return testo
     }// fine del metodo
 
+//    /**
+//     * Corpo della pagina - didascalia
+//     * Decide se c'è la suddivisione in paragrafi
+//     * Costruisce una mappa in funzione della suddivisione in paragrafi
+//     *  chiave=una chiave per ogni parametro/paragrafo
+//     *  valore=una lista di BioGrails
+//     * Se non c'è suddivisione, la mappa ha un unico valore con chiave vuota
+//     * Decide se ci sono sottopagine
+//     * Sovrascritto
+//     */
+//    protected String elaboraBodyDidascalie() {
+//        String testo = ''
+//        LinkedHashMap<String, ArrayList<BioGrails>> mappa
+//
+//        mappa = getMappa(listaBiografie)
+//        mappa?.each {
+//            testo += elaboraBodyParagrafo(it)
+//        }// fine del ciclo each
+//
+//        testo = testo.trim()
+//        testo += aCapo
+//
+//        return testo
+//    }// fine del metodo
+
+
+
     /**
      * Corpo della pagina - didascalia
      * Decide se c'è la suddivisione in paragrafi
@@ -238,6 +266,17 @@ abstract class ListaBio {
      * Sovrascritto
      */
     protected String elaboraBodyDidascalie() {
+        if (usaSuddivisioneUomoDonna) {
+            return elaboraBodyDidascalieNome()
+        } else {
+            return elaboraBodyDidascalieIndifferenziate()
+        }// fine del blocco if-else
+    }// fine del metodo
+
+    /**
+     * Corpo della pagina
+     */
+    protected String elaboraBodyDidascalieIndifferenziate() {
         String testo = ''
         LinkedHashMap<String, ArrayList<BioGrails>> mappa
 
@@ -248,6 +287,51 @@ abstract class ListaBio {
 
         testo = testo.trim()
         testo += aCapo
+
+        return testo
+    }// fine del metodo
+
+
+        /**
+     * Corpo della pagina
+     * Controlla se ci sono voci differenziate uomini/donne
+     * Se ci sono divide in due la pagina
+     * Se non ci sono, procede come la superclasse
+     */
+    protected String elaboraBodyDidascalieNome() {
+        String testo = ''
+        ArrayList<BioGrails> listaVociMaschili
+        ArrayList<BioGrails> listaVociFemminili
+        String tagMaschio = 'M'
+        String tagFemmina = 'F'
+        LinkedHashMap<String, ArrayList<BioGrails>> mappa
+
+        listaVociMaschili = selezionaGenere(listaBiografie, tagMaschio)
+        listaVociFemminili = selezionaGenere(listaBiografie, tagFemmina)
+
+        if (listaVociMaschili && listaVociFemminili) {
+            testo += aCapo
+            testo += '=Uomini='
+            testo += aCapo
+            mappa = getMappa(listaVociMaschili)
+            mappa?.each {
+                testo += elaboraBodyParagrafo(it)
+            }// fine del ciclo each
+            testo += aCapo
+            testo += '=Donne='
+            testo += aCapo
+            mappa = getMappa(listaVociFemminili)
+
+            if (mappa.size() == 1) {
+                mappa = fixMappa(mappa)
+            }// fine del blocco if
+
+            mappa?.each {
+                testo += elaboraBodyParagrafo(it)
+            }// fine del ciclo each
+        } else {
+            testo = elaboraBodyDidascalie()
+        }// fine del blocco if-else
 
         return testo
     }// fine del metodo
@@ -273,6 +357,24 @@ abstract class ListaBio {
         titoloParagrafo = elaboraTitoloParagrafo(chiaveParagrafo, listaVociOrdinate)
 
         return elaboraParagrafo(chiaveParagrafo, titoloParagrafo, listaVociOrdinate, listaDidascalie)
+    }// fine del metodo
+
+    protected static String attivitaPluralePerGenere(BioGrails bio) {
+        String plurale
+        String singolare = bio.attivita
+        String sesso = bio.sesso
+        Genere genere = Genere.findBySingolareAndSesso(singolare, sesso)
+
+        if (genere) {
+            plurale = genere.plurale
+        }// fine del blocco if
+
+        if (plurale) {
+            plurale = LibTesto.primaMaiuscola(plurale)
+            plurale = plurale.trim()
+        }// fine del blocco if
+
+        return plurale
     }// fine del metodo
 
     /**
@@ -376,9 +478,32 @@ abstract class ListaBio {
      * Sovrascritto
      */
     protected String elaboraTitoloParagrafo(String chiaveParagrafo, ArrayList<BioGrails> listaVoci) {
-        return chiaveParagrafo
-    }// fine del metodo
+        String titoloParagrafo = chiaveParagrafo
+        String singolare
+        Professione professione
+        BioGrails bio
 
+        if (usaTitoloParagrafoConLink && !chiaveParagrafo.equals(tagParagrafoNullo) && listaVoci && listaVoci.size() > 0) {
+            titoloParagrafo = '[['
+            bio = listaVoci.get(0)
+            if (bio) {
+                singolare = bio.attivita
+            }// fine del blocco if
+            if (singolare) {
+                professione = Professione.findBySingolare(singolare)
+            }// fine del blocco if
+            if (professione) {
+                titoloParagrafo += LibTesto.primaMaiuscola(professione.voce)
+            } else {
+                titoloParagrafo += LibTesto.primaMaiuscola(singolare)
+            }// fine del blocco if-else
+            titoloParagrafo += '|'
+            titoloParagrafo += chiaveParagrafo
+            titoloParagrafo += ']]'
+        }// fine del blocco if-else
+
+        return titoloParagrafo
+    }// fine del metodo
     protected static ArrayList<BioGrails> ordinaVoci(ArrayList<BioGrails> listaVoci) {
         ArrayList<BioGrails> listaVociOrdinate = listaVoci
 
@@ -418,11 +543,11 @@ abstract class ListaBio {
      * Sovrascritto
      */
     protected String estraeDidascalia(BioGrails bio) {
-        return ''
+        return bio.didascaliaListe
     }// fine del metodo
 
     /**
-     * Prova ad elaborare il bio (BioGrails) e ad estrarre nuyovamente la didascalia
+     * Prova ad elaborare il bio (BioGrails) e ad estrarre nuovamente la didascalia
      */
     private String elaboraDidascaliaMancante(BioGrails bio) {
         String didascalia = ''
@@ -604,5 +729,41 @@ abstract class ListaBio {
         // valore di ritorno
         return listaChiaviOut
     }// fine della closure
+
+    protected static ArrayList<BioGrails> selezionaGenere(ArrayList<BioGrails> listaVoci, String tag) {
+        ArrayList<BioGrails> lista = null
+        BioGrails bio
+
+        if (listaVoci && listaVoci.size() > 0 && tag) {
+            lista = new ArrayList<BioGrails>()
+            listaVoci?.each {
+                bio = it
+                if (bio.sesso.equals(tag)) {
+                    lista.add(bio)
+                }// fine del blocco if
+            } // fine del ciclo each
+        }// fine del blocco if
+
+        return lista
+    }// fine del metodo
+
+    protected LinkedHashMap<String, ArrayList<BioGrails>> fixMappa(LinkedHashMap<String, ArrayList<BioGrails>> mappa) {
+        ArrayList<BioGrails> lista
+        String chiave
+        BioGrails bio
+
+        if (mappa.size() == 1) {
+            if (mappa.containsKey('')) {
+                lista = mappa.get('')
+                bio = lista.get(0)
+                chiave = getChiaveParagrafo(bio)
+
+                mappa = new LinkedHashMap<String, ArrayList<BioGrails>>()
+                mappa.put(chiave, lista)
+            }// fine del blocco if
+        }// fine del blocco if
+
+        return mappa
+    }// fine del metodo
 
 }// fine della classe

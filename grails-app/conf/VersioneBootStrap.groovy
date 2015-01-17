@@ -743,6 +743,54 @@ class VersioneBootStrap {
             pref.save(flush: true)
             versioneService.newVersione('Preferenze', 'USA_SUDDIVISIONE_PARAGRAFI_ANNI di default false')
         }// fine del blocco if
+
+        //--creata una nuova preferenza
+        if (versioneService && versioneService.installaVersione(84)) {
+            Pref pref = new Pref()
+            pref.ordine = Pref.list().size() + 1
+            pref.code = LibBio.USA_LISTE_BIO_NAZIONALITA
+            pref.descrizione = "usa le nuove liste"
+            pref.type = Type.booleano
+            pref.bool = false
+            pref.save(flush: true)
+            versioneService.newVersione('Preferenze', 'USA_LISTE_BIO_NAZIONALITA di default false')
+        }// fine del blocco if
+
+        //--creata una nuova preferenza
+        if (versioneService && versioneService.installaVersione(85)) {
+            Pref pref = new Pref()
+            pref.ordine = Pref.list().size() + 1
+            pref.code = LibBio.USA_LISTE_BIO_ATTIVITA
+            pref.descrizione = "usa le nuove liste"
+            pref.type = Type.booleano
+            pref.bool = false
+            pref.save(flush: true)
+            versioneService.newVersione('Preferenze', 'USA_LISTE_BIO_ATTIVITA di default false')
+        }// fine del blocco if
+
+        //--creata una nuova preferenza
+        if (versioneService && versioneService.installaVersione(86)) {
+            Pref pref = new Pref()
+            pref.ordine = Pref.list().size() + 1
+            pref.code = LibBio.USA_LISTE_BIO_NOMI
+            pref.descrizione = "usa le nuove liste"
+            pref.type = Type.booleano
+            pref.bool = false
+            pref.save(flush: true)
+            versioneService.newVersione('Preferenze', 'USA_LISTE_BIO_NOMI di default false')
+        }// fine del blocco if
+
+        //--creata una nuova preferenza
+        if (versioneService && versioneService.installaVersione(87)) {
+            Pref pref = new Pref()
+            pref.ordine = Pref.list().size() + 1
+            pref.code = LibBio.USA_SUDDIVISIONE_UOMO_DONNA_NAZ
+            pref.descrizione = 'Suddivide in uomini e donne le liste di nazionalità'
+            pref.type = Type.booleano
+            pref.bool = false
+            pref.save(flush: true)
+            versioneService.newVersione('Preferenze', 'USA_SUDDIVISIONE_UOMO_DONNA_NAZ di default false')
+        }// fine del blocco if
     }// fine della closure
 
 

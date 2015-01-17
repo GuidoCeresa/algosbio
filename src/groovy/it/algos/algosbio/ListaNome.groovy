@@ -10,10 +10,13 @@ import it.algos.algoswiki.WikiLib
  */
 class ListaNome extends ListaBio {
 
+    public ListaNome(Antroponimo antroponimo, BioService bioService) {
+        super(antroponimo, bioService)
+    }// fine del costruttore
+
     public ListaNome(Antroponimo antroponimo) {
         super(antroponimo)
     }// fine del costruttore
-
 
     public ListaNome(String soggetto) {
         super(soggetto)
@@ -40,6 +43,7 @@ class ListaNome extends ListaBio {
     protected elaboraParametri() {
         usaTavolaContenuti = true
         tagTemplateBio = 'StatBio'
+        usaSuddivisioneUomoDonna = Pref.getBool(LibBio.USA_SUDDIVISIONE_UOMO_DONNA, false)
         usaSuddivisioneParagrafi = true
         usaTitoloParagrafoConLink = true
         usaDoppiaColonna = false
@@ -90,64 +94,24 @@ class ListaNome extends ListaBio {
         return ritorno
     }// fine del metodo
 
-    /**
-     * Corpo della pagina - didascalia
-     * Decide se c'è la suddivisione in paragrafi
-     * Costruisce una mappa in funzione della suddivisione in paragrafi
-     *  chiave=una chiave per ogni parametro/paragrafo
-     *  valore=una lista di BioGrails
-     * Se non c'è suddivisione, la mappa ha un unico valore con chiave vuota
-     * Decide se ci sono sottopagine
-     * Sovrascritto
-     */
-    @Override
-    protected String elaboraBodyDidascalie() {
-        if (Pref.getBool(LibBio.USA_SUDDIVISIONE_UOMO_DONNA, false)) {
-            return elaboraBodyDidascalieNome()
-        } else {
-            return super.elaboraBodyDidascalie()
-        }// fine del blocco if-else
-    }// fine del metodo
-
-    /**
-     * Corpo della pagina
-     * Controlla se ci sono voci differenziate uomini/donne
-     * Se ci sono divide in due la pagina
-     * Se non ci sono, procede come la superclasse
-     */
-    protected String elaboraBodyDidascalieNome() {
-        String testo = ''
-        ArrayList<BioGrails> listaVociMaschili
-        ArrayList<BioGrails> listaVociFemminili
-        String tagMaschio = 'M'
-        String tagFemmina = 'F'
-        LinkedHashMap<String, ArrayList<BioGrails>> mappa
-
-        listaVociMaschili = selezionaGenere(listaBiografie, tagMaschio)
-        listaVociFemminili = selezionaGenere(listaBiografie, tagFemmina)
-
-        if (listaVociMaschili && listaVociFemminili) {
-            testo += aCapo
-            testo += '=Uomini='
-            testo += aCapo
-            mappa = getMappa(listaVociMaschili)
-            mappa?.each {
-                testo += super.elaboraBodyParagrafo(it)
-            }// fine del ciclo each
-            testo += aCapo
-            testo += '=Donne='
-            testo += aCapo
-            mappa = getMappa(listaVociFemminili)
-            mappa?.each {
-                testo += super.elaboraBodyParagrafo(it)
-            }// fine del ciclo each
-        } else {
-            testo = super.elaboraBodyDidascalie()
-        }// fine del blocco if-else
-
-        def stop
-        return testo
-    }// fine del metodo
+//    /**
+//     * Corpo della pagina - didascalia
+//     * Decide se c'è la suddivisione in paragrafi
+//     * Costruisce una mappa in funzione della suddivisione in paragrafi
+//     *  chiave=una chiave per ogni parametro/paragrafo
+//     *  valore=una lista di BioGrails
+//     * Se non c'è suddivisione, la mappa ha un unico valore con chiave vuota
+//     * Decide se ci sono sottopagine
+//     * Sovrascritto
+//     */
+//    @Override
+//    protected String elaboraBodyDidascalie() {
+//        if (usaSuddivisioneUomoDonna) {
+//            return elaboraBodyDidascalieNome()
+//        } else {
+//            return super.elaboraBodyDidascalie()
+//        }// fine del blocco if-else
+//    }// fine del metodo
 
     /**
      * Utilizza la didascalia prevista per il tipo di pagina in elaborazione
@@ -171,39 +135,6 @@ class ListaNome extends ListaBio {
         }// fine del blocco if
 
         return chiave
-    }// fine del metodo
-
-    /**
-     * Chiave di selezione del paragrafo con eventuali link
-     * Sovrascritto
-     */
-    @Override
-    protected String elaboraTitoloParagrafo(String chiaveParagrafo, ArrayList<BioGrails> listaVoci) {
-        String titoloParagrafo = chiaveParagrafo
-        String singolare
-        Professione professione
-        BioGrails bio
-
-        if (usaTitoloParagrafoConLink && !chiaveParagrafo.equals(tagParagrafoNullo) && listaVoci && listaVoci.size() > 0) {
-            titoloParagrafo = '[['
-            bio = listaVoci.get(0)
-            if (bio) {
-                singolare = bio.attivita
-            }// fine del blocco if
-            if (singolare) {
-                professione = Professione.findBySingolare(singolare)
-            }// fine del blocco if
-            if (professione) {
-                titoloParagrafo += LibTesto.primaMaiuscola(professione.voce)
-            } else {
-                titoloParagrafo += LibTesto.primaMaiuscola(singolare)
-            }// fine del blocco if-else
-            titoloParagrafo += '|'
-            titoloParagrafo += chiaveParagrafo
-            titoloParagrafo += ']]'
-        }// fine del blocco if-else
-
-        return titoloParagrafo
     }// fine del metodo
 
     /**
@@ -284,24 +215,6 @@ class ListaNome extends ListaBio {
     }// fine del metodo
 
 
-    private static String attivitaPluralePerGenere(BioGrails bio) {
-        String plurale
-        String singolare = bio.attivita
-        String sesso = bio.sesso
-        Genere genere = Genere.findBySingolareAndSesso(singolare, sesso)
-
-        if (genere) {
-            plurale = genere.plurale
-        }// fine del blocco if
-
-        if (plurale) {
-            plurale = LibTesto.primaMaiuscola(plurale)
-            plurale = plurale.trim()
-        }// fine del blocco if
-
-        return plurale
-    }// fine del metodo
-
     private static String attivitaPluralePerGenere2(String singolare, String sesso) {
         String plurale
         Genere genere = Genere.findBySingolareAndSesso(singolare, sesso)
@@ -318,23 +231,6 @@ class ListaNome extends ListaBio {
         return plurale
     }// fine del metodo
 
-    private static ArrayList<BioGrails> selezionaGenere(ArrayList<BioGrails> listaVoci, String tag) {
-        ArrayList<BioGrails> lista = null
-        BioGrails bio
-
-        if (listaVoci && listaVoci.size() > 0 && tag) {
-            lista = new ArrayList<BioGrails>()
-            listaVoci?.each {
-                bio = it
-                if (bio.sesso.equals(tag)) {
-                    lista.add(bio)
-                }// fine del blocco if
-            } // fine del ciclo each
-        }// fine del blocco if
-
-        return lista
-    }// fine del metodo
-
     /**
      * Costruisce una lista di biografie
      */
@@ -345,8 +241,23 @@ class ListaNome extends ListaBio {
         if (antroponimo) {
             listaBiografie = BioGrails.findAllByNomeLink(antroponimo, [sort: 'forzaOrdinamento'])
         }// fine del blocco if
+    }// fine del metodo
 
-        def stop
+    /**
+     * Elabora e crea la lista del nome indicato e la uploada sul server wiki
+     */
+    public static boolean uploadNome(Antroponimo nome, BioService bioService) {
+        boolean registrata = false
+        ListaNome listaNome
+
+        if (nome) {
+            listaNome = new ListaNome(nome, bioService)
+            if (listaNome.registrata || listaNome.listaBiografie.size() == 0) {
+                registrata = true
+            }// fine del blocco if
+        }// fine del blocco if
+
+        return registrata
     }// fine del metodo
 
 }// fine della classe

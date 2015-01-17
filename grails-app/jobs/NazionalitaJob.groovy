@@ -13,10 +13,12 @@ class NazionalitaJob {
     // il service viene iniettato automaticamente
     def listaService
     def statisticheService
+    def bioService
+    def nazionalitaService
 
     //--codifica dell'orario di attivazione
     //--MON, TUE, WED, THU, FRI, SAT, SUN
-    private static String cronExpressionNazionalita =  '0 0 8 ? * SAT' //--tutti i sabati alle 8
+    private static String cronExpressionNazionalita = '0 0 8 ? * SAT' //--tutti i sabati alle 8
 
     static triggers = {
         cron name: 'nazionalita', cronExpression: cronExpressionNazionalita
@@ -25,9 +27,17 @@ class NazionalitaJob {
     def execute() {
         //--flag di attivazione
         if (Pref.getBool(LibBio.USA_CRONO_NAZIONALITA)) {
-            if (listaService) {
-                listaService.uploadNazionalita()
-            }// fine del blocco if
+
+            if (Pref.getBool(LibBio.USA_LISTE_BIO_NAZIONALITA)) {
+                if (bioService && nazionalitaService) {
+                    nazionalitaService.uploadNazionalita(bioService)
+                }// fine del blocco if
+            } else {
+                if (listaService) {
+                    listaService.uploadNazionalita()
+                }// fine del blocco if
+            }// fine del blocco if-else
+
             if (statisticheService) {
                 statisticheService.nazionalitaUsate()
             }// fine del blocco if

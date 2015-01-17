@@ -38,6 +38,7 @@ abstract class ListaAnno extends ListaBio {
     @Override
     protected elaboraParametri() {
         usaTavolaContenuti = false
+        usaSuddivisioneUomoDonna = false
         usaSuddivisioneParagrafi = Pref.getBool(LibBio.USA_SUDDIVISIONE_PARAGRAFI_ANNI, false)
         usaTitoloParagrafoConLink = false
         usaDoppiaColonna = true
@@ -85,7 +86,7 @@ abstract class ListaAnno extends ListaBio {
                     || titolo == '11' + tagAC
                     || titolo.startsWith('8')
             ) {
-                titolo = tag  + articoloBis + titolo
+                titolo = tag + articoloBis + titolo
             } else {
                 titolo = tag + articolo + spazio + titolo
             }// fine del blocco if-else

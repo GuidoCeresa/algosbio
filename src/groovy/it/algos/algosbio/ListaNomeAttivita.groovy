@@ -30,6 +30,7 @@ class ListaNomeAttivita extends ListaNome {
     protected elaboraParametri() {
         usaTavolaContenuti = false
         tagTemplateBio = 'StatBio'
+        usaSuddivisioneUomoDonna = false
         usaSuddivisioneParagrafi = true
         usaTitoloParagrafoConLink = false
         usaDoppiaColonna = false

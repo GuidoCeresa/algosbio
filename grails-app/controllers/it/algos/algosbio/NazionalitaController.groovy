@@ -16,6 +16,7 @@ package it.algos.algosbio
 import it.algos.algos.DialogoController
 import it.algos.algos.TipoDialogo
 import it.algos.algoslib.Lib
+import it.algos.algospref.Pref
 import it.algos.algoswiki.Login
 import org.codehaus.groovy.grails.commons.DefaultGrailsDomainClass
 import org.springframework.dao.DataIntegrityViolationException
@@ -32,6 +33,8 @@ class NazionalitaController {
     def nazionalitaService
     def listaService
     def statisticheService
+    def bioService
+    def annoService
 
     def index() {
         redirect(action: 'list', params: params)
@@ -74,8 +77,12 @@ class NazionalitaController {
     //--passa al metodo effettivo senza nessun dialogo di conferma
     def uploadNazionalita() {
         if (grailsApplication && grailsApplication.config.login) {
-            listaService.uploadNazionalita()
-            statisticheService.nazionalitaUsate()
+            if (bioService && Pref.getBool(LibBio.USA_LISTE_BIO_NAZIONALITA)) {
+                nazionalitaService?.uploadAllNazionalita(bioService)
+            } else {
+                listaService?.uploadNazionalita()
+            }// fine del blocco if-else
+            statisticheService?.nazionalitaUsate()
         } else {
             flash.error = 'Devi essere loggato per effettuare un upload di pagine sul server wiki'
         }// fine del blocco if-else
@@ -85,11 +92,15 @@ class NazionalitaController {
     //--elabora e crea le liste della nazionalita indicato e lo uploada sul server wiki
     //--passa al metodo effettivo senza nessun dialogo di conferma
     def uploadSingolaNazionalita(Long id) {
-        def nazionalita = Nazionalita.get(id)
-        String plurale = nazionalita.plurale
+        Nazionalita nazionalita = Nazionalita.get(id)
+        String plurale = nazionalita?.plurale
 
         if (grailsApplication && grailsApplication.config.login) {
-            new BioNazionalita(plurale).registraPagina()
+            if (bioService && Pref.getBool(LibBio.USA_LISTE_BIO_NAZIONALITA)) {
+                ListaNazionalita.uploadNazionalita(nazionalita, bioService)
+            } else {
+                new BioNazionalita(plurale).registraPagina()
+            }// fine del blocco if-else
             flash.info = "Eseguito upload delle liste della nazionalita sul server wiki"
         } else {
             flash.error = 'Devi essere loggato per effettuare un upload di pagine sul server wiki'
@@ -155,12 +166,12 @@ class NazionalitaController {
         //--menuExtra e campiLista possono essere nulli o vuoti
         //--se campiLista è vuoto, mostra tutti i campi (primi 8)
         render(view: 'list', model: [
-                nazionalitaInstanceList: lista,
+                nazionalitaInstanceList : lista,
                 nazionalitaInstanceTotal: recordsTotali,
-                menuExtra: menuExtra,
-                titoloLista: titoloLista,
-                campiLista           : campiLista,
-                noMenuCreate         : noMenuCreate],
+                menuExtra               : menuExtra,
+                titoloLista             : titoloLista,
+                campiLista              : campiLista,
+                noMenuCreate            : noMenuCreate],
                 params: params)
     } // fine del metodo
 
@@ -232,8 +243,8 @@ class NazionalitaController {
         //--menuExtra può essere nullo o vuoto
         render(view: 'show', model: [
                 nazionalitaInstance: nazionalitaInstance,
-                menuExtra       : menuExtra,
-                noMenuCreate    : noMenuCreate],
+                menuExtra          : menuExtra,
+                noMenuCreate       : noMenuCreate],
                 params: params)
     } // fine del metodo
 

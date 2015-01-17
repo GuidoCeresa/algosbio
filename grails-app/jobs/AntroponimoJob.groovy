@@ -17,6 +17,7 @@ class AntroponimoJob {
     def professioneService
     def genereService
     def antroponimoService
+    def bioService
 
     //--codifica dell'orario di attivazione
     //--MON, TUE, WED, THU, FRI, SAT, SUN
@@ -30,7 +31,7 @@ class AntroponimoJob {
         ArrayList<String> listaNomi = null
         int dimBlocco = Pref.getInt(LibBio.CICLO_ANTROPONIMI, 10)
         ArrayList<String> listaBlocchiNomi
-        int numVoci = 0
+        int numVoci
         String numVociTxt
         long inizioInizio = System.currentTimeMillis()
         long inizio = 0
@@ -55,36 +56,42 @@ class AntroponimoJob {
                 genereService.download()
             }// fine del blocco if
 
-            //--costruisce una lista di nomi (circa 600)
-            if (antroponimoService) {
-                listaNomi = antroponimoService.getListaNomi()
-            }// fine del blocco if
+            if (Pref.getBool(LibBio.USA_LISTE_BIO_NOMI)) {
+                if (antroponimoService && bioService) {
+                    antroponimoService.uploadAllNomi(bioService)
+                }// fine del blocco if
+            } else {
+                //--costruisce una lista di nomi (circa 1.200)
+                if (antroponimoService) {
+                    listaNomi = antroponimoService.getListaNomi()
+                }// fine del blocco if
 
-            //--crea le pagine dei singoli nomi a blocchi
-            if (listaNomi) {
-                inizio = inizioInizio
-                numVoci = listaNomi.size()
-                numVociTxt = LibTesto.formatNum(numVoci)
-                log.info "Inizio del metodo di creazione di ${numVociTxt} voci di Antroponimi"
-                listaBlocchiNomi = Lib.Array.splitArray(listaNomi, dimBlocco)
-                listaBlocchiNomi?.each {
-                    cont++
-                    antroponimoService.elabora((ArrayList) it)
-                    fine = System.currentTimeMillis()
-                    durataTotale = fine - inizioInizio
-                    durata = fine - inizio
-                    durataTotale = durataTotale / 1000
-                    durata = durata / 1000
-                    tempoTotaleTxt = LibTesto.formatNum(durataTotale)
-                    tempoTxt = LibTesto.formatNum(durata)
-                    vociCreate = cont * dimBlocco
-                    vociCreateTxt = LibTesto.formatNum(vociCreate)
-                    log.info "Aggiornate ${vociCreateTxt}/${numVociTxt} voci di Antroponimi in ${tempoTxt}/${tempoTotaleTxt} secondi"
-                    inizio = fine
-                }// fine del ciclo each
-            }// fine del blocco if
+                //--crea le pagine dei singoli nomi a blocchi
+                if (listaNomi) {
+                    inizio = inizioInizio
+                    numVoci = listaNomi.size()
+                    numVociTxt = LibTesto.formatNum(numVoci)
+                    log.info "Inizio del metodo di creazione di ${numVociTxt} voci di Antroponimi"
+                    listaBlocchiNomi = Lib.Array.splitArray(listaNomi, dimBlocco)
+                    listaBlocchiNomi?.each {
+                        cont++
+                        antroponimoService.elabora((ArrayList) it)
+                        fine = System.currentTimeMillis()
+                        durataTotale = fine - inizioInizio
+                        durata = fine - inizio
+                        durataTotale = durataTotale / 1000
+                        durata = durata / 1000
+                        tempoTotaleTxt = LibTesto.formatNum(durataTotale)
+                        tempoTxt = LibTesto.formatNum(durata)
+                        vociCreate = cont * dimBlocco
+                        vociCreateTxt = LibTesto.formatNum(vociCreate)
+                        log.info "Aggiornate ${vociCreateTxt}/${numVociTxt} voci di Antroponimi in ${tempoTxt}/${tempoTotaleTxt} secondi"
+                        inizio = fine
+                    }// fine del ciclo each
+                }// fine del blocco if
+            }// fine del blocco if-else
 
-            if (listaNomi) {
+            if (antroponimoService && listaNomi) {
                 antroponimoService.creaPagineControllo()
             }// fine del blocco if
         }// fine del blocco if

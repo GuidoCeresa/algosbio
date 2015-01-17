@@ -44,6 +44,7 @@ class AntroponimoController {
     def antroponimoService
     def professioneService
     def genereService
+    def bioService
 
     def list() {
         redirect(action: 'index', params: params)
@@ -221,8 +222,14 @@ class AntroponimoController {
             //--aggiorna il numero di voci per ogni antroponimo della lista (semi-statica)
             antroponimoService.ricalcola()
 
-            //--costruisce una lista di nomi (circa 900)
-            antroponimoService.upload()
+            //--costruisce una lista di nomi (circa 1.200)
+            if (Pref.getBool(LibBio.USA_LISTE_BIO_NOMI)) {
+                if (bioService) {
+                    antroponimoService.uploadAllNomi(bioService)
+                }// fine del blocco if
+            } else {
+                antroponimoService.upload()
+            }// fine del blocco if-else
 
             //--pagine di controllo
             antroponimoService.creaPagineControllo()
@@ -232,13 +239,15 @@ class AntroponimoController {
     //--elabora e crea le liste del nome indicato e le uploada sul server wiki
     //--passa al metodo effettivo senza nessun dialogo di conferma
     def uploadSingoloNome(Long id) {
-        def nonServe
-        def antroponimo = Antroponimo.get(id)
-        String nome = antroponimo.nome
+        Antroponimo antroponimo = Antroponimo.get(id)
 
         if (grailsApplication && grailsApplication.config.login) {
-            nonServe = new ListaNome(nome)
-            flash.info = "Eseguito upload delle liste del nome sul server wiki"
+            if (antroponimo && bioService) {
+                ListaNome.uploadNome(antroponimo, bioService)
+                flash.message = "Eseguito upload sul server wiki delle pagine con le liste delle voci di nome ${antroponimo.nome}"
+            } else {
+                flash.error = "Non ho trovato le classi necessarie"
+            }// fine del blocco if-else
         } else {
             flash.error = 'Devi essere loggato per effettuare un upload di pagine sul server wiki'
         }// fine del blocco if-else

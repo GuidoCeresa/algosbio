@@ -277,4 +277,22 @@ class NazionalitaService {
         return getListaNonUsate()?.size()
     } // fine del metodo
 
+    /**
+     * creazione delle liste partendo da BioGrails
+     * elabora e crea tutte le nazionalità modificate
+     */
+    def int uploadAllNazionalita(BioService bioService) {
+        int nazionalitaModificate = 0
+        ArrayList<Nazionalita> listaNazionalita = Nazionalita.list()
+
+
+        listaNazionalita?.each {
+            if (ListaNazionalita.uploadNazionalita(it, bioService)) {
+                nazionalitaModificate++
+            }// fine del blocco if
+        } // fine del ciclo each
+
+        return nazionalitaModificate
+    } // fine del metodo
+
 } // fine della service classe

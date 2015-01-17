@@ -38,6 +38,7 @@ abstract class ListaGiorno extends ListaBio {
     @Override
     protected elaboraParametri() {
         usaTavolaContenuti = false
+        usaSuddivisioneUomoDonna = false
         usaSuddivisioneParagrafi = Pref.getBool(LibBio.USA_SUDDIVISIONE_PARAGRAFI_GIORNI, false)
         usaTitoloParagrafoConLink = false
         usaDoppiaColonna = true

@@ -1750,4 +1750,23 @@ class AntroponimoService {
         return nomeNormalizzato
     }// fine del metodo
 
+    /**
+     * creazione delle liste partendo da BioGrails
+     * elabora e crea tutti i nomi
+     */
+    def int uploadAllNomi(BioService bioService) {
+        int nomiModificati = 0
+        ArrayList<Antroponimo> listaNomi
+
+        listaNomi = Antroponimo.list()
+
+        listaNomi?.each {
+            if (ListaNome.uploadNome(it, bioService)) {
+                nomiModificati++
+            }// fine del blocco if
+        } // fine del ciclo each
+
+        return nomiModificati
+    } // fine del metodo
+
 } // fine della service classe

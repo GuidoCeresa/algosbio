@@ -154,7 +154,7 @@ class AnnoController {
     //--passa al metodo effettivo senza nessun dialogo di conferma
     def uploadAnniNascita() {
         if (grailsApplication && grailsApplication.config.login && grailsApplication.config.login.isValido()) {
-            if (bioService && Pref.getBool(LibBio.USA_LISTE_BIO_ANNI)) {
+            if (annoService && bioService && Pref.getBool(LibBio.USA_LISTE_BIO_ANNI)) {
                 annoService.uploadAnniNascita(bioService)
             } else {
                 bioGrailsService.uploadAnniNascita()
@@ -171,7 +171,7 @@ class AnnoController {
     //--passa al metodo effettivo senza nessun dialogo di conferma
     def uploadAnniMorte() {
         if (grailsApplication && grailsApplication.config.login && grailsApplication.config.login.isValido()) {
-            if (bioService && Pref.getBool(LibBio.USA_LISTE_BIO_ANNI)) {
+            if (annoService && bioService && Pref.getBool(LibBio.USA_LISTE_BIO_ANNI)) {
                 annoService.uploadAnniMorte(bioService)
             } else {
                 bioGrailsService.uploadAnniMorte()
@@ -188,7 +188,7 @@ class AnnoController {
     //--passa al metodo effettivo senza nessun dialogo di conferma
     def uploadAllAnni() {
         if (grailsApplication && grailsApplication.config.login && grailsApplication.config.login.isValido()) {
-            if (bioService && Pref.getBool(LibBio.USA_LISTE_BIO_ANNI)) {
+            if (annoService && bioService && Pref.getBool(LibBio.USA_LISTE_BIO_ANNI)) {
                 annoService.uploadAnniNascita(bioService)
                 annoService.uploadAnniMorte(bioService)
             } else {
