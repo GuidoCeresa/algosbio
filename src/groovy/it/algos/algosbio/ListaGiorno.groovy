@@ -81,11 +81,11 @@ abstract class ListaGiorno extends ListaBio {
     }// fine del metodo
 
     /**
-     * Pagina principale a cui tornare
+     * Voce principale a cui tornare
      * Sovrascritto
      */
     @Override
-    protected String elaboraIncipit() {
+    protected String elaboraRitorno() {
         String ritorno = ''
         Giorno giorno = this.getGiorno()
 

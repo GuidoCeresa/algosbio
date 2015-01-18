@@ -36,6 +36,22 @@ class ListaNome extends ListaBio {
     }// fine del metodo
 
     /**
+     * Costruisce un soggetto (Giorno, Anno, Attivita, Nazionalita, Localita, nome, cognome)
+     * Sovrascritto
+     */
+    @Override
+    protected elaboraSoggetto(Object oggetto) {
+        Antroponimo antroponimo
+
+        if (oggetto && oggetto instanceof Antroponimo) {
+            antroponimo = (Antroponimo) oggetto
+            soggetto = antroponimo.nome
+            soggettoMadre = soggetto
+        }// fine del blocco if
+
+    }// fine del metodo
+
+    /**
      * Regola alcuni (eventuali) parametri specifici della sottoclasse
      * Sovrascritto
      */
@@ -85,7 +101,7 @@ class ListaNome extends ListaBio {
     @Override
     protected String elaboraIncipit() {
         String ritorno = ''
-        String nome = soggettoMadre
+        String nome = getNome()
 
         if (nome) {
             ritorno = "{{incipit lista nomi|nome=${nome}}}"
@@ -93,25 +109,6 @@ class ListaNome extends ListaBio {
 
         return ritorno
     }// fine del metodo
-
-//    /**
-//     * Corpo della pagina - didascalia
-//     * Decide se c'è la suddivisione in paragrafi
-//     * Costruisce una mappa in funzione della suddivisione in paragrafi
-//     *  chiave=una chiave per ogni parametro/paragrafo
-//     *  valore=una lista di BioGrails
-//     * Se non c'è suddivisione, la mappa ha un unico valore con chiave vuota
-//     * Decide se ci sono sottopagine
-//     * Sovrascritto
-//     */
-//    @Override
-//    protected String elaboraBodyDidascalie() {
-//        if (usaSuddivisioneUomoDonna) {
-//            return elaboraBodyDidascalieNome()
-//        } else {
-//            return super.elaboraBodyDidascalie()
-//        }// fine del blocco if-else
-//    }// fine del metodo
 
     /**
      * Utilizza la didascalia prevista per il tipo di pagina in elaborazione
@@ -162,12 +159,6 @@ class ListaNome extends ListaBio {
         return 'Persone di nome ' + elaboraSoggettoSpecifico(chiaveParagrafo)
     }// fine del metodo
 
-    /**
-     * Elabora soggetto specifico
-     */
-    protected String elaboraSoggettoSpecifico(String chiaveParagrafo) {
-        return soggetto + '/' + chiaveParagrafo
-    }// fine del metodo
 
     /**
      * Piede della pagina

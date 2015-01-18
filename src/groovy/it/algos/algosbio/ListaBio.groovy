@@ -36,27 +36,30 @@ abstract class ListaBio {
     protected String titoloPaginaMadre = ''
     protected ArrayList<BioGrails> listaBiografie
 
+    protected boolean usaHeadRitorno = false // prima del template di avviso
+    protected boolean usaHeadIncipit = false // dopo il template di avviso
     protected boolean usaTavolaContenuti = Pref.getBool(LibBio.USA_TAVOLA_CONTENUTI, true)
-    protected boolean usaSuddivisioneUomoDonna = false
+    protected boolean usaSuddivisioneUomoDonna = false // falso per Giorni ed Anni
     protected boolean usaSuddivisioneParagrafi = false
-    protected boolean usaTitoloParagrafoConLink = false
-    protected boolean usaDoppiaColonna = false
-    protected boolean usaSottopagine = false
+    protected boolean usaParagrafiAlfabetici = false //utilizzabile solo se usaSuddivisioneParagrafi è vero
+    protected boolean usaTitoloParagrafoConLink = false  //utilizzabile solo se usaSuddivisioneParagrafi è vero
+    protected boolean usaDoppiaColonna = false // vero solo per Giorni ed Anni
+    protected boolean usaSottopagine = false // falso per Giorni ed Anni
     protected int maxVociParagrafo = 100
-    protected String tagTemplateBio = 'ListaBio'
+    protected String tagTemplateBio = 'ListaBio' // in alternativa 'StatBio'
     protected String tagLivelloParagrafo = '=='
     protected String tagParagrafoNullo = 'Altre...'
     public boolean registrata = false
 
 
-    public ListaBio(Object oggetto, BioService bioService) {
-        this.oggetto = oggetto
-        this.bioService = bioService
-        inizia(true)
+    public ListaBio(Object oggetto) {
+        this(oggetto, null)
     }// fine del costruttore
 
-    public ListaBio(Object oggetto) {
+    public ListaBio(Object oggetto, BioService bioService) {
         this.oggetto = oggetto
+        elaboraSoggetto(oggetto)
+        this.bioService = bioService
         inizia(true)
     }// fine del costruttore
 
@@ -88,6 +91,13 @@ abstract class ListaBio {
      * Sovrascritto
      */
     protected elaboraOggetto(String soggetto) {
+    }// fine del metodo
+
+    /**
+     * Costruisce un soggetto (Giorno, Anno, Attivita, Nazionalita, Localita, nome, cognome)
+     * Sovrascritto
+     */
+    protected elaboraSoggetto(Object oggetto) {
     }// fine del metodo
 
     /**
@@ -152,7 +162,6 @@ abstract class ListaBio {
     protected String elaboraHead() {
         // variabili e costanti locali di lavoro
         String testo = ''
-        String ritorno = elaboraRitorno()
         String incipit = elaboraIncipit()
         String dataCorrente = LibTime.getGioMeseAnnoLungo(new Date())
         int numPersone = listaBiografie.size()
@@ -166,8 +175,8 @@ abstract class ListaBio {
         }// fine del blocco if-else
         testo += aCapo
 
-        if (ritorno) {
-            testo += ritorno
+        if (usaHeadRitorno) {
+            testo += elaboraRitorno()
             testo += aCapo
         }// fine del blocco if
 
@@ -193,10 +202,15 @@ abstract class ListaBio {
 
     /**
      * Voce principale a cui tornare
-     * Sovrascritto
      */
     protected String elaboraRitorno() {
-        return ''
+        String testo = ''
+
+        if (titoloPaginaMadre) {
+            testo = "{{Torna a|" + titoloPaginaMadre + "}}"
+        }// fine del blocco if
+
+        return testo
     }// fine del metodo
 
     /**
@@ -228,33 +242,6 @@ abstract class ListaBio {
         return testo
     }// fine del metodo
 
-//    /**
-//     * Corpo della pagina - didascalia
-//     * Decide se c'è la suddivisione in paragrafi
-//     * Costruisce una mappa in funzione della suddivisione in paragrafi
-//     *  chiave=una chiave per ogni parametro/paragrafo
-//     *  valore=una lista di BioGrails
-//     * Se non c'è suddivisione, la mappa ha un unico valore con chiave vuota
-//     * Decide se ci sono sottopagine
-//     * Sovrascritto
-//     */
-//    protected String elaboraBodyDidascalie() {
-//        String testo = ''
-//        LinkedHashMap<String, ArrayList<BioGrails>> mappa
-//
-//        mappa = getMappa(listaBiografie)
-//        mappa?.each {
-//            testo += elaboraBodyParagrafo(it)
-//        }// fine del ciclo each
-//
-//        testo = testo.trim()
-//        testo += aCapo
-//
-//        return testo
-//    }// fine del metodo
-
-
-
     /**
      * Corpo della pagina - didascalia
      * Decide se c'è la suddivisione in paragrafi
@@ -274,25 +261,6 @@ abstract class ListaBio {
     }// fine del metodo
 
     /**
-     * Corpo della pagina
-     */
-    protected String elaboraBodyDidascalieIndifferenziate() {
-        String testo = ''
-        LinkedHashMap<String, ArrayList<BioGrails>> mappa
-
-        mappa = getMappa(listaBiografie)
-        mappa?.each {
-            testo += elaboraBodyParagrafo(it)
-        }// fine del ciclo each
-
-        testo = testo.trim()
-        testo += aCapo
-
-        return testo
-    }// fine del metodo
-
-
-        /**
      * Corpo della pagina
      * Controlla se ci sono voci differenziate uomini/donne
      * Se ci sono divide in due la pagina
@@ -330,8 +298,26 @@ abstract class ListaBio {
                 testo += elaboraBodyParagrafo(it)
             }// fine del ciclo each
         } else {
-            testo = elaboraBodyDidascalie()
+            testo = elaboraBodyDidascalieIndifferenziate()
         }// fine del blocco if-else
+
+        return testo
+    }// fine del metodo
+
+    /**
+     * Corpo della pagina
+     */
+    protected String elaboraBodyDidascalieIndifferenziate() {
+        String testo = ''
+        LinkedHashMap<String, ArrayList<BioGrails>> mappa
+
+        mappa = getMappa(listaBiografie)
+        mappa?.each {
+            testo += elaboraBodyParagrafo(it)
+        }// fine del ciclo each
+
+        testo = testo.trim()
+        testo += aCapo
 
         return testo
     }// fine del metodo
@@ -640,9 +626,15 @@ abstract class ListaBio {
      * Sovrascritto
      */
     protected String getTitoloSottovoce(String chiaveParagrafo) {
-        return 'Persone di nome ' + soggetto + '/' + chiaveParagrafo
+        return ''
     }// fine del metodo
 
+    /**
+     * Elabora soggetto specifico
+     */
+    protected String elaboraSoggettoSpecifico(String chiaveParagrafo) {
+        return LibTesto.primaMaiuscola(soggetto) + '/' + chiaveParagrafo
+    }// fine del metodo
 
     protected static String getParagrafoDidascalia(ArrayList<String> listaDidascalie) {
         String testo = ''

@@ -103,11 +103,11 @@ abstract class ListaAnno extends ListaBio {
     }// fine del metodo
 
     /**
-     * Pagina principale a cui tornare
+     * Voce principale a cui tornare
      * Sovrascritto
      */
     @Override
-    protected String elaboraIncipit() {
+    protected String elaboraRitorno() {
         String ritorno = ''
         Anno anno = this.getAnno()
 
@@ -119,6 +119,7 @@ abstract class ListaAnno extends ListaBio {
 
         return ritorno
     }// fine del metodo
+
 
     /**
      * Ordina le chiavi di una mappa

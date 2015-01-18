@@ -1,24 +1,12 @@
 package it.algos.algosbio
 
-import it.algos.algoslib.LibTesto
-import it.algos.algoswiki.Login
-
 /**
- * Created by gac on 18/10/14.
+ * Created by gac on 17/01/15.
  */
-class ListaNomeAttivita extends ListaNome {
+class ListaNazionalitaAttivita extends ListaNazionalita {
 
 
-    public ListaNomeAttivita(Antroponimo antroponimo) {
-        super(antroponimo)
-    }// fine del costruttore
-
-
-    public ListaNomeAttivita(String soggetto) {
-        super(soggetto)
-    }// fine del costruttore
-
-    public ListaNomeAttivita(String soggetto, boolean iniziaSubito) {
+    public ListaNazionalitaAttivita(String soggetto, boolean iniziaSubito) {
         super(soggetto, iniziaSubito)
     }// fine del costruttore
 
@@ -29,7 +17,8 @@ class ListaNomeAttivita extends ListaNome {
     @Override
     protected elaboraParametri() {
         usaTavolaContenuti = false
-        tagTemplateBio = 'StatBio'
+        usaHeadRitorno = true
+        tagTemplateBio = 'ListaBio'
         usaSuddivisioneUomoDonna = false
         usaSuddivisioneParagrafi = true
         usaTitoloParagrafoConLink = false
@@ -37,15 +26,6 @@ class ListaNomeAttivita extends ListaNome {
         usaSottopagine = false
         tagLivelloParagrafo = '=='
         tagParagrafoNullo = '...'
-    }// fine del metodo
-
-    /**
-     * Pagina principale a cui tornare
-     * Sovrascritto
-     */
-    @Override
-    protected String elaboraIncipit() {
-        return ''
     }// fine del metodo
 
     /**
@@ -65,6 +45,4 @@ class ListaNomeAttivita extends ListaNome {
         return chiave
     }// fine del metodo
 
-
 }// fine della classe
-

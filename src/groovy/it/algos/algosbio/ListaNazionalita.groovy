@@ -9,14 +9,26 @@ import it.algos.algospref.Pref
 class ListaNazionalita extends ListaBio {
 
 
+    public ListaNazionalita() {
+        super((Object) null)
+    }// fine del costruttore
+
+    public ListaNazionalita(Nazionalita nazionalita) {
+        super(nazionalita)
+    }// fine del costruttore
+
     public ListaNazionalita(Nazionalita nazionalita, BioService bioService) {
         super(nazionalita, bioService)
     }// fine del costruttore
 
-    public ListaNazionalita(String soggetto) {
-        super(soggetto)
+    public ListaNazionalita(String soggetto, boolean iniziaSubito) {
+        super(soggetto, iniziaSubito)
     }// fine del costruttore
 
+    /**
+     * Costruisce un oggetto (Giorno, Anno, Attivita, Nazionalita, Localita, nome, cognome)
+     * Sovrascritto
+     */
     @Override
     protected elaboraOggetto(String soggetto) {
         Nazionalita nazionalita = Nazionalita.findByPlurale(soggetto)
@@ -27,12 +39,28 @@ class ListaNazionalita extends ListaBio {
     }// fine del metodo
 
     /**
+     * Costruisce un soggetto (Giorno, Anno, Attivita, Nazionalita, Localita, nome, cognome)
+     * Sovrascritto
+     */
+    @Override
+    protected elaboraSoggetto(Object oggetto) {
+        Nazionalita nazionalita
+
+        if (oggetto && oggetto instanceof Nazionalita) {
+            nazionalita = (Nazionalita) oggetto
+            soggetto = nazionalita.plurale
+            soggettoMadre = soggetto
+        }// fine del blocco if
+
+    }// fine del metodo
+    /**
      * Regola alcuni (eventuali) parametri specifici della sottoclasse
      * Sovrascritto
      */
     @Override
     protected elaboraParametri() {
         usaTavolaContenuti = true
+        usaHeadRitorno = false
         usaSuddivisioneUomoDonna = Pref.getBool(LibBio.USA_SUDDIVISIONE_UOMO_DONNA_NAZ, false)
         usaSuddivisioneParagrafi = true
         usaTitoloParagrafoConLink = true
@@ -42,6 +70,22 @@ class ListaNazionalita extends ListaBio {
         tagParagrafoNullo = 'Altre...'
     }// fine del metodo
 
+    /**
+     * Costruisce il titolo della pagina
+     */
+    @Override
+    protected void elaboraTitolo() {
+        String tag = 'Progetto:Biografie/Nazionalità/'
+        String titolo = getPlurale()
+
+        if (titolo) {
+            titolo = LibTesto.primaMaiuscola(titolo)
+            if (!titoloPagina) {
+                titoloPagina = tag + titolo
+            }// fine del blocco if
+        }// fine del blocco if
+
+    }// fine del metodo
     /**
      * Costruisce il titolo della pagina
      */
@@ -77,6 +121,31 @@ class ListaNazionalita extends ListaBio {
     }// fine del metodo
 
     /**
+     * Creazione della sottopagina
+     * Sovrascritto
+     */
+    @Override
+    protected creazioneSottopagina(String chiaveParagrafo, String titoloParagrafo, ArrayList<BioGrails> listaVociOrdinate) {
+        ListaBio sottoVoce
+
+        //creazione della sottopagina
+        sottoVoce = new ListaNazionalitaAttivita(elaboraSoggettoSpecifico(chiaveParagrafo), false)
+        sottoVoce.listaBiografie = listaVociOrdinate
+        sottoVoce.titoloPaginaMadre = titoloPagina
+        sottoVoce.soggettoMadre = soggetto
+        sottoVoce.elaboraPagina()
+    }// fine del metodo
+
+    /**
+     * Titolo della sottopagina
+     * Sovrascritto
+     */
+    @Override
+    protected String getTitoloSottovoce(String chiaveParagrafo) {
+        return 'Progetto:Biografie/Nazionalità/' + elaboraSoggettoSpecifico(chiaveParagrafo)
+    }// fine del metodo
+
+    /**
      * Recupera il plurale
      */
     private String getPlurale() {
@@ -86,25 +155,46 @@ class ListaNazionalita extends ListaBio {
             plurale = oggetto.plurale
         }// fine del blocco if
 
+        if (!plurale) {
+            plurale = soggetto
+        }// fine del blocco if
+
         return plurale
     }// fine del metodo
 
-//    /**
-//     * Recupera il plurale
-//     * Recupera la lista delle Nazionalita ed analizza la prima
-//     */
-//    protected String getPluraleNazionalitaOld() {
-//        String plurale = ''
-//        ArrayList<Nazionalita> listaNazionalita = getNazionalita()
-//        Nazionalita primaNazionalita
-//
-//        if (listaNazionalita && listaNazionalita.size() > 0) {
-//            primaNazionalita = listaNazionalita.get(0)
-//            plurale = primaNazionalita.plurale
-//        }// fine del blocco if
-//
-//        return plurale
-//    }// fine del metodo
+    /**
+     * Recupera il plurale
+     */
+    private String getPluraleMaiuscolo() {
+        return LibTesto.primaMaiuscola(getPlurale())
+    }// fine del metodo
+
+    /**
+     * Piede della pagina
+     * Sovrascritto
+     */
+    @Override
+    protected elaboraFooter() {
+        String testo = ''
+        String nazionalita = soggettoMadre
+        nazionalita = LibTesto.primaMaiuscola(nazionalita)
+
+        testo += '==Voci correlate=='
+        testo += aCapo
+        testo += "*[[:Categoria:${nazionalita}]]"
+        testo += aCapo
+        testo += '*[[Progetto:Biografie/Nazionalità]]'
+        testo += aCapo
+        testo += aCapo
+        testo += '{{Portale|biografie}}'
+        testo += aCapo
+        testo += aCapo
+        testo += '<noinclude>'
+        testo += "[[Categoria:Bio nazionalità|${nazionalita}]]"
+        testo += '</noinclude>'
+
+        return testo
+    }// fine del metodo
 
     /**
      * Recupera la Nazionalita
