@@ -20,6 +20,7 @@ class ListaNazionalitaAttivita extends ListaNazionalita {
         usaTavolaContenuti = false
         usaHeadRitorno = true
         usaSuddivisioneUomoDonna = false
+        usaAttivitaMultiple = false
         usaParagrafiAlfabetici = true
         usaTitoloParagrafoConLink = false
         usaSottopagine = false
