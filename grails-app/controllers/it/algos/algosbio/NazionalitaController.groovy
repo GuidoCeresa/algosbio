@@ -93,12 +93,13 @@ class NazionalitaController {
     //--passa al metodo effettivo senza nessun dialogo di conferma
     def uploadSingolaNazionalita(Long id) {
         Nazionalita nazionalita = Nazionalita.get(id)
-        String plurale = nazionalita?.plurale
+        String plurale
 
         if (grailsApplication && grailsApplication.config.login) {
             if (bioService && Pref.getBool(LibBio.USA_LISTE_BIO_NAZIONALITA)) {
-                ListaNazionalita.uploadNazionalita(nazionalita, bioService)
+                nazionalitaService?.uploadNazionalita(nazionalita, bioService)
             } else {
+                plurale = nazionalita?.plurale
                 new BioNazionalita(plurale).registraPagina()
             }// fine del blocco if-else
             flash.info = "Eseguito upload delle liste della nazionalita sul server wiki"

@@ -29,8 +29,8 @@ class NazionalitaJob {
         if (Pref.getBool(LibBio.USA_CRONO_NAZIONALITA)) {
 
             if (Pref.getBool(LibBio.USA_LISTE_BIO_NAZIONALITA)) {
-                if (bioService && nazionalitaService) {
-                    nazionalitaService.uploadNazionalita(bioService)
+                if (bioService) {
+                    nazionalitaService?.uploadAllNazionalita(bioService)
                 }// fine del blocco if
             } else {
                 if (listaService) {
@@ -41,6 +41,7 @@ class NazionalitaJob {
             if (statisticheService) {
                 statisticheService.nazionalitaUsate()
             }// fine del blocco if
+
         }// fine del blocco if
     }// fine del metodo execute
 

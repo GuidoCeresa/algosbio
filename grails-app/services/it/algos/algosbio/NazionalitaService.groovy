@@ -138,7 +138,7 @@ class NazionalitaService {
      *  -plurale dell'attività
      *  -numero di voci che nel campo nazionalità usano tutti records di nazionalità che hanno quel plurale
      */
-    public static getLista() {
+    public static ArrayList getLista() {
         // variabili e costanti locali di lavoro
         def lista = new ArrayList()
         def listaPlurali
@@ -278,13 +278,38 @@ class NazionalitaService {
     } // fine del metodo
 
     /**
-     * creazione delle liste partendo da BioGrails
-     * elabora e crea tutte le nazionalità modificate
+     * Ritorna una lista di tutte le nazionalità distinta
      */
-    def int uploadAllNazionalita(BioService bioService) {
-        int nazionalitaModificate = 0
-        ArrayList<Nazionalita> listaNazionalita = Nazionalita.list()
+    public static ArrayList<Nazionalita> getListaNazionalita() {
+        ArrayList<Nazionalita> lista = new ArrayList<Nazionalita>()
+        ArrayList<String> listaPlurali = getListaPlurali()
+        Nazionalita nazionalita
 
+        listaPlurali?.each {
+            nazionalita = Nazionalita.findByPlurale(it)
+            if (nazionalita) {
+                lista.add(nazionalita)
+            }// fine del blocco if
+        }// fine di each
+
+        // valore di ritorno
+        return lista
+    } // fine del metodo
+
+    /**
+     * Elabora e crea la lista della nazionalità indicata e la uploada sul server wiki
+     */
+    public void uploadNazionalita(Nazionalita nazionalita, BioService bioService) {
+        ListaNazionalita.uploadNazionalita(nazionalita, bioService)
+    } // fine del metodo
+
+    /**
+     * creazione delle liste partendo da BioGrails
+     * elabora e crea tutte le nazionalità
+     */
+    public int uploadAllNazionalita(BioService bioService) {
+        int nazionalitaModificate = 0
+        ArrayList<Nazionalita> listaNazionalita = getListaNazionalita()
 
         listaNazionalita?.each {
             if (ListaNazionalita.uploadNazionalita(it, bioService)) {
