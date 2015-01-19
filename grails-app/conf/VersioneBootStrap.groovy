@@ -864,6 +864,18 @@ class VersioneBootStrap {
             versioneService.newVersione('Preferenze', 'USA_TITOLO_PARAGRAFO_NAZ_ATT_LINK_PROGETTO di default true')
         }// fine del blocco if
 
+        //--creata una nuova preferenza
+        if (versioneService && versioneService.installaVersione(94)) {
+            Pref pref = new Pref()
+            pref.ordine = Pref.list().size() + 1
+            pref.code = LibBio.USA_ATTIVITA_MULTIPLE
+            pref.descrizione = 'Usa tutte le 3 attività nelle liste di Nazionalità. Le persone appaiono in più di un paragrafo.'
+            pref.type = Type.booleano
+            pref.bool = true
+            pref.save(flush: true)
+            versioneService.newVersione('Preferenze', 'USA_ATTIVITA_MULTIPLE di default true')
+        }// fine del blocco if
+
     }// fine della closure
 
 

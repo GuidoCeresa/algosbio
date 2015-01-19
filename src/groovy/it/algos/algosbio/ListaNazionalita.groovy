@@ -56,8 +56,11 @@ class ListaNazionalita extends ListaBio {
         }// fine del blocco if
 
     }// fine del metodo
+
     /**
      * Regola alcuni (eventuali) parametri specifici della sottoclasse
+     * <p>
+     * Nelle sottoclassi va SEMPRE richiamata la superclasse PRIMA di regolare localmente le variabili <br>
      * Sovrascritto
      */
     @Override
@@ -65,7 +68,8 @@ class ListaNazionalita extends ListaBio {
         super.elaboraParametri()
         usaInclude = false
         tagTemplateBio = Pref.getStr(LibBio.NOME_TEMPLATE_AVVISO_LISTE_NAZ_ATT, 'ListaBio')
-        usaSuddivisioneUomoDonna = Pref.getBool(LibBio.USA_SUDDIVISIONE_UOMO_DONNA_NAZ, false)
+        usaSuddivisioneUomoDonna = Pref.getBool(LibBio.USA_SUDDIVISIONE_UOMO_DONNA_NAZ, true)
+        usaAttivitaMultiple = Pref.getBool(LibBio.USA_ATTIVITA_MULTIPLE, true)
         maxVociParagrafo = Pref.getInt(LibBio.MAX_VOCI_PARAGRAFO_NAZIONALITA, 100)
     }// fine del metodo
 
@@ -98,6 +102,24 @@ class ListaNazionalita extends ListaBio {
         }// fine del blocco if
 
         return chiave
+    }// fine del metodo
+
+    /**
+     * Chiave di selezione del paragrafo per la seconda attività
+     * Sovrascritto
+     */
+    @Override
+    protected String getChiaveParagrafoSecondaAttivita(BioGrails bio) {
+        return attivitaSecondaPluralePerGenere(bio)
+    }// fine del metodo
+
+    /**
+     * Chiave di selezione del paragrafo per la terza attività
+     * Sovrascritto
+     */
+    @Override
+    protected String getChiaveParagrafoTerzaAttivita(BioGrails bio) {
+        return attivitaTerzaPluralePerGenere(bio)
     }// fine del metodo
 
     /**
@@ -160,6 +182,14 @@ class ListaNazionalita extends ListaBio {
         nazionalita = LibTesto.primaMaiuscola(nazionalita)
         String tagCategoria = "[[Categoria:Bio nazionalità|${nazionalita}]]"
 
+        if (numDidascalie > listaBiografie.size()) {
+            testo += super.getNote('Alcune persone sono citate più volte perché hanno diverse attività')
+            if (usaSuddivisioneUomoDonna && esistonoUominiDonne) {
+                testo += aCapo
+            }// fine del blocco if
+            testo += aCapo
+        }// fine del blocco if
+
         testo += super.getVociCorrelate()
         testo += aCapo
         testo += "*[[:Categoria:${nazionalita}]]"
@@ -176,7 +206,7 @@ class ListaNazionalita extends ListaBio {
             testo += tagCategoria
         }// fine del blocco if-else
 
-        return testo.trim()
+        return finale(testo)
     }// fine del metodo
 
     /**
@@ -199,7 +229,7 @@ class ListaNazionalita extends ListaBio {
     /**
      * Chiave di selezione del paragrafo con link
      */
-    private  String elaboraTitoloParagrafoNazionalita(String chiaveParagrafo, ArrayList<BioGrails> listaVoci) {
+    private String elaboraTitoloParagrafoNazionalita(String chiaveParagrafo, ArrayList<BioGrails> listaVoci) {
         String titoloParagrafo
         String pipe = '|'
         String singolare
@@ -220,7 +250,7 @@ class ListaNazionalita extends ListaBio {
 
         plurale = LibTesto.primaMaiuscola(plurale)
         if (chiaveParagrafo.equals(tagParagrafoNullo)) {
-            titoloParagrafo=chiaveParagrafo
+            titoloParagrafo = chiaveParagrafo
         } else {
             titoloParagrafo = TAG_PARAGRAFO + plurale + pipe + chiaveParagrafo
             titoloParagrafo = LibWiki.setQuadre(titoloParagrafo)

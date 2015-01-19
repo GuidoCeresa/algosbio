@@ -97,6 +97,7 @@ class LibBio {
     public static final String NOME_TEMPLATE_AVVISO_LISTE_NAZ_ATT = 'nomeAvvisoListeNazAtt'
     public static final String NOME_TEMPLATE_AVVISO_LISTE_NOMI_COGNOMI = 'nomeAvvisoListeNomiCognomi'
     public static final String USA_TITOLO_PARAGRAFO_NAZ_ATT_LINK_PROGETTO = 'usaParagrafoNazAttProgetto'
+    public static final String USA_ATTIVITA_MULTIPLE = 'usaAttivitaMultiple'
 
     // campi di una mappa
     public static final String MAPPA_TITOLO_PARAGRAFO = 'titoloParagrafo'
