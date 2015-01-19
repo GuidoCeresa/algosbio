@@ -16,33 +16,14 @@ class ListaNazionalitaAttivita extends ListaNazionalita {
      */
     @Override
     protected elaboraParametri() {
+        super.elaboraParametri()
         usaTavolaContenuti = false
         usaHeadRitorno = true
-        tagTemplateBio = 'ListaBio'
         usaSuddivisioneUomoDonna = false
-        usaSuddivisioneParagrafi = true
+        usaParagrafiAlfabetici = true
         usaTitoloParagrafoConLink = false
-        usaDoppiaColonna = false
         usaSottopagine = false
-        tagLivelloParagrafo = '=='
         tagParagrafoNullo = '...'
-    }// fine del metodo
-
-    /**
-     * Chiave di selezione del paragrafo
-     * Sovrascritto
-     */
-    @Override
-    protected String getChiaveParagrafo(BioGrails bio) {
-        String chiave = bio.cognome
-
-        if (chiave) {
-            chiave = chiave.substring(0, 1).toUpperCase()
-        } else {
-            chiave = tagParagrafoNullo
-        }// fine del blocco if-else
-
-        return chiave
     }// fine del metodo
 
 }// fine della classe

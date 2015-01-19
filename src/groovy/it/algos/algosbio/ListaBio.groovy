@@ -2,8 +2,10 @@ package it.algos.algosbio
 
 import grails.transaction.Transactional
 import groovy.util.logging.Log4j
+import it.algos.algoslib.LibHtml
 import it.algos.algoslib.LibTesto
 import it.algos.algoslib.LibTime
+import it.algos.algoslib.LibWiki
 import it.algos.algoslib.Mese
 import it.algos.algospref.Pref
 import it.algos.algoswiki.Risultato
@@ -36,9 +38,12 @@ abstract class ListaBio {
     protected String titoloPaginaMadre = ''
     protected ArrayList<BioGrails> listaBiografie
 
-    protected boolean usaHeadRitorno = false // prima del template di avviso
-    protected boolean usaHeadIncipit = false // dopo il template di avviso
     protected boolean usaTavolaContenuti = Pref.getBool(LibBio.USA_TAVOLA_CONTENUTI, true)
+    protected boolean usaInclude = true // vero per Giorni ed Anni
+    protected boolean usaHeadRitorno = false // prima del template di avviso
+    protected String tagTemplateBio = Pref.getStr(LibBio.NOME_TEMPLATE_AVVISO_LISTE_GIORNI_ANNI, 'ListaBio')
+    // in alternativa 'StatBio'
+    protected boolean usaHeadIncipit = false // dopo il template di avviso
     protected boolean usaSuddivisioneUomoDonna = false // falso per Giorni ed Anni
     protected boolean usaSuddivisioneParagrafi = false
     protected boolean usaParagrafiAlfabetici = false //utilizzabile solo se usaSuddivisioneParagrafi è vero
@@ -46,10 +51,10 @@ abstract class ListaBio {
     protected boolean usaDoppiaColonna = false // vero solo per Giorni ed Anni
     protected boolean usaSottopagine = false // falso per Giorni ed Anni
     protected int maxVociParagrafo = 100
-    protected String tagTemplateBio = 'ListaBio' // in alternativa 'StatBio'
     protected String tagLivelloParagrafo = '=='
     protected String tagParagrafoNullo = 'Altre...'
     public boolean registrata = false
+    public boolean esistonoUominiDonne = false
 
 
     public ListaBio(Object oggetto) {
@@ -105,6 +110,20 @@ abstract class ListaBio {
      * Sovrascritto
      */
     protected elaboraParametri() {
+        usaTavolaContenuti = true
+        usaInclude = true
+        usaHeadRitorno = false
+        tagTemplateBio == Pref.getStr(LibBio.NOME_TEMPLATE_AVVISO_LISTE_GIORNI_ANNI, 'ListaBio')
+        usaHeadIncipit = false
+        usaSuddivisioneUomoDonna = false
+        usaSuddivisioneParagrafi = true
+        usaParagrafiAlfabetici = false
+        usaTitoloParagrafoConLink = true
+        usaDoppiaColonna = false
+        usaSottopagine = true
+        maxVociParagrafo = 100
+        tagLivelloParagrafo = '=='
+        tagParagrafoNullo = 'Altre...'
     }// fine del metodo
 
     /**
@@ -124,6 +143,12 @@ abstract class ListaBio {
 
     /**
      * Elaborazione principale della pagina
+     * <p>
+     * Costruisce head <br>
+     * Costruisce body <br>
+     * Costruisce footer <br>
+     * Ogni blocco esce trimmato. Gli spazi di separazione vanno aggiunti qui <br>
+     * Registra la pagina <br>
      */
     protected elaboraPagina() {
         boolean debug = Pref.getBool(LibBio.DEBUG, false)
@@ -137,9 +162,15 @@ abstract class ListaBio {
             testo += this.elaboraHead()
 
             //body
+            testo += aCapo
             testo += this.elaboraBody()
 
             //footer
+            testo += aCapo
+            testo += aCapo
+            if (esistonoUominiDonne) {
+                testo += aCapo
+            }// fine del blocco if
             testo += this.elaboraFooter()
         }// fine del blocco if
 
@@ -157,67 +188,137 @@ abstract class ListaBio {
     }// fine del metodo
 
     /**
-     * Costruisce il testo iniziale della pagina
+     * Costruisce il testo iniziale della pagina (header)
+     * <p>
+     * Non sovrascrivibile <br>
+     * Posiziona il TOC <br>
+     * Posiziona il ritorno (eventuale) <br>
+     * Posizione il template di avviso <br>
+     * Posiziona l'incipit della pagina (eventuale) <br>
+     * Ritorno ed avviso vanno (eventualmente) protetti con 'include' <br>
+     * Testo trimmato. Eventuali spazi gestiti da chi usa il metodo <br>
      */
-    protected String elaboraHead() {
+    private String elaboraHead() {
         // variabili e costanti locali di lavoro
         String testo = ''
-        String incipit = elaboraIncipit()
-        String dataCorrente = LibTime.getGioMeseAnnoLungo(new Date())
-        int numPersone = listaBiografie.size()
-        String personeTxt = LibTesto.formatNum(numPersone)
-        String template = tagTemplateBio
+        String testoIncluso = ''
 
-        if (usaTavolaContenuti) {
-            testo += TAG_INDICE
-        } else {
-            testo += TAG_NO_INDICE
-        }// fine del blocco if-else
-        testo += aCapo
+        // Posiziona il TOC
+        testo += elaboraTOC()
 
-        if (usaHeadRitorno) {
-            testo += elaboraRitorno()
-            testo += aCapo
-        }// fine del blocco if
+        // Posiziona il ritorno
+        testoIncluso += elaboraRitorno()
 
-        testo += "<noinclude>"
-        testo += aCapo
-        testo += "{{${template}"
-        testo += "|bio="
-        testo += personeTxt
-        testo += "|data="
-        testo += dataCorrente.trim()
-        testo += "}}"
-        testo += aCapo
+        // Posizione il template di avviso
+        testoIncluso += elaboraTemplateAvviso()
 
-        if (incipit) {
-            testo += incipit
-            testo += aCapo
-        }// fine del blocco if
-        testo += "</noinclude>"
+        // Ritorno ed avviso vanno (eventualmente) protetti con 'include'
+        testo += elaboraInclude(testoIncluso)
+
+        // Posiziona l'incipit della pagina
+        testo += elaboraIncipit()
 
         // valore di ritorno
         return testo.trim()
     }// fine del metodo
 
     /**
-     * Voce principale a cui tornare
+     * Costruisce il TOC (tavola contenuti)
+     * <p>
+     * Non sovrascrivibile <br>
+     * Parametrizzato (nelle sottoclassi) l'utilizzo di una delle due possibilità <br>
+     */
+    private String elaboraTOC() {
+        String testo = ''
+
+        if (usaTavolaContenuti) {
+            testo += TAG_INDICE
+        } else {
+            testo += TAG_NO_INDICE
+        }// fine del blocco if-else
+
+        return testo
+    }// fine del metodo
+
+    /**
+     * Costruisce il ritorno alla pagina 'madre'
+     * <p>
+     * Sovrascrivibile <br>
+     * Parametrizzato (nelle sottoclassi) l'utilizzo e la formulazione <br>
      */
     protected String elaboraRitorno() {
         String testo = ''
 
-        if (titoloPaginaMadre) {
-            testo = "{{Torna a|" + titoloPaginaMadre + "}}"
+        if (usaHeadRitorno) {
+            if (titoloPaginaMadre) {
+                testo += "Torna a|" + titoloPaginaMadre
+                testo = LibWiki.setGraffe(testo)
+            }// fine del blocco if
         }// fine del blocco if
 
         return testo
     }// fine del metodo
 
     /**
-     * Frase inziale della pagina (incipit)
-     * Sovrascritto
+     * Costruisce il template di avviso
+     * <p>
+     * Non sovrascrivibile <br>
+     * Parametrizzato (nelle sottoclassi) il nome del template da usare <br>
      */
-    protected String elaboraIncipit() {
+    private String elaboraTemplateAvviso() {
+        String testo = ''
+        String dataCorrente = LibTime.getGioMeseAnnoLungo(new Date())
+        int numPersone = listaBiografie.size()
+        String personeTxt = LibTesto.formatNum(numPersone)
+
+        testo += tagTemplateBio
+        testo += "|bio="
+        testo += personeTxt
+        testo += "|data="
+        testo += dataCorrente.trim()
+        testo = LibWiki.setGraffe(testo)
+
+        return testo
+    }// fine del metodo
+
+    /**
+     * Incorpora ilo testo nel tag 'include'
+     * <p>
+     * Non sovrascrivibile <br>
+     * Parametrizzato (nelle sottoclassi) l'utilizzo <br>
+     */
+    private String elaboraInclude(String testoIn) {
+        String testoOut = testoIn
+
+        if (usaInclude) {
+            testoOut = LibBio.setNoInclude(testoIn)
+        }// fine del blocco if
+
+        return testoOut
+    }// fine del metodo
+
+    /**
+     * Costruisce la frase di incipit iniziale
+     * <p>
+     * Non sovrascrivibile <br>
+     */
+    private String elaboraIncipit() {
+        String testo = ''
+
+        if (usaHeadIncipit) {
+            testo += elaboraIncipitSpecifico()
+        }// fine del blocco if
+
+        return testo
+    }// fine del metodo
+
+    /**
+     * Costruisce la frase di incipit iniziale
+     * <p>
+     * Sovrascrivibile <br>
+     * Parametrizzato (nelle sottoclassi) l'utilizzo e la formulazione <br>
+     */
+    protected String elaboraIncipitSpecifico() {
         return ''
     }// fine del metodo
 
@@ -239,7 +340,7 @@ abstract class ListaBio {
 
         testo = elaboraTemplate(testo)
 
-        return testo
+        return testo.trim()
     }// fine del metodo
 
     /**
@@ -297,6 +398,7 @@ abstract class ListaBio {
             mappa?.each {
                 testo += elaboraBodyParagrafo(it)
             }// fine del ciclo each
+            esistonoUominiDonne = true
         } else {
             testo = elaboraBodyDidascalieIndifferenziate()
         }// fine del blocco if-else
@@ -340,7 +442,7 @@ abstract class ListaBio {
         listaVoci = mappa.value
         listaVociOrdinate = ordinaVoci(listaVoci)
         listaDidascalie = estraeListaDidascalie(listaVociOrdinate)
-        titoloParagrafo = elaboraTitoloParagrafo(chiaveParagrafo, listaVociOrdinate)
+        titoloParagrafo = elaboraTitoloParagrafoBase(chiaveParagrafo, listaVociOrdinate)
 
         return elaboraParagrafo(chiaveParagrafo, titoloParagrafo, listaVociOrdinate, listaDidascalie)
     }// fine del metodo
@@ -419,7 +521,7 @@ abstract class ListaBio {
                 mappa = new LinkedHashMap<String, ArrayList<BioGrails>>()
                 listaVoci?.each {
                     bio = it
-                    chiave = getChiaveParagrafo(bio)
+                    chiave = getChiaveParagrafoBase(bio)
                     if (chiave.equals(chiaveOld)) {
                         lista = mappa.get(chiave)
                         lista.add(bio)
@@ -437,7 +539,7 @@ abstract class ListaBio {
                 }// fine del ciclo each
             }// fine del blocco if
 
-            if (mappa.size() > 1) {
+            if (mappa.size() > 0) {
                 mappa = ordinaMappa(mappa)
             } else {
                 mappa = new LinkedHashMap<String, ArrayList<BioGrails>>()
@@ -460,6 +562,51 @@ abstract class ListaBio {
     }// fine del metodo
 
     /**
+     * Chiave di selezione del paragrafo
+     */
+    protected String getChiaveParagrafoAlfabetico(BioGrails bio) {
+        String chiave = bio.cognome
+
+        if (chiave) {
+            chiave = chiave.substring(0, 1).toUpperCase()
+        } else {
+            chiave = tagParagrafoNullo
+        }// fine del blocco if-else
+
+        return chiave
+    }// fine del metodo
+
+    /**
+     * Chiave di selezione del paragrafo
+     */
+    private String getChiaveParagrafoBase(BioGrails bio) {
+        String chiave
+
+        if (usaParagrafiAlfabetici) {
+            chiave = getChiaveParagrafoAlfabetico(bio)
+        } else {
+            chiave = getChiaveParagrafo(bio)
+        }// fine del blocco if-else
+
+        return chiave
+    }// fine del metodo
+
+    /**
+     * Chiave di selezione del paragrafo con eventuali link
+     */
+    private String elaboraTitoloParagrafoBase(String chiaveParagrafo, ArrayList<BioGrails> listaVoci) {
+        String chiave
+
+        if (usaParagrafiAlfabetici) {
+            chiave = chiaveParagrafo
+        } else {
+            chiave = elaboraTitoloParagrafo(chiaveParagrafo, listaVoci)
+        }// fine del blocco if-else
+
+        return chiave
+    }// fine del metodo
+
+    /**
      * Chiave di selezione del paragrafo con eventuali link
      * Sovrascritto
      */
@@ -468,28 +615,42 @@ abstract class ListaBio {
         String singolare
         Professione professione
         BioGrails bio
+        Attivita attivita
 
         if (usaTitoloParagrafoConLink && !chiaveParagrafo.equals(tagParagrafoNullo) && listaVoci && listaVoci.size() > 0) {
-            titoloParagrafo = '[['
             bio = listaVoci.get(0)
             if (bio) {
-                singolare = bio.attivita
+                attivita = bio.attivitaLink
+                if (attivita) {
+                    singolare = attivita.singolare
+                } else {
+                    singolare = bio.attivita
+                }// fine del blocco if-else
             }// fine del blocco if
+
             if (singolare) {
                 professione = Professione.findBySingolare(singolare)
             }// fine del blocco if
             if (professione) {
-                titoloParagrafo += LibTesto.primaMaiuscola(professione.voce)
+                titoloParagrafo = LibTesto.primaMaiuscola(professione.voce)
             } else {
-                titoloParagrafo += LibTesto.primaMaiuscola(singolare)
+                titoloParagrafo = LibTesto.primaMaiuscola(singolare)
             }// fine del blocco if-else
-            titoloParagrafo += '|'
-            titoloParagrafo += chiaveParagrafo
-            titoloParagrafo += ']]'
+
+            if (!titoloParagrafo.equals(chiaveParagrafo)) {
+                titoloParagrafo += '|'
+                titoloParagrafo += chiaveParagrafo
+            }// fine del blocco if
+
+            if (titoloParagrafo) {
+                titoloParagrafo = LibWiki.setQuadre(titoloParagrafo)
+            }// fine del blocco if
         }// fine del blocco if-else
 
         return titoloParagrafo
     }// fine del metodo
+
+
     protected static ArrayList<BioGrails> ordinaVoci(ArrayList<BioGrails> listaVoci) {
         ArrayList<BioGrails> listaVociOrdinate = listaVoci
 
@@ -748,7 +909,7 @@ abstract class ListaBio {
             if (mappa.containsKey('')) {
                 lista = mappa.get('')
                 bio = lista.get(0)
-                chiave = getChiaveParagrafo(bio)
+                chiave = getChiaveParagrafoBase(bio)
 
                 mappa = new LinkedHashMap<String, ArrayList<BioGrails>>()
                 mappa.put(chiave, lista)
@@ -756,6 +917,22 @@ abstract class ListaBio {
         }// fine del blocco if
 
         return mappa
+    }// fine del metodo
+
+    /**
+     * Voci correlate
+     * Regola il livello del paragrafo
+     */
+    protected String getVociCorrelate() {
+        String testo = ''
+
+        if (usaSuddivisioneUomoDonna && esistonoUominiDonne) {
+            testo += '=Voci correlate='
+        } else {
+            testo += '==Voci correlate=='
+        }// fine del blocco if-else
+
+        return testo
     }// fine del metodo
 
 }// fine della classe

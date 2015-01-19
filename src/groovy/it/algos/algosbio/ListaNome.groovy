@@ -58,7 +58,7 @@ class ListaNome extends ListaBio {
     @Override
     protected elaboraParametri() {
         usaTavolaContenuti = true
-        tagTemplateBio = 'StatBio'
+        tagTemplateBio = Pref.getStr(LibBio.NOME_TEMPLATE_AVVISO_LISTE_NOMI_COGNOMI, 'StatBio')
         usaSuddivisioneUomoDonna = Pref.getBool(LibBio.USA_SUDDIVISIONE_UOMO_DONNA, false)
         usaSuddivisioneParagrafi = true
         usaTitoloParagrafoConLink = true
@@ -99,7 +99,7 @@ class ListaNome extends ListaBio {
      * Sovrascritto
      */
     @Override
-    protected String elaboraIncipit() {
+    protected String elaboraIncipitSpecifico() {
         String ritorno = ''
         String nome = getNome()
 

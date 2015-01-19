@@ -68,6 +68,8 @@ class LibBio {
     public static final String TAGLIO_LOCALITA = 'taglioLocalita'
     public static final String MAX_VOCI_PARAGRAFO_ANTROPONIMI = 'maxVociParagrafoAntroponimi'
     public static final String MAX_VOCI_PARAGRAFO_LOCALITA = 'maxVociParagrafoLocalita'
+    public static final String MAX_VOCI_PARAGRAFO_NAZIONALITA = 'maxVociParagrafoNazionalita'
+    public static final String MAX_VOCI_PARAGRAFO_ATTIVITA = 'maxVociParagrafoAttivita'
     public static final String USA_SUDDIVISIONE_UOMO_DONNA = 'usaSuddivisioneUomoDonna'
     public static final String USA_SUDDIVISIONE_UOMO_DONNA_NAZ = 'usaSuddivisioneUomoDonnaNaz'
     public static final String MAX_CICLI_ELABORA_COGNOMI = 'maxCicliElaboraCognomi'
@@ -91,6 +93,10 @@ class LibBio {
     public static final String NUM_VOCI_INFO_NOMI_UPLOAD = 'numVociInfoNomiUpload'
     public static final String USA_NOME_COGNOME_PER_TITOLO = 'usaNomeCognomePerTitolo'
     public static final String MAX_RICALCOLA_COGNOMI = 'maxRicalcolaCognomi'
+    public static final String NOME_TEMPLATE_AVVISO_LISTE_GIORNI_ANNI = 'nomeAvvisoListeGiorniAnni'
+    public static final String NOME_TEMPLATE_AVVISO_LISTE_NAZ_ATT = 'nomeAvvisoListeNazAtt'
+    public static final String NOME_TEMPLATE_AVVISO_LISTE_NOMI_COGNOMI = 'nomeAvvisoListeNomiCognomi'
+    public static final String USA_TITOLO_PARAGRAFO_NAZ_ATT_LINK_PROGETTO = 'usaParagrafoNazAttProgetto'
 
     // campi di una mappa
     public static final String MAPPA_TITOLO_PARAGRAFO = 'titoloParagrafo'
@@ -1327,5 +1333,29 @@ class LibBio {
         return accettato
     }// fine del metodo
 
+    /**
+     * Aggiunge tag 'NoInclude' in testa e coda alla stringa.
+     * <p>
+     * Aggiunge SOLO se già non esiste TODO Non ancora
+     * Se arriva una stringa vuota, restituisce una stringa vuota
+     * Elimina spazi vuoti iniziali e finali
+     * Elimina eventuali 'NoInclude' già presenti, per evitare di metterli doppi TODO Non ancora
+     *
+     * @param stringa in ingresso
+     * @return stringa coi tag aggiunti
+     */
+    public static String setNoInclude(String stringaIn) {
+        String stringaOut = stringaIn.trim()
+        String tagIni = '<noinclude>'
+        String tagEnd = '</noinclude>'
+
+        if (stringaIn) {
+            stringaOut = tagIni + stringaOut + tagEnd
+            stringaOut = stringaOut.trim()
+        }// fine del blocco if
+
+        // valore di ritorno
+        return stringaOut
+    } // fine del metodo
 
 } // fine della classe

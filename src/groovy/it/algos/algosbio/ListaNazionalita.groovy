@@ -1,6 +1,7 @@
 package it.algos.algosbio
 
 import it.algos.algoslib.LibTesto
+import it.algos.algoslib.LibWiki
 import it.algos.algospref.Pref
 
 /**
@@ -8,6 +9,8 @@ import it.algos.algospref.Pref
  */
 class ListaNazionalita extends ListaBio {
 
+    private static String TAG_PROGETTO = 'Progetto:Biografie/Nazionalità/'
+    private static String TAG_PARAGRAFO = 'Progetto:Biografie/Attività/'
 
     public ListaNazionalita() {
         super((Object) null)
@@ -59,15 +62,11 @@ class ListaNazionalita extends ListaBio {
      */
     @Override
     protected elaboraParametri() {
-        usaTavolaContenuti = true
-        usaHeadRitorno = false
+        super.elaboraParametri()
+        usaInclude = false
+        tagTemplateBio = Pref.getStr(LibBio.NOME_TEMPLATE_AVVISO_LISTE_NAZ_ATT, 'ListaBio')
         usaSuddivisioneUomoDonna = Pref.getBool(LibBio.USA_SUDDIVISIONE_UOMO_DONNA_NAZ, false)
-        usaSuddivisioneParagrafi = true
-        usaTitoloParagrafoConLink = true
-        usaDoppiaColonna = false
-        usaSottopagine = true
-        tagLivelloParagrafo = '=='
-        tagParagrafoNullo = 'Altre...'
+        maxVociParagrafo = Pref.getInt(LibBio.MAX_VOCI_PARAGRAFO_NAZIONALITA, 100)
     }// fine del metodo
 
     /**
@@ -75,34 +74,15 @@ class ListaNazionalita extends ListaBio {
      */
     @Override
     protected void elaboraTitolo() {
-        String tag = 'Progetto:Biografie/Nazionalità/'
         String titolo = getPlurale()
 
         if (titolo) {
             titolo = LibTesto.primaMaiuscola(titolo)
             if (!titoloPagina) {
-                titoloPagina = tag + titolo
+                titoloPagina = TAG_PROGETTO + titolo
             }// fine del blocco if
         }// fine del blocco if
 
-    }// fine del metodo
-    /**
-     * Costruisce il titolo della pagina
-     */
-    @Override
-    protected String getTitolo() {
-        // variabili e costanti locali di lavoro
-        String titolo = ''
-        String tag = 'Progetto:Biografie/Nazionalità/'
-        String plurale = getPlurale()
-
-        if (plurale) {
-            titolo = LibTesto.primaMaiuscola(plurale)
-            titolo = tag + titolo
-        }// fine del blocco if
-
-        // valore di ritorno
-        return titolo
     }// fine del metodo
 
     /**
@@ -142,7 +122,7 @@ class ListaNazionalita extends ListaBio {
      */
     @Override
     protected String getTitoloSottovoce(String chiaveParagrafo) {
-        return 'Progetto:Biografie/Nazionalità/' + elaboraSoggettoSpecifico(chiaveParagrafo)
+        return TAG_PROGETTO + elaboraSoggettoSpecifico(chiaveParagrafo)
     }// fine del metodo
 
     /**
@@ -178,8 +158,9 @@ class ListaNazionalita extends ListaBio {
         String testo = ''
         String nazionalita = soggettoMadre
         nazionalita = LibTesto.primaMaiuscola(nazionalita)
+        String tagCategoria = "[[Categoria:Bio nazionalità|${nazionalita}]]"
 
-        testo += '==Voci correlate=='
+        testo += super.getVociCorrelate()
         testo += aCapo
         testo += "*[[:Categoria:${nazionalita}]]"
         testo += aCapo
@@ -189,11 +170,63 @@ class ListaNazionalita extends ListaBio {
         testo += '{{Portale|biografie}}'
         testo += aCapo
         testo += aCapo
-        testo += '<noinclude>'
-        testo += "[[Categoria:Bio nazionalità|${nazionalita}]]"
-        testo += '</noinclude>'
+        if (usaInclude) {
+            testo += LibBio.setNoInclude(tagCategoria)
+        } else {
+            testo += tagCategoria
+        }// fine del blocco if-else
 
-        return testo
+        return testo.trim()
+    }// fine del metodo
+
+    /**
+     * Chiave di selezione del paragrafo con eventuali link
+     * Sovrascritto
+     */
+    @Override
+    protected String elaboraTitoloParagrafo(String chiaveParagrafo, ArrayList<BioGrails> listaVoci) {
+        String titoloParagrafo
+
+        if (Pref.getBool(LibBio.USA_TITOLO_PARAGRAFO_NAZ_ATT_LINK_PROGETTO, true)) {
+            titoloParagrafo = elaboraTitoloParagrafoNazionalita(chiaveParagrafo, listaVoci)
+        } else {
+            titoloParagrafo = super.elaboraTitoloParagrafo(chiaveParagrafo, listaVoci)
+        }// fine del blocco if-else
+
+        return titoloParagrafo
+    }// fine del metodo
+
+    /**
+     * Chiave di selezione del paragrafo con link
+     */
+    private  String elaboraTitoloParagrafoNazionalita(String chiaveParagrafo, ArrayList<BioGrails> listaVoci) {
+        String titoloParagrafo
+        String pipe = '|'
+        String singolare
+        String plurale = ''
+        Attivita attivita
+        BioGrails bio = listaVoci.get(0)
+
+        if (bio) {
+            attivita = bio.attivitaLink
+            if (!attivita) {
+                singolare = bio.attivita
+                attivita = Attivita.findBySingolare(singolare)
+            }// fine del blocco if
+            if (attivita) {
+                plurale = attivita.plurale
+            }// fine del blocco if
+        }// fine del blocco if
+
+        plurale = LibTesto.primaMaiuscola(plurale)
+        if (chiaveParagrafo.equals(tagParagrafoNullo)) {
+            titoloParagrafo=chiaveParagrafo
+        } else {
+            titoloParagrafo = TAG_PARAGRAFO + plurale + pipe + chiaveParagrafo
+            titoloParagrafo = LibWiki.setQuadre(titoloParagrafo)
+        }// fine del blocco if-else
+
+        return titoloParagrafo
     }// fine del metodo
 
     /**

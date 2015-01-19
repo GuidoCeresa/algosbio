@@ -791,6 +791,79 @@ class VersioneBootStrap {
             pref.save(flush: true)
             versioneService.newVersione('Preferenze', 'USA_SUDDIVISIONE_UOMO_DONNA_NAZ di default false')
         }// fine del blocco if
+
+        //--creata una nuova preferenza
+        if (versioneService && versioneService.installaVersione(88)) {
+            Pref pref = new Pref()
+            pref.ordine = Pref.list().size() + 1
+            pref.code = LibBio.MAX_VOCI_PARAGRAFO_NAZIONALITA
+            pref.descrizione = 'Numero di voci del paragrafo nelle liste di nazionalità per creare una sotto-pagina'
+            pref.type = Type.intero
+            pref.intero = 100
+            pref.save(flush: true)
+            versioneService.newVersione('Preferenze', 'MAX_VOCI_PARAGRAFO_NAZIONALITA di default 100')
+        }// fine del blocco if
+
+        //--creata una nuova preferenza
+        if (versioneService && versioneService.installaVersione(89)) {
+            Pref pref = new Pref()
+            pref.ordine = Pref.list().size() + 1
+            pref.code = LibBio.MAX_VOCI_PARAGRAFO_ATTIVITA
+            pref.descrizione = 'Numero di voci del paragrafo nelle liste di attività per creare una sotto-pagina'
+            pref.type = Type.intero
+            pref.intero = 100
+            pref.save(flush: true)
+            versioneService.newVersione('Preferenze', 'MAX_VOCI_PARAGRAFO_ATTIVITA di default 100')
+        }// fine del blocco if
+
+        //--creata una nuova preferenza
+        if (versioneService && versioneService.installaVersione(90)) {
+            Pref pref = new Pref()
+            pref.ordine = Pref.list().size() + 1
+            pref.code = LibBio.NOME_TEMPLATE_AVVISO_LISTE_GIORNI_ANNI
+            pref.descrizione = "Nome template di avviso in testa alle liste di giorni ed anni"
+            pref.type = Type.stringa
+            pref.stringa = 'ListaBio'
+            pref.save(flush: true)
+            versioneService.newVersione('Preferenze', 'NOME_TEMPLATE_AVVISO_LISTE_GIORNI_ANNI di default ListaBio')
+        }// fine del blocco if
+
+        //--creata una nuova preferenza
+        if (versioneService && versioneService.installaVersione(91)) {
+            Pref pref = new Pref()
+            pref.ordine = Pref.list().size() + 1
+            pref.code = LibBio.NOME_TEMPLATE_AVVISO_LISTE_NAZ_ATT
+            pref.descrizione = "Nome template di avviso in testa alle liste di nazionalità ed attività"
+            pref.type = Type.stringa
+            pref.stringa = 'ListaBio'
+            pref.save(flush: true)
+            versioneService.newVersione('Preferenze', 'NOME_TEMPLATE_AVVISO_LISTE_NAZ_ATT di default ListaBio')
+        }// fine del blocco if
+
+        //--creata una nuova preferenza
+        if (versioneService && versioneService.installaVersione(92)) {
+            Pref pref = new Pref()
+            pref.ordine = Pref.list().size() + 1
+            pref.code = LibBio.NOME_TEMPLATE_AVVISO_LISTE_NOMI_COGNOMI
+            pref.descrizione = "Nome template di avviso in testa alle liste di nomi e cognomi"
+            pref.type = Type.stringa
+            pref.stringa = 'StatBio'
+            pref.save(flush: true)
+            versioneService.newVersione('Preferenze', 'NOME_TEMPLATE_AVVISO_LISTE_NOMI_COGNOMI di default StatBio')
+        }// fine del blocco if
+
+        //--creata una nuova preferenza
+        if (versioneService && versioneService.installaVersione(93)) {
+            Pref pref = new Pref()
+            pref.ordine = Pref.list().size() + 1
+            pref.code = LibBio.USA_TITOLO_PARAGRAFO_NAZ_ATT_LINK_PROGETTO
+            pref.descrizione = 'Usa il link alle pagine di progetto nei titoli dei paragrafi di nazionalità ed attività'
+            pref.type = Type.booleano
+            pref.bool = true
+            pref.save(flush: true)
+            versioneService.newVersione('Preferenze', 'USA_TITOLO_PARAGRAFO_NAZ_ATT_LINK_PROGETTO di default true')
+        }// fine del blocco if
+
     }// fine della closure
 
 
