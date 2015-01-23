@@ -57,11 +57,13 @@ class ListaGiornoNato extends ListaGiorno {
 
     /**
      * Piede della pagina
+     * <p>
+     * Aggiungere (di solito) inizialmente la chiamata al metodo elaboraFooterSpazioIniziale <br>
      * Sovrascritto
      */
     @Override
-    protected elaboraFooter() {
-        return elaboraFooter("Liste di nati per giorno")
+    protected String elaboraFooter() {
+        return elaboraFooterSpazioIniziale() + elaboraFooter("Liste di nati per giorno")
     }// fine del metodo
 
     /**

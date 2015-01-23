@@ -153,7 +153,7 @@ abstract class ListaBio {
      * Costruisce body <br>
      * Costruisce footer <br>
      * Ogni blocco esce trimmato (per l'inizio) e con un solo ritorno a capo per fine riga. <br>
-     * Gli spazi (righe) di separazione vanno aggiunti qui <br>
+     * Gli spazi (righe) di separazione NON vanno aggiunti qui <br>
      * Registra la pagina <br>
      */
     protected elaboraPagina() {
@@ -172,10 +172,6 @@ abstract class ListaBio {
             testo += this.elaboraBody()
 
             //footer
-            testo += aCapo
-            if (esistonoUominiDonne) {
-                testo += aCapo
-            }// fine del blocco if
             testo += this.elaboraFooter()
         }// fine del blocco if
 
@@ -884,10 +880,26 @@ abstract class ListaBio {
 
     /**
      * Piede della pagina
+     * <p>
+     * Aggiungere (di solito) inizialmente la chiamata al metodo elaboraFooterSpazioIniziale <br>
      * Sovrascritto
      */
-    protected elaboraFooter() {
+    protected String elaboraFooter() {
         return ''
+    }// fine del metodo
+
+    /**
+     * Piede della pagina - Parte iniziale
+     */
+    protected String elaboraFooterSpazioIniziale() {
+        String testo = ''
+
+        testo += aCapo
+        if (esistonoUominiDonne) {
+            testo += aCapo
+        }// fine del blocco if
+
+        return testo
     }// fine del metodo
 
     /**

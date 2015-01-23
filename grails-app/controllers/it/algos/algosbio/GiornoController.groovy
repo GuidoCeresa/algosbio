@@ -17,6 +17,7 @@ import grails.transaction.Transactional
 import it.algos.algos.DialogoController
 import it.algos.algos.TipoDialogo
 import it.algos.algoslib.Lib
+import it.algos.algoslib.LibArray
 import it.algos.algospref.Pref
 import it.algos.algoswiki.Login
 import org.codehaus.groovy.grails.commons.DefaultGrailsDomainClass
@@ -154,7 +155,7 @@ class GiornoController {
     //--creazione delle liste partendo da BioGrails
     //--elabora e crea tutti i giorni modificati (solo nascita)
     //--passa al metodo effettivo senza nessun dialogo di conferma
-    def uploadGiorniNascita() {
+    public uploadGiorniNascita() {
         if (grailsApplication && grailsApplication.config.login && grailsApplication.config.login.isValido()) {
             if (bioService && Pref.getBool(LibBio.USA_LISTE_BIO_GIORNI)) {
                 giornoService.uploadGiorniNascita(bioService)

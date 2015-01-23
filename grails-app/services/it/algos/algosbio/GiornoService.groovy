@@ -13,12 +13,15 @@
 
 package it.algos.algosbio
 
+import grails.transaction.Transactional
+import it.algos.algoslib.LibArray
 import it.algos.algoslib.LibTime
 import it.algos.algospref.Pref
 
+@Transactional(readOnly = false)
 class GiornoService {
 
-    boolean transactional = false
+    boolean transactional = true
 
     /**
      * Crea tutti i records
@@ -148,6 +151,7 @@ class GiornoService {
     public int uploadGiorniNascita(BioService bioService) {
         int giorniModificati = 0
         ArrayList<Giorno> listaGiorniModificati
+        ListaGiornoNato listaGiorno
 
         if (Pref.getBool(LibBio.REGISTRA_ALL_GIORNI_ANNI, false)) {
             listaGiorniModificati = Giorno.list()
@@ -164,11 +168,12 @@ class GiornoService {
         return giorniModificati
     } // fine del metodo
 
+
     /**
      * creazione delle liste partendo da BioGrails
      * elabora e crea tutti i giorni di nascita modificati
      */
-    def int uploadGiorniMorte(BioService bioService) {
+    public int uploadGiorniMorte(BioService bioService) {
         int giorniModificati = 0
         ArrayList<Giorno> listaGiorniModificati
 
