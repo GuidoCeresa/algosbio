@@ -876,6 +876,16 @@ class VersioneBootStrap {
             versioneService.newVersione('Preferenze', 'USA_ATTIVITA_MULTIPLE di default true')
         }// fine del blocco if
 
+        //--modifica transactional
+        if (versioneService && versioneService.installaVersione(95)) {
+            versioneService.newVersione('Transactional', 'Eliminate le transazioni in Giorno ed Anno')
+        }// fine del blocco if
+
+        //--regolata mail
+        if (versioneService && versioneService.installaVersione(96)) {
+            versioneService.newVersione('Mail', 'Regolati i parametri in config.groovy')
+        }// fine del blocco if
+
     }// fine della closure
 
 

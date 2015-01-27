@@ -200,7 +200,14 @@ class BioService {
         durata = fine - inizio
         tempo = durata / numVoci
         tempoTxt = LibTesto.formatNum(tempo)
-        log.warn "Eseguito il metodo elabora su ${numVoci} records in ${tempoTxt} millisecondi/ciascuno"
+        if (numVoci == 1) {
+            if (bioWiki) {
+                log.warn "Eseguito il metodo elabora sulla voce " + bioWiki.title
+            }// fine del blocco if
+        } else {
+            log.warn "Eseguito il metodo elabora su ${numVoci} records in ${tempoTxt} millisecondi/ciascuno"
+        }// fine del blocco if-else
+
 
         return listaRecordsElaborati
     } // fine del metodo

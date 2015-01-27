@@ -9,6 +9,7 @@ import org.grails.datastore.mapping.query.api.Criteria
  */
 class ListaAnnoNato extends ListaAnno {
 
+    static boolean transactional = false
 
     public ListaAnnoNato(Anno anno, BioService bioService) {
         super(anno, bioService)
@@ -57,7 +58,7 @@ class ListaAnnoNato extends ListaAnno {
      * Sovrascritto
      */
     @Override
-    protected elaboraFooter() {
+    protected String elaboraFooter() {
         return elaboraFooter("Liste di nati nell'anno", 'Nati')
     }// fine del metodo
 

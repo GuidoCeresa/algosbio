@@ -1,5 +1,6 @@
 package it.algos.algosbio
 
+import grails.transaction.Transactional
 import it.algos.algoswiki.Login
 import org.grails.datastore.mapping.query.api.Criteria
 
@@ -8,6 +9,7 @@ import org.grails.datastore.mapping.query.api.Criteria
  */
 class ListaGiornoNato extends ListaGiorno {
 
+    static boolean transactional = false
 
     public ListaGiornoNato(Giorno giorno, BioService bioService) {
         super(giorno, bioService)

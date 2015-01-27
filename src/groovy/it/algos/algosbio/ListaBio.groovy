@@ -15,10 +15,9 @@ import it.algos.algoswiki.WikiLib
  * Created by gac on 17/10/14.
  */
 @Log4j
-@Transactional(readOnly = false)
 abstract class ListaBio {
 
-    static transactional = false
+    static boolean transactional = false
 
     // utilizzo di un service con la businessLogic
     // il service NON viene iniettato automaticamente (perché è nel plugin)

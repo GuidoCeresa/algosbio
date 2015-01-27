@@ -128,3 +128,14 @@ log4j.main = {
     debug 'grails.app.conf'
     debug 'grails.app.realm'
 }// fine di log4j
+
+grails {
+    mail {
+        host = "smtp.algos.it"
+        port = 25
+        username = "gac@algos.it"
+        password = "fulvia"
+        props = ["mail.smtp.auth": "true", "mail.smtp.port": "25"]
+    }
+}
+grails.mail.default.from="gac@algos.it"

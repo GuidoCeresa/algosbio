@@ -38,13 +38,13 @@ class RefreshJob {
 
 
     private spedisceMail(String testo) {
-        String oggetto
+        String oggetto='Prova'
         String adesso = new Date().toString()
         String mailTo = 'guidoceresa@me.com'
         String time = 'Report eseguito alle ' + adesso + '\n'
 
         testo = time + testo
-        oggetto = LibGrails.getAppName()
+//        oggetto = LibGrails.getAppName()
         oggetto = LibTesto.primaMaiuscola(oggetto)
 
         if (mailService) {

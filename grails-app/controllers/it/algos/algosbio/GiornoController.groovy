@@ -26,8 +26,9 @@ import org.springframework.dao.DataIntegrityViolationException
 import static org.springframework.http.HttpStatus.NOT_FOUND
 import static org.springframework.http.HttpStatus.OK
 
-@Transactional(readOnly = false)
 class GiornoController {
+
+    static boolean transactional = false
 
     static allowedMethods = [save: 'POST', update: 'POST', delete: 'POST']
 
@@ -172,7 +173,7 @@ class GiornoController {
     //--creazione delle liste partendo da BioGrails
     //--elabora e crea tutti i giorni modificati (solo morte)
     //--passa al metodo effettivo senza nessun dialogo di conferma
-    def uploadGiorniMorte() {
+    public uploadGiorniMorte() {
         if (grailsApplication && grailsApplication.config.login && grailsApplication.config.login.isValido()) {
             if (bioService && Pref.getBool(LibBio.USA_LISTE_BIO_GIORNI)) {
                 giornoService.uploadGiorniMorte(bioService)

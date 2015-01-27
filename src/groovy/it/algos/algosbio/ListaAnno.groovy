@@ -8,6 +8,7 @@ import it.algos.algospref.Pref
  */
 abstract class ListaAnno extends ListaBio {
 
+    static boolean transactional = false
 
     public ListaAnno(Anno anno, BioService bioService) {
         super(anno, bioService)

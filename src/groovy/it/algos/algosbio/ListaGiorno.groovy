@@ -7,6 +7,7 @@ import it.algos.algospref.Pref
  */
 abstract class ListaGiorno extends ListaBio {
 
+    static boolean transactional = false
 
     public ListaGiorno(Giorno giorno, BioService bioService) {
         super(giorno, bioService)

@@ -18,10 +18,9 @@ import it.algos.algoslib.LibArray
 import it.algos.algoslib.LibTime
 import it.algos.algospref.Pref
 
-@Transactional(readOnly = false)
 class GiornoService {
 
-    boolean transactional = true
+    static boolean transactional = false
 
     /**
      * Crea tutti i records
@@ -151,7 +150,7 @@ class GiornoService {
     public int uploadGiorniNascita(BioService bioService) {
         int giorniModificati = 0
         ArrayList<Giorno> listaGiorniModificati
-        ListaGiornoNato listaGiorno
+        Giorno giorno
 
         if (Pref.getBool(LibBio.REGISTRA_ALL_GIORNI_ANNI, false)) {
             listaGiorniModificati = Giorno.list()
@@ -160,14 +159,14 @@ class GiornoService {
         }// fine del blocco if-else
 
         listaGiorniModificati?.each {
-            if (ListaGiornoNato.uploadGiorno(it, bioService)) {
+            giorno = (Giorno) it
+            if (ListaGiornoNato.uploadGiorno(giorno, bioService)) {
                 giorniModificati++
             }// fine del blocco if
         } // fine del ciclo each
 
         return giorniModificati
     } // fine del metodo
-
 
     /**
      * creazione delle liste partendo da BioGrails
@@ -176,6 +175,7 @@ class GiornoService {
     public int uploadGiorniMorte(BioService bioService) {
         int giorniModificati = 0
         ArrayList<Giorno> listaGiorniModificati
+        Giorno giorno
 
         if (Pref.getBool(LibBio.REGISTRA_ALL_GIORNI_ANNI, false)) {
             listaGiorniModificati = Giorno.list()
@@ -184,7 +184,8 @@ class GiornoService {
         }// fine del blocco if-else
 
         listaGiorniModificati?.each {
-            if (ListaGiornoMorto.uploadGiorno(it, bioService)) {
+            giorno = (Giorno) it
+            if (ListaGiornoMorto.uploadGiorno(giorno, bioService)) {
                 giorniModificati++
             }// fine del blocco if
         } // fine del ciclo each

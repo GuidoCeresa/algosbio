@@ -17,7 +17,7 @@ import it.algos.algospref.Pref
 
 class AnnoService {
 
-    boolean transactional = false
+    static boolean transactional = false
 
     //--usato nell'ordinamento delle categorie
     public static int ANNO_INIZIALE = 2000
