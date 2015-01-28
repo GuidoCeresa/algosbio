@@ -886,6 +886,17 @@ class VersioneBootStrap {
             versioneService.newVersione('Mail', 'Regolati i parametri in config.groovy')
         }// fine del blocco if
 
+        //--creata una nuova preferenza
+        if (versioneService && versioneService.installaVersione(97)) {
+            Pref pref = new Pref()
+            pref.ordine = Pref.list().size() + 1
+            pref.code = LibBio.USA_PARAGRAFO_PUNTI_GIORNI_ANNI
+            pref.descrizione = "Usa i puntini come titolo del paragrafo di giorni ed anni mancante di specificazione. In alternativa usa 'senza mese' e 'senza giorno'."
+            pref.type = Type.booleano
+            pref.bool = true
+            pref.save(flush: true)
+            versioneService.newVersione('Preferenze', 'USA_PARAGRAFO_PUNTI_GIORNI_ANNI di default true')
+        }// fine del blocco if
     }// fine della closure
 
 

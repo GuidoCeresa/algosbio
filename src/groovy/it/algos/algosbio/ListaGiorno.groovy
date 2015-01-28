@@ -45,7 +45,11 @@ abstract class ListaGiorno extends ListaBio {
         usaDoppiaColonna = true
         usaSottopagine = false
         tagLivelloParagrafo = '==='
-        tagParagrafoNullo = 'senza anno'
+        if (Pref.getBool(LibBio.USA_PARAGRAFO_PUNTI_GIORNI_ANNI, false)) {
+            tagParagrafoNullo = '...'
+        } else {
+            tagParagrafoNullo = 'senza anno'
+        }// fine del blocco if-else
     }// fine del metodo
 
     /**
@@ -215,6 +219,7 @@ abstract class ListaGiorno extends ListaBio {
 
     /**
      * Elabora e crea le liste del giorno indicato (nascita e morte) e le uploada sul server wiki
+     * @deprecated
      */
     public static void uploadGiorno(String titolo) {
         Giorno giorno

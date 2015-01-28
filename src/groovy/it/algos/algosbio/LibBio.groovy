@@ -84,6 +84,7 @@ class LibBio {
     public static final String USA_LISTE_BIO_NOMI = 'usaListeBioNomi'
     public static final String USA_SUDDIVISIONE_PARAGRAFI_GIORNI = 'usaSuddivisioneParagrafiGiorni'
     public static final String USA_SUDDIVISIONE_PARAGRAFI_ANNI = 'usaSuddivisioneParagrafiAnni'
+    public static final String USA_PARAGRAFO_PUNTI_GIORNI_ANNI = 'usaParagrafoPuntiGiorniAnni'
     public static final String REGISTRA_ALL_GIORNI_ANNI = 'registraAllGiorniAnni'
     public static final String BOT_NAME = 'botName'
     public static final String BOT_PASSWORD = 'botPassword'

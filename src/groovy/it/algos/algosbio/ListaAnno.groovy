@@ -45,7 +45,11 @@ abstract class ListaAnno extends ListaBio {
         usaDoppiaColonna = true
         usaSottopagine = false
         tagLivelloParagrafo = '==='
-        tagParagrafoNullo = 'senza giorno'
+        if (Pref.getBool(LibBio.USA_PARAGRAFO_PUNTI_GIORNI_ANNI, false)) {
+            tagParagrafoNullo = '...'
+        } else {
+            tagParagrafoNullo = 'senza giorno'
+        }// fine del blocco if-else
     }// fine del metodo
 
     /**
@@ -120,7 +124,6 @@ abstract class ListaAnno extends ListaBio {
 
         return ritorno
     }// fine del metodo
-
 
     /**
      * Ordina le chiavi di una mappa

@@ -48,6 +48,7 @@ abstract class ListaBio {
     protected boolean usaAttivitaMultiple = false
     protected boolean usaParagrafiAlfabetici = false //utilizzabile solo se usaSuddivisioneParagrafi è vero
     protected boolean usaTitoloParagrafoConLink = false  //utilizzabile solo se usaSuddivisioneParagrafi è vero
+    protected boolean usaTitoloSingoloParagrafo = false  //se c'è un solo paragrafo, niente titolo
     protected boolean usaDoppiaColonna = false // vero solo per Giorni ed Anni
     protected boolean usaSottopagine = false // falso per Giorni ed Anni
     protected int maxVociParagrafo = 100
@@ -123,6 +124,7 @@ abstract class ListaBio {
         usaAttivitaMultiple = false
         usaParagrafiAlfabetici = false
         usaTitoloParagrafoConLink = true
+        usaTitoloSingoloParagrafo = false
         usaDoppiaColonna = false
         usaSottopagine = true
         maxVociParagrafo = 100
@@ -553,6 +555,7 @@ abstract class ListaBio {
         String chiave = ''
         ArrayList<BioGrails> lista = null
         BioGrails bio
+        int min
 
         if (usaSuddivisioneParagrafi) {
             if (listaVoci) {
@@ -560,24 +563,31 @@ abstract class ListaBio {
                 listaVoci?.each {
                     bio = it
                     chiave = getChiaveParagrafoBase(bio)
-                    putMappa(mappa, chiave, lista, bio)
+                    lista = putMappa(mappa, chiave, lista, bio)
 
                     if (usaAttivitaMultiple) {
                         chiave = getChiaveParagrafoSecondaAttivita(bio)
                         if (chiave) {
-                            putMappa(mappa, chiave, lista, bio)
+                            lista = putMappa(mappa, chiave, lista, bio)
                         }// fine del blocco if
 
                         chiave = getChiaveParagrafoTerzaAttivita(bio)
                         if (chiave) {
-                            putMappa(mappa, chiave, lista, bio)
+                            lista = putMappa(mappa, chiave, lista, bio)
                         }// fine del blocco if
                     }// fine del blocco if
 
                 }// fine del ciclo each
             }// fine del blocco if
 
-            if (mappa.size() > 0) {
+
+            if (usaTitoloSingoloParagrafo) {
+                min = 0
+            } else {
+                min = 1
+            }// fine del blocco if-else
+
+            if (mappa.size() > min) {
                 mappa = ordinaMappa(mappa)
             } else {
                 mappa = new LinkedHashMap<String, ArrayList<BioGrails>>()
@@ -592,7 +602,7 @@ abstract class ListaBio {
     }// fine del metodo
 
     private
-    static void putMappa(LinkedHashMap<String, ArrayList<BioGrails>> mappa, String chiave, ArrayList<BioGrails> lista, BioGrails bio) {
+    static ArrayList<BioGrails> putMappa(LinkedHashMap<String, ArrayList<BioGrails>> mappa, String chiave, ArrayList<BioGrails> lista, BioGrails bio) {
         if (mappa.get(chiave)) {
             lista = mappa.get(chiave)
             lista.add(bio)
@@ -601,6 +611,8 @@ abstract class ListaBio {
             lista.add(bio)
             mappa.put(chiave, lista)
         }// fine del blocco if-else
+
+        return lista
     }// fine del metodo
 
     /**
