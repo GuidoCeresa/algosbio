@@ -175,7 +175,7 @@ abstract class ListaAnno extends ListaBio {
         testo += aCapo
         testo += "</noinclude>"
 
-        return testo
+        return finale(testo)
     }// fine del metodo
 
     /**

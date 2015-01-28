@@ -153,8 +153,8 @@ abstract class ListaBio {
      * Costruisce head <br>
      * Costruisce body <br>
      * Costruisce footer <br>
-     * Ogni blocco esce trimmato (per l'inizio) e con un solo ritorno a capo per fine riga. <br>
-     * Gli spazi (righe) di separazione NON vanno aggiunti qui <br>
+     * Ogni blocco esce trimmato (inizio e fine) <br>
+     * Gli spazi (righe) di separazione vanno aggiunti qui <br>
      * Registra la pagina <br>
      */
     protected elaboraPagina() {
@@ -169,10 +169,12 @@ abstract class ListaBio {
             testo += this.elaboraHead()
 
             //body
-            //attaccato all'header senza righe di separazione
+            //a capo, ma senza senza righe di separazione
+            testo += aCapo
             testo += this.elaboraBody()
 
             //footer
+            //di fila nella stessa riga, senza ritorno a capo (se inizia con <include>)
             testo += this.elaboraFooter()
         }// fine del blocco if
 
@@ -1060,7 +1062,6 @@ abstract class ListaBio {
         // trim finale
         if (testoIn) {
             testoOut = testoIn.trim()
-            testoOut += aCapo
         }// fine del blocco if
 
         // valore di ritorno

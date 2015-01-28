@@ -64,7 +64,7 @@ class ListaGiornoMorto extends ListaGiorno {
      */
     @Override
     protected String elaboraFooter() {
-        return elaboraFooterSpazioIniziale() + elaboraFooter("Liste di morti per giorno")
+        return elaboraFooter("Liste di morti per giorno")
     }// fine del metodo
 
     /**

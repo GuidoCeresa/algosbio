@@ -65,7 +65,7 @@ class ListaGiornoNato extends ListaGiorno {
      */
     @Override
     protected String elaboraFooter() {
-        return elaboraFooterSpazioIniziale() + elaboraFooter("Liste di nati per giorno")
+        return elaboraFooter("Liste di nati per giorno")
     }// fine del metodo
 
     /**
