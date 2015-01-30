@@ -9,8 +9,8 @@ class ListaCrono extends ListaBio {
 
     static boolean transactional = false
 
-    public ListaCrono(Giorno giorno) {
-        super(giorno)
+    public ListaCrono(def oggetto) {
+        super(oggetto)
     }// fine del costruttore
 
 

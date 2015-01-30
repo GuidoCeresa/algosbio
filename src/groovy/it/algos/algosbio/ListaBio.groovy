@@ -210,7 +210,7 @@ abstract class ListaBio {
         String testoIncluso = ''
 
         // Posiziona il TOC
-        testo += elaboraTOC()
+        testoIncluso += elaboraTOC()
 
         // Posiziona il ritorno
         testoIncluso += elaboraRitorno()

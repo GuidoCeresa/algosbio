@@ -1,5 +1,6 @@
 package it.algos.algosbio
 
+import it.algos.algospref.Pref
 import it.algos.algoswiki.Login
 import org.grails.datastore.mapping.query.api.Criteria
 
@@ -21,6 +22,18 @@ class ListaGiornoMorto extends ListaGiorno {
     public ListaGiornoMorto(String soggetto) {
         super(soggetto)
     }// fine del costruttore
+
+    /**
+     * Regola alcuni (eventuali) parametri specifici della sottoclasse
+     * <p>
+     * Nelle sottoclassi va SEMPRE richiamata la superclasse PRIMA di regolare localmente le variabili <br>
+     * Sovrascritto
+     */
+    @Override
+    protected elaboraParametri() {
+        super.elaboraParametri()
+    }// fine del metodo
+
 
     /**
      * Recupera il tag specifico nati/morti

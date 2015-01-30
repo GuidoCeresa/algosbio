@@ -20,6 +20,17 @@ class ListaAnnoNato extends ListaAnno {
     }// fine del costruttore
 
     /**
+     * Regola alcuni (eventuali) parametri specifici della sottoclasse
+     * <p>
+     * Nelle sottoclassi va SEMPRE richiamata la superclasse PRIMA di regolare localmente le variabili <br>
+     * Sovrascritto
+     */
+    @Override
+    protected elaboraParametri() {
+        super.elaboraParametri()
+    }// fine del metodo
+
+    /**
      * Recupera il tag specifico nati/morti
      */
     @Override

@@ -6,13 +6,10 @@ import it.algos.algospref.Pref
 /**
  * Created by gac on 18/10/14.
  */
-abstract class ListaAnno extends ListaBio {
+abstract class ListaAnno extends ListaCrono {
 
     static boolean transactional = false
 
-    public ListaAnno(Anno anno, BioService bioService) {
-        super(anno, bioService)
-    }// fine del costruttore
 
     public ListaAnno(Anno anno) {
         super(anno)
@@ -21,6 +18,10 @@ abstract class ListaAnno extends ListaBio {
 
     public ListaAnno(String soggetto) {
         super(soggetto)
+    }// fine del costruttore
+
+    public ListaAnno(Anno anno, BioService bioService) {
+        super(anno, bioService)
     }// fine del costruttore
 
     @Override
