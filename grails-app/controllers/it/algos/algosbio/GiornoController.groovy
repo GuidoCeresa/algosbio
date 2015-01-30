@@ -29,7 +29,6 @@ import static org.springframework.http.HttpStatus.OK
 class GiornoController {
 
     static boolean transactional = false
-
     static allowedMethods = [save: 'POST', update: 'POST', delete: 'POST']
 
     // utilizzo di un service con la businessLogic per l'elaborazione dei dati

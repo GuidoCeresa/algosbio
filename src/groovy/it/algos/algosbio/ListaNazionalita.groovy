@@ -67,8 +67,10 @@ class ListaNazionalita extends ListaBio {
     protected elaboraParametri() {
         super.elaboraParametri()
         usaInclude = false
+        usaHeadRitorno = false
         tagTemplateBio = Pref.getStr(LibBio.NOME_TEMPLATE_AVVISO_LISTE_NAZ_ATT, 'ListaBio')
         usaSuddivisioneUomoDonna = Pref.getBool(LibBio.USA_SUDDIVISIONE_UOMO_DONNA_NAZ, true)
+        usaTitoloSingoloParagrafo = true
         usaAttivitaMultiple = Pref.getBool(LibBio.USA_ATTIVITA_MULTIPLE, true)
         maxVociParagrafo = Pref.getInt(LibBio.MAX_VOCI_PARAGRAFO_NAZIONALITA, 100)
     }// fine del metodo
@@ -176,20 +178,21 @@ class ListaNazionalita extends ListaBio {
      * Sovrascritto
      */
     @Override
-    protected elaboraFooter() {
+    protected String elaboraFooter() {
         String testo = ''
         String nazionalita = soggettoMadre
         nazionalita = LibTesto.primaMaiuscola(nazionalita)
         String tagCategoria = "[[Categoria:Bio nazionalità|${nazionalita}]]"
 
         if (numDidascalie > listaBiografie.size()) {
+            testo += aCapo
             testo += super.getNote('Alcune persone sono citate più volte perché hanno diverse attività')
             if (usaSuddivisioneUomoDonna && esistonoUominiDonne) {
                 testo += aCapo
             }// fine del blocco if
-            testo += aCapo
         }// fine del blocco if
 
+        testo += aCapo
         testo += super.getVociCorrelate()
         testo += aCapo
         testo += "*[[:Categoria:${nazionalita}]]"
@@ -199,14 +202,13 @@ class ListaNazionalita extends ListaBio {
         testo += aCapo
         testo += '{{Portale|biografie}}'
         testo += aCapo
-        testo += aCapo
         if (usaInclude) {
             testo += LibBio.setNoInclude(tagCategoria)
         } else {
             testo += tagCategoria
         }// fine del blocco if-else
 
-        return finale(testo)
+        return testo
     }// fine del metodo
 
     /**
@@ -233,22 +235,38 @@ class ListaNazionalita extends ListaBio {
         String titoloParagrafo
         String pipe = '|'
         String singolare
-        String plurale = ''
+        String plurale = LibTesto.primaMaiuscola(chiaveParagrafo)
         Attivita attivita
         BioGrails bio = listaVoci.get(0)
+        Genere genere
 
         if (bio) {
-            attivita = bio.attivitaLink
-            if (!attivita) {
-                singolare = bio.attivita
-                attivita = Attivita.findBySingolare(singolare)
-            }// fine del blocco if
-            if (attivita) {
-                plurale = attivita.plurale
+            if (bio.sesso.equals('F')) {
+                plurale = LibTesto.primaMinuscola(plurale)
+                genere = Genere.findByPlurale(plurale)
+                if (genere) {
+                    singolare = genere.singolare
+                    if (singolare) {
+                        attivita = Attivita.findBySingolare(singolare)
+                        if (attivita) {
+                            plurale = attivita.plurale
+                            plurale = LibTesto.primaMaiuscola(plurale)
+                        }// fine del blocco if
+                    }// fine del blocco if
+                }// fine del blocco if
+
+//                attivita = bio.attivitaLink
+//                if (!attivita) {
+//                    singolare = bio.attivita
+//                    attivita = Attivita.findBySingolare(singolare)
+//                }// fine del blocco if
+//                if (attivita) {
+//                    plurale = attivita.plurale
+//                    plurale = LibTesto.primaMaiuscola(plurale)
+//                }// fine del blocco if
             }// fine del blocco if
         }// fine del blocco if
 
-        plurale = LibTesto.primaMaiuscola(plurale)
         if (chiaveParagrafo.equals(tagParagrafoNullo)) {
             titoloParagrafo = chiaveParagrafo
         } else {

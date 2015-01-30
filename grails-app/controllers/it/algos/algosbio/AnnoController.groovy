@@ -27,7 +27,6 @@ import static org.springframework.http.HttpStatus.OK
 class AnnoController {
 
     static boolean transactional = false
-
     static allowedMethods = [save: 'POST', update: 'POST', delete: 'POST']
 
     // utilizzo di un service con la businessLogic per l'elaborazione dei dati
@@ -156,8 +155,8 @@ class AnnoController {
     //--passa al metodo effettivo senza nessun dialogo di conferma
     def uploadAnniNascita() {
         if (grailsApplication && grailsApplication.config.login && grailsApplication.config.login.isValido()) {
-            if (annoService && bioService && Pref.getBool(LibBio.USA_LISTE_BIO_ANNI)) {
-                annoService.uploadAnniNascita(bioService)
+            if (bioService && Pref.getBool(LibBio.USA_LISTE_BIO_ANNI)) {
+                annoService?.uploadAnniNascita(bioService)
             } else {
                 bioGrailsService.uploadAnniNascita()
             }// fine del blocco if-else
@@ -173,8 +172,8 @@ class AnnoController {
     //--passa al metodo effettivo senza nessun dialogo di conferma
     def uploadAnniMorte() {
         if (grailsApplication && grailsApplication.config.login && grailsApplication.config.login.isValido()) {
-            if (annoService && bioService && Pref.getBool(LibBio.USA_LISTE_BIO_ANNI)) {
-                annoService.uploadAnniMorte(bioService)
+            if (bioService && Pref.getBool(LibBio.USA_LISTE_BIO_ANNI)) {
+                annoService?.uploadAnniMorte(bioService)
             } else {
                 bioGrailsService.uploadAnniMorte()
             }// fine del blocco if-else
@@ -190,9 +189,9 @@ class AnnoController {
     //--passa al metodo effettivo senza nessun dialogo di conferma
     def uploadAllAnni() {
         if (grailsApplication && grailsApplication.config.login && grailsApplication.config.login.isValido()) {
-            if (annoService && bioService && Pref.getBool(LibBio.USA_LISTE_BIO_ANNI)) {
-                annoService.uploadAnniNascita(bioService)
-                annoService.uploadAnniMorte(bioService)
+            if (bioService && Pref.getBool(LibBio.USA_LISTE_BIO_ANNI)) {
+                annoService?.uploadAnniNascita(bioService)
+                annoService?.uploadAnniMorte(bioService)
             } else {
                 bioGrailsService.uploadAnniNascita()
                 bioGrailsService.uploadAnniMorte()

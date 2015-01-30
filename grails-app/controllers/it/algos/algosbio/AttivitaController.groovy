@@ -23,6 +23,7 @@ import org.springframework.dao.DataIntegrityViolationException
 
 class AttivitaController {
 
+    static boolean transactional = false
     static allowedMethods = [save: 'POST', update: 'POST', delete: 'POST']
 
     // utilizzo di un service con la businessLogic per l'elaborazione dei dati

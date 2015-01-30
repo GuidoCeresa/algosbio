@@ -23,6 +23,7 @@ import org.springframework.dao.DataIntegrityViolationException
 
 class NazionalitaController {
 
+    static boolean transactional = false
     static allowedMethods = [save: 'POST', update: 'POST', delete: 'POST']
 
     // utilizzo di un service con la businessLogic per l'elaborazione dei dati
@@ -97,7 +98,7 @@ class NazionalitaController {
 
         if (grailsApplication && grailsApplication.config.login) {
             if (bioService && Pref.getBool(LibBio.USA_LISTE_BIO_NAZIONALITA)) {
-                nazionalitaService?.uploadNazionalita(nazionalita, bioService)
+                ListaNazionalita.uploadNazionalita(nazionalita, bioService)
             } else {
                 plurale = nazionalita?.plurale
                 new BioNazionalita(plurale).registraPagina()

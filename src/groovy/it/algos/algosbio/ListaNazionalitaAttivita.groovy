@@ -18,7 +18,6 @@ class ListaNazionalitaAttivita extends ListaNazionalita {
     protected elaboraParametri() {
         super.elaboraParametri()
         usaTavolaContenuti = false
-        usaHeadRitorno = true
         usaSuddivisioneUomoDonna = false
         usaAttivitaMultiple = false
         usaParagrafiAlfabetici = true

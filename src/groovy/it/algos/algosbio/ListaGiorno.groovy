@@ -5,13 +5,10 @@ import it.algos.algospref.Pref
 /**
  * Created by gac on 17/10/14.
  */
-abstract class ListaGiorno extends ListaBio {
+abstract class ListaGiorno extends ListaCrono {
 
     static boolean transactional = false
 
-    public ListaGiorno(Giorno giorno, BioService bioService) {
-        super(giorno, bioService)
-    }// fine del costruttore
 
     public ListaGiorno(Giorno giorno) {
         super(giorno)
@@ -22,6 +19,10 @@ abstract class ListaGiorno extends ListaBio {
         super(soggetto)
     }// fine del costruttore
 
+
+    public ListaGiorno(Giorno giorno, BioService bioService) {
+        super(giorno, bioService)
+    }// fine del costruttore
 
     @Override
     protected elaboraOggetto(String soggetto) {
@@ -34,22 +35,18 @@ abstract class ListaGiorno extends ListaBio {
 
     /**
      * Regola alcuni (eventuali) parametri specifici della sottoclasse
+     * <p>
+     * Nelle sottoclassi va SEMPRE richiamata la superclasse PRIMA di regolare localmente le variabili <br>
      * Sovrascritto
      */
     @Override
     protected elaboraParametri() {
-        usaTavolaContenuti = false
+        super.elaboraParametri()
         usaSuddivisioneUomoDonna = false
         usaSuddivisioneParagrafi = Pref.getBool(LibBio.USA_SUDDIVISIONE_PARAGRAFI_GIORNI, false)
-        usaTitoloParagrafoConLink = false
-        usaDoppiaColonna = true
-        usaSottopagine = false
-        tagLivelloParagrafo = '==='
-        if (Pref.getBool(LibBio.USA_PARAGRAFO_PUNTI_GIORNI_ANNI, false)) {
-            tagParagrafoNullo = '...'
-        } else {
+        if (!Pref.getBool(LibBio.USA_PARAGRAFO_PUNTI_GIORNI_ANNI, false)) {
             tagParagrafoNullo = 'senza anno'
-        }// fine del blocco if-else
+        }// fine del blocco if
     }// fine del metodo
 
     /**
@@ -76,13 +73,6 @@ abstract class ListaGiorno extends ListaBio {
         }// fine del blocco if
 
         titoloPagina = titolo
-    }// fine del metodo
-
-    /**
-     * Recupera il tag specifico nati/morti
-     */
-    protected String getTagTitolo() {
-        return ''
     }// fine del metodo
 
     /**
@@ -160,20 +150,6 @@ abstract class ListaGiorno extends ListaBio {
     }// fine del metodo
 
     /**
-     * Recupera il singolo Giorno come numero
-     */
-    protected int getGiornoNumero() {
-        int giornoNumero = 0
-        Giorno giorno = getGiorno()
-
-        if (giorno) {
-            giornoNumero = giorno.bisestile
-        }// fine del blocco if
-
-        return giornoNumero
-    }// fine del metodo
-
-    /**
      * Recupera il singolo Giorno come ordinamento
      * Comprende il 29 febbraio per gli anni bisestili
      */
@@ -215,22 +191,6 @@ abstract class ListaGiorno extends ListaBio {
         }// fine del blocco if
 
         return giorno
-    }// fine del metodo
-
-    /**
-     * Elabora e crea le liste del giorno indicato (nascita e morte) e le uploada sul server wiki
-     * @deprecated
-     */
-    public static void uploadGiorno(String titolo) {
-        Giorno giorno
-
-        if (titolo) {
-            giorno = Giorno.findByTitolo(titolo)
-            if (giorno) {
-                uploadGiorno(giorno)
-            }// fine del blocco if
-        }// fine del blocco if
-
     }// fine del metodo
 
     /**

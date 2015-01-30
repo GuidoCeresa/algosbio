@@ -34,41 +34,19 @@ abstract class ListaAnno extends ListaBio {
 
     /**
      * Regola alcuni (eventuali) parametri specifici della sottoclasse
+     * <p>
+     * Nelle sottoclassi va SEMPRE richiamata la superclasse PRIMA di regolare localmente le variabili <br>
      * Sovrascritto
      */
     @Override
     protected elaboraParametri() {
-        usaTavolaContenuti = false
-        usaSuddivisioneUomoDonna = false
+        super.elaboraParametri()
         usaSuddivisioneParagrafi = Pref.getBool(LibBio.USA_SUDDIVISIONE_PARAGRAFI_ANNI, false)
-        usaTitoloParagrafoConLink = false
-        usaDoppiaColonna = true
-        usaSottopagine = false
-        tagLivelloParagrafo = '==='
-        if (Pref.getBool(LibBio.USA_PARAGRAFO_PUNTI_GIORNI_ANNI, false)) {
-            tagParagrafoNullo = '...'
-        } else {
+        if (!Pref.getBool(LibBio.USA_PARAGRAFO_PUNTI_GIORNI_ANNI, true)) {
             tagParagrafoNullo = 'senza giorno'
-        }// fine del blocco if-else
-    }// fine del metodo
-
-    /**
-     * Titolo della pagina da creare/caricare su wikipedia
-     * Sovrascritto
-     */
-    protected void elaboraTitoloOld() {
-        String titolo = ''
-        String tag = getTagTitolo()
-        String articolo = 'nel'
-        Anno anno = getAnno()
-
-        if (anno) {
-            titolo = anno.titolo
-            titolo = tag + articolo + SPAZIO + titolo
         }// fine del blocco if
-
-        titoloPagina = titolo
     }// fine del metodo
+
 
     /**
      * Titolo della pagina da creare/caricare su wikipedia
@@ -100,12 +78,6 @@ abstract class ListaAnno extends ListaBio {
         titoloPagina = titolo
     }// fine del metodo
 
-    /**
-     * Recupera il tag specifico nati/morti
-     */
-    protected String getTagTitolo() {
-        return ''
-    }// fine del metodo
 
     /**
      * Voce principale a cui tornare
@@ -178,22 +150,6 @@ abstract class ListaAnno extends ListaBio {
         return finale(testo)
     }// fine del metodo
 
-    /**
-     * Recupera il singolo Anno come numero
-     */
-    protected int getAnnoNumero() {
-        int annoNumero = 0
-        Anno anno = getAnno()
-
-        if (anno) {
-            try { // prova ad eseguire il codice
-                annoNumero = Integer.decode(anno.titolo)
-            } catch (Exception unErrore) { // intercetta l'errore
-            }// fine del blocco try-catch
-        }// fine del blocco if
-
-        return annoNumero
-    }// fine del metodo
 
     /**
      * Recupera il singolo Anno come progressivo dall'inizio
@@ -222,19 +178,6 @@ abstract class ListaAnno extends ListaBio {
         return anno
     }// fine del metodo
 
-    /**
-     * Elabora e crea le liste dell'anno indicato (nascita e morte) e le uploada sul server wiki
-     */
-    public static void uploadAnno(String titolo) {
-        Anno anno
-
-        if (titolo) {
-            anno = Anno.findByTitolo(titolo)
-            if (anno) {
-                uploadAnno(anno, null)
-            }// fine del blocco if
-        }// fine del blocco if
-    }// fine del metodo
 
     /**
      * Elabora e crea le liste dell'anno indicato (nascita e morte) e le uploada sul server wiki

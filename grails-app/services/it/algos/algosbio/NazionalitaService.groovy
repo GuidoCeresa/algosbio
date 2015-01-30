@@ -297,13 +297,6 @@ class NazionalitaService {
     } // fine del metodo
 
     /**
-     * Elabora e crea la lista della nazionalità indicata e la uploada sul server wiki
-     */
-    public void uploadNazionalita(Nazionalita nazionalita, BioService bioService) {
-        ListaNazionalita.uploadNazionalita(nazionalita, bioService)
-    } // fine del metodo
-
-    /**
      * creazione delle liste partendo da BioGrails
      * elabora e crea tutte le nazionalità
      */

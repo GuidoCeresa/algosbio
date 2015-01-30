@@ -189,6 +189,7 @@ abstract class ListaBio {
                 registrata = paginaModificata.registrata
             }// fine del blocco if-else
         }// fine del blocco if
+        def stop
     }// fine del metodo
 
     /**
@@ -345,7 +346,7 @@ abstract class ListaBio {
 
         testo = elaboraTemplate(testo)
 
-        return finale(testo)
+        return testo
 
     }// fine del metodo
 
@@ -385,7 +386,6 @@ abstract class ListaBio {
         listaVociFemminili = selezionaGenere(listaBiografie, tagFemmina)
 
         if (listaVociMaschili && listaVociFemminili) {
-            testo += aCapo
             testo += '=Uomini='
             testo += aCapo
             mappa = getMappa(listaVociMaschili)
@@ -535,10 +535,11 @@ abstract class ListaBio {
 
     /**
      * Incapsula il testo come parametro di un (eventuale) template
+     * Se non viene incapsulato, lascia una riga vuota iniziale
      * Sovrascritto
      */
     protected String elaboraTemplate(String testoIn) {
-        return testoIn
+        return aCapo + testoIn
     }// fine del metodo
 
     /**
@@ -1023,6 +1024,7 @@ abstract class ListaBio {
         String testo = ''
 
         if (usaSuddivisioneUomoDonna && esistonoUominiDonne) {
+            testo += aCapo
             testo += '=Voci correlate='
         } else {
             testo += '==Voci correlate=='
@@ -1040,6 +1042,7 @@ abstract class ListaBio {
 
         if (usaAttivitaMultiple) {
             if (usaSuddivisioneUomoDonna && esistonoUominiDonne) {
+                testo += aCapo
                 testo += '=Note='
             } else {
                 testo += '==Note=='
