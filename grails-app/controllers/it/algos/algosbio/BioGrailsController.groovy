@@ -205,13 +205,40 @@ class BioGrailsController {
 
     //--aggiornamento della pagina di statistica
     def statistiche() {
+        params.tipo = TipoDialogo.conferma
+        params.avviso = []
+        params.avviso.add('Creazione della pagina di sintesi con le statistiche.')
+        params.avviso.add("Normalmente viene creata alla fine dell'upload delle pagine di giorni ed anni")
+        params.avviso.add('Modifica i valori di alcune preferenze nel DB per calcolare le differenze.')
+        params.returnController = 'bioGrails'
+        params.returnAction = 'statisticheDopoConferma'
+        redirect(controller: 'dialogo', action: 'box', params: params)
+    } // fine del metodo
 
-        if (grailsApplication && grailsApplication.config.login) {
+    //--aggiornamento della pagina di statistica
+    def statisticheDopoConferma() {
+        String valore
+        boolean continua = false
+
+        if (params.valore) {
+            if (params.valore instanceof String) {
+                valore = (String) params.valore
+                if (valore.equals(DialogoController.DIALOGO_CONFERMA)) {
+                    if (grailsApplication && grailsApplication.config.login) {
+                        continua = true
+                    } else {
+                        flash.message = 'Devi essere loggato per poter modificare le pagine sul server wiki'
+                    }// fine del blocco if-else
+                }// fine del blocco if
+            }// fine del blocco if
+        }// fine del blocco if
+
+        if (continua) {
             if (statisticheService) {
                 statisticheService.paginaSintesi()
             }// fine del blocco if
         } else {
-            flash.message = 'Devi essere loggato per poter modificare le pagine sul server wiki'
+            flash.error = "Annullata l'operazione di creazione delle statistiche"
         }// fine del blocco if-else
 
         redirect(action: 'list')

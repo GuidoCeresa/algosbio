@@ -241,29 +241,17 @@ class ListaNazionalita extends ListaBio {
         Genere genere
 
         if (bio) {
-            if (bio.sesso.equals('F')) {
-                plurale = LibTesto.primaMinuscola(plurale)
-                genere = Genere.findByPlurale(plurale)
-                if (genere) {
-                    singolare = genere.singolare
-                    if (singolare) {
-                        attivita = Attivita.findBySingolare(singolare)
-                        if (attivita) {
-                            plurale = attivita.plurale
-                            plurale = LibTesto.primaMaiuscola(plurale)
-                        }// fine del blocco if
+            plurale = LibTesto.primaMinuscola(plurale)
+            genere = Genere.findByPlurale(plurale)
+            if (genere) {
+                singolare = genere.singolare
+                if (singolare) {
+                    attivita = Attivita.findBySingolare(singolare)
+                    if (attivita) {
+                        plurale = attivita.plurale
+                        plurale = LibTesto.primaMaiuscola(plurale)
                     }// fine del blocco if
                 }// fine del blocco if
-
-//                attivita = bio.attivitaLink
-//                if (!attivita) {
-//                    singolare = bio.attivita
-//                    attivita = Attivita.findBySingolare(singolare)
-//                }// fine del blocco if
-//                if (attivita) {
-//                    plurale = attivita.plurale
-//                    plurale = LibTesto.primaMaiuscola(plurale)
-//                }// fine del blocco if
             }// fine del blocco if
         }// fine del blocco if
 

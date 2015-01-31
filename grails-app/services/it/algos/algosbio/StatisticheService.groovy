@@ -33,6 +33,9 @@ class StatisticheService {
     private static String A_CAPO = '\n'
     private static HashMap mappaSintesi = new HashMap()
     private static int NUOVA_ATTESA = 5
+    private static String SPAZIO = '&nbsp;'
+    private static boolean USA_SPAZI = true
+
     /**
      * Aggiorna la pagina wiki di servizio delle attività
      */
@@ -73,7 +76,7 @@ class StatisticheService {
     }// fine del metodo
 
     /**
-     * Costruisce il testo iniziale della pagina
+     * Costruisce il testo iniziale della pagina statistiche
      */
     private static String getTestoTop() {
         // variabili e costanti locali di lavoro
@@ -367,16 +370,21 @@ class StatisticheService {
         String titolo = PATH + 'Statistiche'
         String testo = ''
         String summary = Pref.getStr(LibBio.SUMMARY)
-
+        def nonServe
+        boolean debug = Pref.getBool(LibBio.DEBUG, true)
         testo += getTestoTop()
         testo += getTestoBodySintesi()
         testo += getTestoBottomSintesi()
 
-        def a = mappaSintesi
+        if (debug) {
+            titolo = 'Utente:Biobot/2'
+        }// fine del blocco if
 
         if (titolo && testo && summary) {
-            new Edit(titolo, testo, summary)
-            registraPreferenze()
+            nonServe = new Edit(titolo, testo, summary)
+            if (!debug) {
+                registraPreferenze()
+            }// fine del blocco if
         }// fine del blocco if
     }// fine del metodo
 
@@ -414,6 +422,12 @@ class StatisticheService {
         mappaSintesi.put(LibBio.ULTIMA_SINTESI, nuovaData)
 
         nuovaData = LibWiki.setBold(nuovaData)
+
+        statistiche = regolaSpazi(statistiche)
+        vecchiaData = regolaSpazi(vecchiaData)
+        nuovaData = regolaSpazi(nuovaData)
+        differenze = regolaSpazi(differenze)
+
         titoli = [statistiche, vecchiaData, nuovaData, differenze]
 
         // valore di ritorno
@@ -436,18 +450,18 @@ class StatisticheService {
         descrizione = LibWiki.setQuadre(descrizione)
         descrizione = LibWiki.setBold(descrizione)
         differenze = newValue - oldValue
-        oldValue = LibTesto.formatNum(oldValue)
-        newValue = LibTesto.formatNum(newValue)
+        oldValue = (String) LibTesto.formatNum(oldValue)
+        newValue = (String) LibTesto.formatNum(newValue)
         newValue = LibWiki.setBold(newValue)
         if (differenze != 0) {
-            differenze = LibTesto.formatNum(differenze)
+            differenze = (String) LibTesto.formatNum(differenze)
         } else {
             differenze = ''
         }// fine del blocco if-else
-        riga.add(descrizione)
-        riga.add(oldValue)
-        riga.add(newValue)
-        riga.add(differenze)
+        riga.add(regolaSpazi(descrizione))
+        riga.add(regolaSpazi(oldValue))
+        riga.add(regolaSpazi(newValue))
+        riga.add(regolaSpazi(differenze))
 
         // valore di ritorno
         return riga
@@ -468,21 +482,21 @@ class StatisticheService {
         mappaSintesi.put(LibBio.GIORNI, newValue)
 
         descrizione = LibWiki.setBold(descrizione)
-        nota = LibWiki.setRef(nota)
+        nota = SPAZIO + LibWiki.setRef(nota)
         descrizione += nota
         differenze = newValue - oldValue
-        oldValue = LibTesto.formatNum(oldValue)
-        newValue = LibTesto.formatNum(newValue)
+        oldValue = (String) LibTesto.formatNum(oldValue)
+        newValue = (String) LibTesto.formatNum(newValue)
         if (differenze != 0) {
-            differenze = LibTesto.formatNum(differenze)
+            differenze = (String) LibTesto.formatNum(differenze)
         } else {
             differenze = ''
         }// fine del blocco if-else
 
-        riga.add(descrizione)
-        riga.add(oldValue)
-        riga.add(newValue)
-        riga.add(differenze)
+        riga.add(regolaSpazi(descrizione))
+        riga.add(regolaSpazi(oldValue))
+        riga.add(regolaSpazi(newValue))
+        riga.add(regolaSpazi(differenze))
 
         // valore di ritorno
         return riga
@@ -492,10 +506,11 @@ class StatisticheService {
      * Riga col numero di anni
      */
     private static getRigaAnni() {
+        int anniPreCristo = 1000
         ArrayList riga = new ArrayList()
         String descrizione = 'Anni interessati'
         def oldValue = Pref.getInt(LibBio.ANNI)
-        def newValue = Anno.count()
+        def newValue = getAnnoCorrenteNum() + anniPreCristo
         def differenze
         String nota = 'Potenzialmente dal [[1000 a.C.]] al [[{{CURRENTYEAR}}]]'
 
@@ -503,21 +518,21 @@ class StatisticheService {
         mappaSintesi.put(LibBio.ANNI, newValue)
 
         descrizione = LibWiki.setBold(descrizione)
-        nota = LibWiki.setRef(nota)
+        nota = SPAZIO + LibWiki.setRef(nota)
         descrizione += nota
         differenze = newValue - oldValue
-        oldValue = LibTesto.formatNum(oldValue)
-        newValue = LibTesto.formatNum(newValue)
+        oldValue = (String) LibTesto.formatNum(oldValue)
+        newValue = (String) LibTesto.formatNum(newValue)
         if (differenze != 0) {
-            differenze = LibTesto.formatNum(differenze)
+            differenze = (String) LibTesto.formatNum(differenze)
         } else {
             differenze = ''
         }// fine del blocco if-else
 
-        riga.add(descrizione)
-        riga.add(oldValue)
-        riga.add(newValue)
-        riga.add(differenze)
+        riga.add(regolaSpazi(descrizione))
+        riga.add(regolaSpazi(oldValue))
+        riga.add(regolaSpazi(newValue))
+        riga.add(regolaSpazi(differenze))
 
         // valore di ritorno
         return riga
@@ -539,19 +554,19 @@ class StatisticheService {
         descrizione = LibWiki.setQuadre(descrizione)
         descrizione = LibWiki.setBold(descrizione)
         differenze = newValue - oldValue
-        oldValue = LibTesto.formatNum(oldValue)
-        newValue = LibTesto.formatNum(newValue)
+        oldValue = (String) LibTesto.formatNum(oldValue)
+        newValue = (String) LibTesto.formatNum(newValue)
         newValue = LibWiki.setBold(newValue)
         if (differenze != 0) {
-            differenze = LibTesto.formatNum(differenze)
+            differenze = (String) LibTesto.formatNum(differenze)
         } else {
             differenze = ''
         }// fine del blocco if-else
 
-        riga.add(descrizione)
-        riga.add(oldValue)
-        riga.add(newValue)
-        riga.add(differenze)
+        riga.add(regolaSpazi(descrizione))
+        riga.add(regolaSpazi(oldValue))
+        riga.add(regolaSpazi(newValue))
+        riga.add(regolaSpazi(differenze))
 
         // valore di ritorno
         return riga
@@ -573,19 +588,19 @@ class StatisticheService {
         descrizione = LibWiki.setQuadre(descrizione)
         descrizione = LibWiki.setBold(descrizione)
         differenze = newValue - oldValue
-        oldValue = LibTesto.formatNum(oldValue)
-        newValue = LibTesto.formatNum(newValue)
+        oldValue = (String) LibTesto.formatNum(oldValue)
+        newValue = (String) LibTesto.formatNum(newValue)
         newValue = LibWiki.setBold(newValue)
         if (differenze != 0) {
-            differenze = LibTesto.formatNum(differenze)
+            differenze = (String) LibTesto.formatNum(differenze)
         } else {
             differenze = ''
         }// fine del blocco if-else
 
-        riga.add(descrizione)
-        riga.add(oldValue)
-        riga.add(newValue)
-        riga.add(differenze)
+        riga.add(regolaSpazi(descrizione))
+        riga.add(regolaSpazi(oldValue))
+        riga.add(regolaSpazi(newValue))
+        riga.add(regolaSpazi(differenze))
 
         // valore di ritorno
         return riga
@@ -606,21 +621,21 @@ class StatisticheService {
         mappaSintesi.put(LibBio.ATTESA, newValue)
 
         descrizione = LibWiki.setBold(descrizione)
-        nota = LibWiki.setRef(nota)
+        nota = SPAZIO + LibWiki.setRef(nota)
         descrizione += nota
         differenze = newValue - oldValue
-        oldValue = LibTesto.formatNum(oldValue)
-        newValue = LibTesto.formatNum(newValue)
+        oldValue = (String) LibTesto.formatNum(oldValue)
+        newValue = (String) LibTesto.formatNum(newValue)
         if (differenze != 0) {
-            differenze = LibTesto.formatNum(differenze)
+            differenze = (String) LibTesto.formatNum(differenze)
         } else {
             differenze = ''
         }// fine del blocco if-else
 
-        riga.add(descrizione)
-        riga.add(oldValue)
-        riga.add(newValue)
-        riga.add(differenze)
+        riga.add(regolaSpazi(descrizione))
+        riga.add(regolaSpazi(oldValue))
+        riga.add(regolaSpazi(newValue))
+        riga.add(regolaSpazi(differenze))
 
         // valore di ritorno
         return riga
@@ -688,5 +703,56 @@ class StatisticheService {
         mappaSintesi.clear()
     }// fine del metodo
 
+    /**
+     * Eventuali spazi vuoti prima e dopo il testo
+     * Vale per tutte le righe
+     */
+    private static String regolaSpazi(String testoIn) {
+        String testoOut = testoIn
+
+        if (testoOut) {
+            if (USA_SPAZI) {
+                testoOut = SPAZIO + testoIn + SPAZIO
+            }// fine del blocco if
+        }// fine del blocco if
+
+        // valore di ritorno
+        return testoOut
+    }// fine del metodo
+
+    /**
+     * Anno corrente.
+     */
+    public static int getAnnoCorrenteNum() {
+        int anno = 0
+        String annoTxt = getAnnoCorrenteTxt()
+
+        if (annoTxt) {
+            try { // prova ad eseguire il codice
+                anno = Integer.decode(annoTxt)
+            } catch (Exception unErrore) { // intercetta l'errore
+            }// fine del blocco try-catch
+        }// fine del blocco if
+
+        /* valore di ritorno */
+        return anno
+    }// fine del metodo
+
+    /**
+     * Anno corrente.
+     */
+    public static String getAnnoCorrenteTxt() {
+        String anno = ''
+        Date data = new Date(System.currentTimeMillis())
+        GregorianCalendar cal = new GregorianCalendar()
+
+        if (data) {
+            cal.setTime(data)
+            anno = cal.get(Calendar.YEAR)
+        }// fine del blocco if
+
+        /* valore di ritorno */
+        return anno
+    }// fine del metodo
 
 } // fine della service classe
