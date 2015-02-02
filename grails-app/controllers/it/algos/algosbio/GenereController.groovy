@@ -6,9 +6,9 @@ import it.algos.algos.TipoDialogo
 import static org.springframework.http.HttpStatus.*
 import grails.transaction.Transactional
 
-@Transactional(readOnly = false)
 class GenereController {
 
+    static boolean transactional = false
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
     private static int MAX = 100
 

@@ -3,6 +3,7 @@ package it.algos.algosbio
 import it.algos.algoslib.LibTesto
 import it.algos.algoslib.LibWiki
 import it.algos.algospref.Pref
+import it.algos.algoswiki.WikiLib
 
 /**
  * Created by gac on 18/10/14.
@@ -72,7 +73,7 @@ class ListaNazionalita extends ListaBio {
         usaSuddivisioneUomoDonna = Pref.getBool(LibBio.USA_SUDDIVISIONE_UOMO_DONNA_NAZ, true)
         usaTitoloSingoloParagrafo = true
         usaAttivitaMultiple = Pref.getBool(LibBio.USA_ATTIVITA_MULTIPLE, true)
-        maxVociParagrafo = Pref.getInt(LibBio.MAX_VOCI_PARAGRAFO_NAZIONALITA, 100)
+        maxVociParagrafo = Pref.getInt(LibBio.MAX_VOCI_PARAGRAFO_NAZIONALITA, 50)
     }// fine del metodo
 
     /**
@@ -173,6 +174,17 @@ class ListaNazionalita extends ListaBio {
         return LibTesto.primaMaiuscola(getPlurale())
     }// fine del metodo
 
+//    /**
+//     * Corpo della pagina
+//     * Decide se c'è la doppia colonna
+//     * Controlla eventuali template di rinvio
+//     * Sovrascritto
+//     */
+//    @Override
+//    protected String elaboraBody() {
+//        return elaboraBodyDidascalie()
+//    }// fine del metodo
+
     /**
      * Piede della pagina
      * Sovrascritto
@@ -180,8 +192,10 @@ class ListaNazionalita extends ListaBio {
     @Override
     protected String elaboraFooter() {
         String testo = ''
-        String nazionalita = soggettoMadre
+        String nazionalita = soggetto
+        String nazionalitaMadre = soggettoMadre
         nazionalita = LibTesto.primaMaiuscola(nazionalita)
+        nazionalitaMadre = LibTesto.primaMaiuscola(nazionalitaMadre)
         String tagCategoria = "[[Categoria:Bio nazionalità|${nazionalita}]]"
 
         if (numDidascalie > listaBiografie.size()) {
@@ -195,7 +209,7 @@ class ListaNazionalita extends ListaBio {
         testo += aCapo
         testo += super.getVociCorrelate()
         testo += aCapo
-        testo += "*[[:Categoria:${nazionalita}]]"
+        testo += "*[[:Categoria:${nazionalitaMadre}]]"
         testo += aCapo
         testo += '*[[Progetto:Biografie/Nazionalità]]'
         testo += aCapo
@@ -283,50 +297,261 @@ class ListaNazionalita extends ListaBio {
      */
     @Override
     protected elaboraListaBiografie() {
-        String nazionalitaPlurale = getListaNazionalitaWhere()
+        String whereNazionalita
         String query
+        int numRecords
+        String nazionalitaPlurale
 
         if (nazionalita) {
-            query = "from BioGrails where ($nazionalitaPlurale)"
-            listaBiografie = BioGrails.executeQuery(query)
+            nazionalitaPlurale = LibTesto.primaMinuscola(nazionalita.plurale)
+            whereNazionalita = whereParagrafo(nazionalitaPlurale)
+            numRecords = LibBio.bioGrailsCount(whereNazionalita)
+
+            if (whereNazionalita && numRecords < Pref.getInt(LibBio.MAX_VOCI_PAGINA_NAZIONALITA, 10000)) {
+                query = "from BioGrails where ($whereNazionalita)"
+                listaBiografie = BioGrails.executeQuery(query)
+            } else {
+                elaboraNazionalitaMoltoGrande(nazionalitaPlurale)
+            }// fine del blocco if-else
         }// fine del blocco if
+
+        def stop
     }// fine del metodo
 
     /**
-     * Crea una lista di nazionalità per la WHERE condition
+     * Elaborazione specifica per nazionalità troppo grandi
+     * Seleziono i generi plurali, che sono i titoli dei paragrafi
+     * Elabora il singolo paragrafo di attività
+     * Se il paragrafo è piccolo, elabora il testo
+     * Se il paragrafo è grande, elabora una sottopagina e la registra
      */
-    private String getListaNazionalitaWhere() {
-        String listaNazionalitaWhere = ''
-        String tag = ' nazionalita_link_id='
-        String tagOr = ' OR'
-        ArrayList<Long> listaSingolariID = getListaID()
+    protected elaboraNazionalitaMoltoGrande(String nazionalitaPlurale) {
+        ArrayList<String> paragrafiAttMaschili
+        ArrayList<String> paragrafiAttFemminili
+        ArrayList<String> paragrafiAttAmbigenere
 
-        listaSingolariID?.each {
-            listaNazionalitaWhere += tag + it + tagOr
-        } // fine del ciclo each
-        listaNazionalitaWhere = LibTesto.levaCoda(listaNazionalitaWhere, tagOr)
+        if (usaSuddivisioneUomoDonna) {
+            paragrafiAttMaschili = paragrafiAttivitaMaschili()
+            paragrafiAttMaschili?.each {
+                elaboraParagrafo(nazionalitaPlurale, it)
+            } // fine del ciclo each
 
-        return listaNazionalitaWhere
+            paragrafiAttFemminili = paragrafiAttivitaFemminili()
+            paragrafiAttFemminili?.each {
+                elaboraParagrafo(nazionalitaPlurale, it)
+            } // fine del ciclo each
+        } else {
+            paragrafiAttAmbigenere = paragrafiAttivitaAmbigenere()
+            paragrafiAttAmbigenere?.each {
+                elaboraParagrafo(nazionalitaPlurale, it)
+            } // fine del ciclo each
+        }// fine del blocco if-else
+
+    }// fine del metodo
+
+
+    /**
+     * Elabora il singolo paragrafo
+     * <p>
+     * Decide se il testo rimane nella pagina principale o se occorre creare una sottopagina
+     */
+    private void elaboraParagrafo(String nazionalita, String paragrafo) {
+        String where
+        int numRecords = 0
+        ArrayList<BioGrails> lista
+
+        if (nazionalita && paragrafo) {
+            where = whereParagrafo(nazionalita, paragrafo)
+            numRecords = LibBio.bioGrailsCount(where)
+        }// fine del blocco if
+
+        if (numRecords) {
+            lista = creaLista(nazionalita, paragrafo)
+            paragrafo = LibTesto.primaMaiuscola(paragrafo)
+            if (numRecords < maxVociParagrafo) {
+                creaParagrafoPrincipale(nazionalita, paragrafo, lista)
+            } else {
+                creaParagrafoSottopagina(nazionalita, paragrafo, lista)
+            }// fine del blocco if-else
+        }// fine del blocco if
+
+        def stop
     } // fine del metodo
 
     /**
-     * Crea una lista di id di attività utilizzate
-     * Per ogni plurale, ci possono essere diversi 'singolari' richiamati dalle voci di BioGrails
+     * Elabora la query per il singolo paragrafo
      */
-    private ArrayList<Long> getListaID() {
-        ArrayList<Long> listaSingolariID = null
-        String nazionalitaPlurale = this.getPlurale()
-        String query
-        String tag = "'"
+    private static String whereParagrafo(String nazionalita) {
+        String where = ''
 
-        if (nazionalitaPlurale) {
-            if (!nazionalitaPlurale.contains(tag)) {
-                query = "select id from Nazionalita where plurale='$nazionalitaPlurale'"
-                listaSingolariID = (ArrayList<Long>) Nazionalita.executeQuery(query)
+        if (nazionalita) {
+            where = whereParagrafoNazionalita(nazionalita)
+        }// fine del blocco if
+
+        return where
+    } // fine del metodo
+
+    /**
+     * Elabora la query per il singolo paragrafo
+     */
+    private static String whereParagrafo(String nazionalita, String paragrafo) {
+        String where = ''
+        String whereNaz
+        String whereAtt
+
+        if (nazionalita && paragrafo) {
+            whereNaz = whereParagrafoNazionalita(nazionalita)
+            whereAtt = whereParagrafoAttivita(paragrafo)
+            if (whereNaz && whereAtt) {
+                whereNaz = '(' + whereNaz + ')'
+                whereAtt = '(' + whereAtt + ')'
+                where = whereNaz + ' AND ' + whereAtt
             }// fine del blocco if
         }// fine del blocco if
 
-        return listaSingolariID
+        return where
+    } // fine del metodo
+
+    /**
+     * Crea il singolo paragrafo nella pagina principale
+     */
+    private static ArrayList<BioGrails> creaLista(String nazionalita, String attivita) {
+        ArrayList<BioGrails> lista
+        String query
+        String where = whereParagrafo(nazionalita, attivita)
+
+        query = "from BioGrails where ($where)"
+        lista = BioGrails.executeQuery(query)
+
+        return lista
+    } // fine del metodo
+
+    /**
+     * Crea il singolo paragrafo nella pagina principale
+     */
+    private static void creaParagrafoPrincipale(String nazionalita, String attivita, ArrayList<BioGrails> lista) {
+        def stop
+    } // fine del metodo
+
+    /**
+     * Crea la sottopagina per il paragrafo troppo grande
+     * Lascia il rinvio nella pagina principale
+     */
+    private void creaParagrafoSottopagina(String nazionalita, String paragrafo, ArrayList<BioGrails> lista) {
+        creazioneSottopagina(paragrafo, '', lista)
+    } // fine del metodo
+
+    /**
+     * Elabora la where nazionalità per la query del singolo paragrafo
+     */
+    private static String whereParagrafoNazionalita(String nazionalitaPlurale) {
+        String where = ''
+        String tag = ' nazionalita_link_id='
+        String tagOr = ' OR'
+        ArrayList<Nazionalita> listaNazionalita = getListaNazionalita(nazionalitaPlurale)
+        Nazionalita nazionalita
+        long codice
+
+        if (nazionalitaPlurale) {
+            listaNazionalita?.each {
+                nazionalita = it
+                codice = nazionalita.id
+                where += tag + codice + tagOr
+            } // fine del ciclo each
+            where = LibTesto.levaCoda(where, tagOr)
+        }// fine del blocco if
+
+        return where
+    } // fine del metodo
+
+    /**
+     * Elabora la where attività per la query del singolo paragrafo
+     */
+    private static String whereParagrafoAttivita(String paragrafo) {
+        String where = ''
+        String tag = ' attivita_link_id='
+        String tag2 = ' attivita2link_id='
+        String tag3 = ' attivita3link_id='
+        String tagOr = ' OR'
+        ArrayList<Attivita> listaAttivita = getListaAttivita('distillatori')
+        boolean attivitaMultiple = true
+        Attivita attivita
+        long codice
+
+        if (paragrafo) {
+            listaAttivita?.each {
+                attivita = it
+                codice = attivita.id
+                where += tag + codice + tagOr
+                if (attivitaMultiple) {
+                    where += tag2 + codice + tagOr
+                    where += tag3 + codice + tagOr
+                }// fine del blocco if
+            } // fine del ciclo each
+            where = LibTesto.levaCoda(where, tagOr)
+        }// fine del blocco if
+
+        return where
+    } // fine del metodo
+
+    /**
+     * Crea una lista di id di nazionalità utilizzate
+     * Per ogni plurale, ci possono essere diversi 'singolari' richiamati dalle voci di BioGrails
+     */
+    private static ArrayList<Nazionalita> getListaNazionalita(String nazionalitaPlurale) {
+        ArrayList<Nazionalita> listaNazionalita = null
+
+        if (nazionalitaPlurale) {
+            listaNazionalita = Nazionalita.findAllByPlurale(nazionalitaPlurale)
+        }// fine del blocco if
+
+        return listaNazionalita
+    } // fine del metodo
+
+    /**
+     * Crea una lista di attività utilizzate nel paragrafo
+     * Il titolo del paragrafo deriva dal plurale di genere
+     * Ogni plurale di genere può avere diversi singolari di genere
+     * Ogni singolare di genere diventa singolare di attività
+     */
+    private static ArrayList<Attivita> getListaAttivita(String paragrafo) {
+        ArrayList<Attivita> listaAttivita = null
+        ArrayList<Genere> listaGenere
+        Genere genere
+        String singolare
+        Attivita attivita
+
+        if (paragrafo) {
+            listaGenere = getListaGenere(paragrafo)
+            if (listaGenere) {
+                listaAttivita = new ArrayList<Attivita>()
+                listaGenere?.each {
+                    genere = it
+                    singolare = genere.singolare
+                    attivita = Attivita.findBySingolare(singolare)
+                    if (attivita) {
+                        if (!listaAttivita.contains(attivita)) {
+                            listaAttivita.add(attivita)
+                        }// fine del blocco if
+                    }// fine del blocco if
+                } // fine del ciclo each
+            }// fine del blocco if
+        }// fine del blocco if
+
+        return listaAttivita
+    } // fine del metodo
+
+    /**
+     * Crea una lista di genere che ha come singolare il paragrafo
+     */
+    private static ArrayList<Genere> getListaGenere(String paragrafo) {
+        ArrayList<Genere> listaGenere = null
+
+        if (paragrafo) {
+            listaGenere = Genere.findAllByPlurale(paragrafo)
+        }// fine del blocco if
+
+        return listaGenere
     } // fine del metodo
 
     /**
@@ -338,7 +563,7 @@ class ListaNazionalita extends ListaBio {
 
         if (nazionalita) {
             listaNazionalita = new ListaNazionalita(nazionalita, bioService)
-            if (listaNazionalita.registrata || listaNazionalita.listaBiografie.size() == 0) {
+            if (listaNazionalita.registrata) {
                 registrata = true
             }// fine del blocco if
         }// fine del blocco if

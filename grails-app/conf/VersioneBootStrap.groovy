@@ -897,6 +897,18 @@ class VersioneBootStrap {
             pref.save(flush: true)
             versioneService.newVersione('Preferenze', 'USA_PARAGRAFO_PUNTI_GIORNI_ANNI di default true')
         }// fine del blocco if
+
+        //--creata una nuova preferenza
+        if (versioneService && versioneService.installaVersione(98)) {
+            Pref pref = new Pref()
+            pref.ordine = Pref.list().size() + 1
+            pref.code = LibBio.MAX_VOCI_PAGINA_NAZIONALITA
+            pref.descrizione = 'Numero di voci di nazionalità per attivare la creazione per pagine separate'
+            pref.type = Type.intero
+            pref.intero = 10000
+            pref.save(flush: true)
+            versioneService.newVersione('Preferenze', 'MAX_VOCI_PAGINA_NAZIONALITA di default 10.000')
+        }// fine del blocco if
     }// fine della closure
 
 

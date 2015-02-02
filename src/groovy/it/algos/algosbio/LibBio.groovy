@@ -69,6 +69,7 @@ class LibBio {
     public static final String MAX_VOCI_PARAGRAFO_ANTROPONIMI = 'maxVociParagrafoAntroponimi'
     public static final String MAX_VOCI_PARAGRAFO_LOCALITA = 'maxVociParagrafoLocalita'
     public static final String MAX_VOCI_PARAGRAFO_NAZIONALITA = 'maxVociParagrafoNazionalita'
+    public static final String MAX_VOCI_PAGINA_NAZIONALITA = 'maxVociPaginaNazionalita'
     public static final String MAX_VOCI_PARAGRAFO_ATTIVITA = 'maxVociParagrafoAttivita'
     public static final String USA_SUDDIVISIONE_UOMO_DONNA = 'usaSuddivisioneUomoDonna'
     public static final String USA_SUDDIVISIONE_UOMO_DONNA_NAZ = 'usaSuddivisioneUomoDonnaNaz'
@@ -1359,5 +1360,25 @@ class LibBio {
         // valore di ritorno
         return stringaOut
     } // fine del metodo
+
+    /**
+     * Conteggio dei records di BioGrails che soddisfano una certa condizione
+     */
+    public static int bioGrailsCount(String where) {
+        int numRecords = 0
+        String query
+        def risultatoQuery = null
+
+        if (where) {
+            query = "select count (*) from BioGrails where $where"
+            risultatoQuery = BioGrails.executeQuery(query)
+        }// fine del blocco if
+
+        if (risultatoQuery && risultatoQuery instanceof ArrayList && risultatoQuery.size() == 1) {
+            numRecords = risultatoQuery[0]
+        }// fine del blocco if
+
+        return numRecords
+    }// fine del metodo
 
 } // fine della classe

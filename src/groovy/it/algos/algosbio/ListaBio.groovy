@@ -1071,4 +1071,49 @@ abstract class ListaBio {
         return testoOut
     }// fine del metodo
 
+    /**
+     * Titoli dei paragrafi maschili
+     * <p>
+     * Maiuscoli ed ordinati alfabeticamente
+     */
+    protected static ArrayList<String> paragrafiAttivitaMaschili() {
+        ArrayList<String> paragrafi
+        String query
+
+        query = "select distinct(plurale) from Genere where sesso='M' order by plurale asc"
+        paragrafi = (ArrayList<String>) Genere.executeQuery(query)
+
+        return paragrafi
+    } // fine del metodo
+
+    /**
+     * Titoli dei paragrafi femminili
+     * <p>
+     * Maiuscoli ed ordinati alfabeticamente
+     */
+    protected static ArrayList<String> paragrafiAttivitaFemminili() {
+        ArrayList<String> paragrafi
+        String query
+
+        query = "select distinct(plurale) from Genere where sesso='F' order by plurale asc"
+        paragrafi = (ArrayList<String>) Genere.executeQuery(query)
+
+        return paragrafi
+    } // fine del metodo
+
+    /**
+     * Titoli dei paragrafi maschili e femminili
+     * <p>
+     * Maiuscoli ed ordinati alfabeticamente
+     */
+    protected static ArrayList<String> paragrafiAttivitaAmbigenere() {
+        ArrayList<String> paragrafi
+        String query
+
+        query = "select distinct(plurale) from Genere order by plurale asc"
+        paragrafi = (ArrayList<String>) Genere.executeQuery(query)
+
+        return paragrafi
+    } // fine del metodo
+
 }// fine della classe

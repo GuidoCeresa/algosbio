@@ -5,8 +5,9 @@ import it.algos.algoslib.LibTesto
 import it.algos.algospref.Pref
 import it.algos.algoswiki.WikiService
 
-@Transactional
 class GenereService {
+
+    static boolean transactional = false
 
     // utilizzo di un service con la businessLogic
     // il service NON viene iniettato automaticamente (perché è nel plugin)
@@ -28,6 +29,9 @@ class GenereService {
 
         // Recupera la mappa dalla pagina wiki
         Map mappa = this.getMappa()
+
+        // cancella tutto per ricarica ogni volta
+        Genere.executeUpdate('delete from Genere')
 
         // Aggiunge i records mancanti
         if (mappa) {
