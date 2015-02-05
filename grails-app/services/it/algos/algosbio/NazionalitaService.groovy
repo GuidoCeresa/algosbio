@@ -25,6 +25,8 @@ class NazionalitaService {
     WikiService wikiService = new WikiService()
 
     public static String TITOLO = 'Modulo:Bio/Plurale nazionalità'
+    public static String TAG_PROGETTO = 'Progetto:Biografie/Nazionalità/'
+    public static String TAG_PARAGRAFO = 'Progetto:Biografie/Attività/'
 
     /**
      * Aggiorna i records leggendoli dalla pagina wiki
@@ -471,6 +473,42 @@ class NazionalitaService {
         }// fine del blocco if
 
         return numPersone
+    }// fine del metodo
+
+    /**
+     * Chiave di selezione del paragrafo con link
+     */
+    public static String elaboraTitoloParagrafoNazionalita(String chiaveParagrafo, String tagParagrafoNullo) {
+        String titoloParagrafo
+        String pipe = '|'
+        String singolare
+        String plurale = ''
+        Attivita attivita
+        Genere genere
+
+        if (chiaveParagrafo) {
+            plurale = LibTesto.primaMinuscola(chiaveParagrafo)
+            genere = Genere.findByPlurale(plurale)
+            if (genere) {
+                singolare = genere.singolare
+                if (singolare) {
+                    attivita = Attivita.findBySingolare(singolare)
+                    if (attivita) {
+                        plurale = attivita.plurale
+                        plurale = LibTesto.primaMaiuscola(plurale)
+                    }// fine del blocco if
+                }// fine del blocco if
+            }// fine del blocco if
+        }// fine del blocco if
+
+        if (chiaveParagrafo.equals(tagParagrafoNullo)) {
+            titoloParagrafo = chiaveParagrafo
+        } else {
+            titoloParagrafo = TAG_PARAGRAFO + plurale + pipe + chiaveParagrafo
+            titoloParagrafo = LibWiki.setQuadre(titoloParagrafo)
+        }// fine del blocco if-else
+
+        return titoloParagrafo
     }// fine del metodo
 
     /**

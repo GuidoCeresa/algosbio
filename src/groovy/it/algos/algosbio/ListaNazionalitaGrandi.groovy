@@ -12,6 +12,9 @@ class ListaNazionalitaGrandi extends ListaBio {
 
     private static String TAG_PROGETTO = 'Progetto:Biografie/Nazionalità/'
     private static String TAG_PARAGRAFO = 'Progetto:Biografie/Attività/'
+    private static String tagAltri = 'Altri...'
+    private static String tagAltre = 'Altre...'
+
 
     public ListaNazionalitaGrandi() {
         super((Object) null)
@@ -263,47 +266,17 @@ class ListaNazionalitaGrandi extends ListaBio {
     protected String elaboraTitoloParagrafo(String chiaveParagrafo, ArrayList<BioGrails> listaVoci) {
         String titoloParagrafo
 
+        String a = tagAltre
+        String b = tagAltri
+
         if (Pref.getBool(LibBio.USA_TITOLO_PARAGRAFO_NAZ_ATT_LINK_PROGETTO, true)) {
-            titoloParagrafo = elaboraTitoloParagrafoNazionalita(chiaveParagrafo, listaVoci)
+            if (chiaveParagrafo.equals(tagAltri) || chiaveParagrafo.equals(tagAltre)) {
+                titoloParagrafo = chiaveParagrafo
+            } else {
+                titoloParagrafo = NazionalitaService.elaboraTitoloParagrafoNazionalita(chiaveParagrafo, tagParagrafoNullo)
+            }// fine del blocco if-else
         } else {
             titoloParagrafo = super.elaboraTitoloParagrafo(chiaveParagrafo, listaVoci)
-        }// fine del blocco if-else
-
-        return titoloParagrafo
-    }// fine del metodo
-
-    /**
-     * Chiave di selezione del paragrafo con link
-     */
-    private String elaboraTitoloParagrafoNazionalita(String chiaveParagrafo, ArrayList<BioGrails> listaVoci) {
-        String titoloParagrafo
-        String pipe = '|'
-        String singolare
-        String plurale = LibTesto.primaMaiuscola(chiaveParagrafo)
-        Attivita attivita
-        BioGrails bio = listaVoci.get(0)
-        Genere genere
-
-        if (bio) {
-            plurale = LibTesto.primaMinuscola(plurale)
-            genere = Genere.findByPlurale(plurale)
-            if (genere) {
-                singolare = genere.singolare
-                if (singolare) {
-                    attivita = Attivita.findBySingolare(singolare)
-                    if (attivita) {
-                        plurale = attivita.plurale
-                        plurale = LibTesto.primaMaiuscola(plurale)
-                    }// fine del blocco if
-                }// fine del blocco if
-            }// fine del blocco if
-        }// fine del blocco if
-
-        if (chiaveParagrafo.equals(tagParagrafoNullo)) {
-            titoloParagrafo = chiaveParagrafo
-        } else {
-            titoloParagrafo = TAG_PARAGRAFO + plurale + pipe + chiaveParagrafo
-            titoloParagrafo = LibWiki.setQuadre(titoloParagrafo)
         }// fine del blocco if-else
 
         return titoloParagrafo
@@ -352,14 +325,15 @@ class ListaNazionalitaGrandi extends ListaBio {
      * <p>
      * Decide se il testo rimane nella pagina principale o se occorre creare una sottopagina
      */
-    private String elaboraParagrafo(String nazionalita, String paragrafo, String sesso) {
+    private String elaboraParagrafo(String nazionalita, String chiaveParagrafo, String sesso) {
         String testo = ''
         String where
         int numRecords = 0
         ArrayList<BioGrails> lista
+        String titoloParagrafo
 
         if (nazionalita) {
-            where = whereParagrafo(nazionalita, paragrafo, sesso)
+            where = whereParagrafo(nazionalita, chiaveParagrafo, sesso)
             try { // prova ad eseguire il codice
                 numRecords = LibBio.bioGrailsCount(where)
             } catch (Exception unErrore) { // intercetta l'errore
@@ -368,12 +342,21 @@ class ListaNazionalitaGrandi extends ListaBio {
         }// fine del blocco if
 
         if (numRecords) {
-            lista = creaLista(nazionalita, paragrafo, sesso)
-            paragrafo = LibTesto.primaMaiuscola(paragrafo)
-            if (numRecords < maxVociParagrafo) {
-                testo += creaParagrafoPrincipale(paragrafo, lista)
+            lista = creaLista(nazionalita, chiaveParagrafo, sesso)
+            if (chiaveParagrafo) {
+                chiaveParagrafo = LibTesto.primaMaiuscola(chiaveParagrafo)
             } else {
-                testo += creaParagrafoSottopagina(paragrafo, lista)
+                if (sesso && sesso.equals('F')) {
+                    chiaveParagrafo = tagAltre
+                } else {
+                    chiaveParagrafo = tagAltri
+                }// fine del blocco if-else
+            }// fine del blocco if-else
+            if (numRecords < maxVociParagrafo) {
+                testo += super.elaboraBodyParagrafo(chiaveParagrafo, lista)
+            } else {
+                titoloParagrafo = elaboraTitoloParagrafo(chiaveParagrafo, lista)
+                testo += super.elaboraParagrafoSottoPagina(chiaveParagrafo, titoloParagrafo, lista)
             }// fine del blocco if-else
         }// fine del blocco if
 
@@ -437,24 +420,24 @@ class ListaNazionalitaGrandi extends ListaBio {
         return lista
     } // fine del metodo
 
-    /**
-     * Crea il singolo paragrafo nella pagina principale
-     */
-    private String creaParagrafoPrincipale(String paragrafo, ArrayList<BioGrails> lista) {
-        String testo
+//    /**
+//     * Crea il singolo paragrafo nella pagina principale
+//     */
+//    private String creaParagrafoPrincipale(String paragrafo, ArrayList<BioGrails> lista) {
+//        String testo
+//
+//        testo = super.elaboraBodyParagrafo(paragrafo, lista)
+//        return testo
+//    } // fine del metodo
 
-        testo = super.elaboraBodyParagrafo(paragrafo, lista)
-        return testo
-    } // fine del metodo
-
-    /**
-     * Crea la sottopagina per il paragrafo troppo grande
-     * Lascia il rinvio nella pagina principale
-     */
-    private String creaParagrafoSottopagina(String paragrafo, ArrayList<BioGrails> lista) {
-        creazioneSottopagina(paragrafo, '', lista)
-        return elaborazioneRimando(paragrafo, paragrafo)
-    } // fine del metodo
+//    /**
+//     * Crea la sottopagina per il paragrafo troppo grande
+//     * Lascia il rinvio nella pagina principale
+//     */
+//    private String creaParagrafoSottopagina(String paragrafo, ArrayList<BioGrails> lista) {
+//        creazioneSottopagina(paragrafo, '', lista)
+//        return elaborazioneRimando(chiaveParagrafo, titoloParagrafo)
+//    } // fine del metodo
 
     /**
      * Elabora e crea la lista della nazionalità indicata e la uploada sul server wiki
