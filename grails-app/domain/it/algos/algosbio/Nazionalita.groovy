@@ -48,7 +48,7 @@ class Nazionalita {
      * valore di testo restituito per una istanza della classe
      */
     String toString() {
-        return singolare
+        return plurale
     } // end of toString
 
     /**

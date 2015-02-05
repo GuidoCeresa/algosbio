@@ -25,7 +25,7 @@ class AttivitaService {
     WikiService wikiService = new WikiService()
 
 
-    private static String TITOLO = 'Modulo:Bio/Plurale attività'
+    public static String TITOLO = 'Modulo:Bio/Plurale attività'
 
     /**
      * Aggiorna i records leggendoli dalla pagina wiki

@@ -62,6 +62,8 @@ class ListaCognome extends ListaBio {
         if (cognome) {
             listaBiografie = BioGrails.findAllByCognome(cognome.testo, [sort: 'forzaOrdinamento'])
         }// fine del blocco if
+
+        super.elaboraListaBiografie()
     }// fine del metodo
 
 }// fine della classe

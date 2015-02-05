@@ -909,6 +909,18 @@ class VersioneBootStrap {
             pref.save(flush: true)
             versioneService.newVersione('Preferenze', 'MAX_VOCI_PAGINA_NAZIONALITA di default 10.000')
         }// fine del blocco if
+
+        //--creata una nuova preferenza
+        if (versioneService && versioneService.installaVersione(99)) {
+            Pref pref = new Pref()
+            pref.ordine = Pref.list().size() + 1
+            pref.code = LibBio.USA_DUE_COLONNE_STATISTICHE_NAZIONALITA
+            pref.descrizione = "Nelle statistiche di nazionalità, usa due colonne: liste e categorie"
+            pref.type = Type.booleano
+            pref.bool = true
+            pref.save(flush: true)
+            versioneService.newVersione('Preferenze', 'USA_DUE_COLONNE_STATISTICHE_NAZIONALITA di default true')
+        }// fine del blocco if
     }// fine della closure
 
 

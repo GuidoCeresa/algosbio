@@ -165,7 +165,7 @@ class ListaNome extends ListaBio {
      * Sovrascritto
      */
     @Override
-    protected elaboraFooter() {
+    protected String elaboraFooter() {
         String testo = ''
         String nome = getNome()
 
@@ -232,6 +232,8 @@ class ListaNome extends ListaBio {
         if (antroponimo) {
             listaBiografie = BioGrails.findAllByNomeLink(antroponimo, [sort: 'forzaOrdinamento'])
         }// fine del blocco if
+
+        super.elaboraListaBiografie()
     }// fine del metodo
 
     /**

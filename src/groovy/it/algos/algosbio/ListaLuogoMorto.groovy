@@ -27,6 +27,8 @@ class ListaLuogoMorto extends ListaLuogo {
         if (luogo) {
             listaBiografie = BioGrails.findAllByLuogoMortoLink(luogo, [sort: 'forzaOrdinamento'])
         }// fine del blocco if
+
+        super.elaboraListaBiografie()
     }// fine del metodo
 
 }// fine della classe

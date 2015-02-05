@@ -86,6 +86,8 @@ class ListaAttivita extends ListaBio {
         if (listaTmp.size() > 0) {
             listaBiografie = listaTmp
         }// fine del blocco if
+
+        super.elaboraListaBiografie()
     }// fine del metodo
 
 }// fine della classe

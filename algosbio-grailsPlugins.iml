@@ -10,8 +10,8 @@
           <root url="file://$MODULE_DIR$/target/work/plugins/algoslogo-0.30/grails-app/views" relative="/" />
           <root url="file://$MODULE_DIR$/target/work/plugins/algosvers-0.36/grails-app/views" relative="/" />
           <root url="file://$MODULE_DIR$/target/work/plugins/algospref-0.73/grails-app/views" relative="/" />
-          <root url="file://$MODULE_DIR$/target/work/plugins/algoswiki-0.94/grails-app/views" relative="/" />
           <root url="file://$MODULE_DIR$/target/work/plugins/algos-1.43/grails-app/views" relative="/" />
+          <root url="file://$MODULE_DIR$/target/work/plugins/algoswiki-0.95/grails-app/views" relative="/" />
         </webroots>
         <sourceRoots />
       </configuration>
@@ -59,11 +59,11 @@
       <sourceFolder url="file://$MODULE_DIR$/target/work/plugins/algosvers-0.36/grails-app/domain" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/target/work/plugins/algosvers-0.36/grails-app/services" isTestSource="false" />
     </content>
-    <content url="file://$MODULE_DIR$/target/work/plugins/algoswiki-0.94">
-      <sourceFolder url="file://$MODULE_DIR$/target/work/plugins/algoswiki-0.94/src/groovy" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/target/work/plugins/algoswiki-0.94/grails-app/i18n" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/target/work/plugins/algoswiki-0.94/grails-app/controllers" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/target/work/plugins/algoswiki-0.94/grails-app/services" isTestSource="false" />
+    <content url="file://$MODULE_DIR$/target/work/plugins/algoswiki-0.95">
+      <sourceFolder url="file://$MODULE_DIR$/target/work/plugins/algoswiki-0.95/src/groovy" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/target/work/plugins/algoswiki-0.95/grails-app/i18n" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/target/work/plugins/algoswiki-0.95/grails-app/controllers" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/target/work/plugins/algoswiki-0.95/grails-app/services" isTestSource="false" />
     </content>
     <content url="file://$MODULE_DIR$/target/work/plugins/asset-pipeline-1.8.11">
       <sourceFolder url="file://$MODULE_DIR$/target/work/plugins/asset-pipeline-1.8.11/src/groovy" isTestSource="false" />
@@ -187,4 +187,3 @@
     </orderEntry>
   </component>
 </module>
-

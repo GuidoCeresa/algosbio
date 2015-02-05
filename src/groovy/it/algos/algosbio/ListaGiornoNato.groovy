@@ -99,6 +99,8 @@ class ListaGiornoNato extends ListaGiorno {
             }
             listaBiografie = results
         }// fine del blocco if
+
+        super.elaboraListaBiografie()
     }// fine del metodo
 
     /**

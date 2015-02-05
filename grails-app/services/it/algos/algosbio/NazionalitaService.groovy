@@ -24,7 +24,7 @@ class NazionalitaService {
     // il service NON viene iniettato automaticamente (perché è nel plugin)
     WikiService wikiService = new WikiService()
 
-    private static String TITOLO = 'Modulo:Bio/Plurale nazionalità'
+    public static String TITOLO = 'Modulo:Bio/Plurale nazionalità'
 
     /**
      * Aggiorna i records leggendoli dalla pagina wiki
@@ -209,37 +209,40 @@ class NazionalitaService {
      *  -plurale dell'attività
      *  -numero di voci che nel campo nazionalita usano tutti records di nazionalita che hanno quel plurale
      */
-    def getRigaNazionalita = { num, mappa ->
+    public ArrayList getRigaNazionalita(int pos, Nazionalita nazionalita, int numVoci) {
         // variabili e costanti locali di lavoro
-        def riga = new ArrayList()
-        boolean usaListe = true
+        ArrayList riga = new ArrayList()
         String tagCat = ':Categoria:'
+        String tagSpazio = '&nbsp;'
         String tagListe = StatisticheService.PATH + 'Nazionalità/'
         String pipe = '|'
-        String nazionalita
-        int numNaz
-        String plurale
+        String plurale = ''
+        String lista
+        String categoria = ''
+        boolean usaDueColonne = Pref.getBool(LibBio.USA_DUE_COLONNE_STATISTICHE_NAZIONALITA, false)
 
-        if (mappa) {
-            plurale = mappa.plurale
-            if (usaListe) {
-                if (true) { // possibilità di cambiare idea da programma
-                    nazionalita = tagListe + LibTesto.primaMaiuscola(plurale) + pipe + LibTesto.primaMinuscola(plurale)
-                } else {
-                    nazionalita = tagCat + LibTesto.primaMinuscola(plurale) + pipe + plurale
-                }// fine del blocco if-else
-                nazionalita = LibWiki.setQuadre(nazionalita)
-            } else {
-                nazionalita = plurale
-            }// fine del blocco if-else
+        if (nazionalita) {
+            plurale = nazionalita.plurale
+            numVoci = bioGrailsCount(plurale)
+            lista = tagListe + LibTesto.primaMaiuscola(plurale) + pipe + LibTesto.primaMinuscola(plurale)
+            lista = LibWiki.setQuadre(lista)
+            lista = tagSpazio + lista
+            if (usaDueColonne) {
+                categoria = tagCat + LibTesto.primaMinuscola(plurale) + pipe + plurale
+                categoria = LibWiki.setQuadre(categoria)
+                categoria = tagSpazio + categoria
+            }// fine del blocco if
+        } else {
+            lista = plurale
+        }// fine del blocco if-else
 
-            numNaz = mappa.nazionalita
-
-            //riga.add(getColore(mappa))
-            riga.add(num)
-            riga.add(nazionalita)
-            riga.add(numNaz)
+        //riga.add(getColore(mappa))
+        riga.add(pos)
+        riga.add(lista)
+        if (usaDueColonne) {
+            riga.add(categoria)
         }// fine del blocco if
+        riga.add(numVoci)
 
         // valore di ritorno
         return riga
@@ -280,7 +283,7 @@ class NazionalitaService {
     /**
      * Ritorna una lista di tutte le nazionalità distinta
      */
-    public static ArrayList<Nazionalita> getListaNazionalita() {
+    public static ArrayList<Nazionalita> getListaAllNazionalita() {
         ArrayList<Nazionalita> lista = new ArrayList<Nazionalita>()
         ArrayList<String> listaPlurali = getListaPlurali()
         Nazionalita nazionalita
@@ -297,20 +300,220 @@ class NazionalitaService {
     } // fine del metodo
 
     /**
+     * Crea una lista di id di nazionalità utilizzate
+     * Per ogni plurale, ci possono essere diversi 'singolari' richiamati dalle voci di BioGrails
+     */
+    private static ArrayList<Nazionalita> getListaNazionalita(String nazionalitaPlurale) {
+        ArrayList<Nazionalita> listaNazionalita = null
+
+        if (nazionalitaPlurale) {
+            listaNazionalita = Nazionalita.findAllByPlurale(nazionalitaPlurale)
+        }// fine del blocco if
+
+        return listaNazionalita
+    } // fine del metodo
+
+    /**
+     * Elabora la where attività per la query del singolo paragrafo
+     */
+    public static String whereParagrafoAttivita(String paragrafo) {
+        return whereParagrafoAttivita(paragrafo, '')
+    } // fine del metodo
+
+    /**
+     * Elabora la where attività per la query del singolo paragrafo
+     */
+    public static String whereParagrafoAttivita(String paragrafo, String sesso) {
+        String where = ''
+        String tag = ' attivita_link_id='
+        String tag2 = ' attivita2link_id='
+        String tag3 = ' attivita3link_id='
+        String tagOr = ' OR'
+        String tagNull = 'attivita_link_id is NULL'
+        String tagNull2 = 'attivita2link_id is NULL'
+        String tagNull3 = 'attivita3link_id is NULL'
+        String tagAnd = ' AND '
+        ArrayList<Attivita> listaAttivita = getListaAttivita(paragrafo, sesso)
+        boolean attivitaMultiple = true
+        Attivita attivita
+        long codice
+
+        if (paragrafo) {
+            listaAttivita?.each {
+                attivita = it
+                codice = attivita.id
+                where += tag + codice + tagOr
+                if (attivitaMultiple) {
+                    where += tag2 + codice + tagOr
+                    where += tag3 + codice + tagOr
+                }// fine del blocco if
+            } // fine del ciclo each
+            where = LibTesto.levaCoda(where, tagOr)
+        } else {
+            where += tagNull
+            if (attivitaMultiple) {
+                where += tagAnd + tagNull2
+                where += tagAnd + tagNull3
+            }// fine del blocco if
+        }// fine del blocco if-else
+
+        return where
+    } // fine del metodo
+
+    /**
+     * Crea una lista di genere che ha come singolare il paragrafo
+     */
+    public static ArrayList<Genere> getListaGenere(String paragrafo) {
+        return getListaGenere(paragrafo, '')
+    } // fine del metodo
+
+    /**
+     * Crea una lista di genere che ha come singolare il paragrafo
+     */
+    public static ArrayList<Genere> getListaGenere(String paragrafo, String sesso) {
+        ArrayList<Genere> listaGenere = null
+
+        if (paragrafo) {
+            if (sesso.equals('M' || sesso.equals('F'))) {
+                listaGenere = Genere.findAllByPluraleAndSesso(paragrafo, sesso)
+            } else {
+                listaGenere = Genere.findAllByPlurale(paragrafo)
+            }// fine del blocco if-else
+        }// fine del blocco if
+
+        return listaGenere
+    } // fine del metodo
+
+    /**
+     * Crea una lista di attività utilizzate nel paragrafo
+     * Il titolo del paragrafo deriva dal plurale di genere
+     * Ogni plurale di genere può avere diversi singolari di genere
+     * Ogni singolare di genere diventa singolare di attività
+     */
+    public static ArrayList<Attivita> getListaAttivita(String paragrafo) {
+        return getListaAttivita(paragrafo, '')
+    } // fine del metodo
+
+    /**
+     * Crea una lista di attività utilizzate nel paragrafo
+     * Il titolo del paragrafo deriva dal plurale di genere
+     * Ogni plurale di genere può avere diversi singolari di genere
+     * Ogni singolare di genere diventa singolare di attività
+     */
+    public static ArrayList<Attivita> getListaAttivita(String paragrafo, String sesso) {
+        ArrayList<Attivita> listaAttivita = null
+        ArrayList<Genere> listaGenere
+        Genere genere
+        String singolare
+        Attivita attivita
+
+        if (paragrafo) {
+            listaGenere = getListaGenere(paragrafo, sesso)
+            if (listaGenere) {
+                listaAttivita = new ArrayList<Attivita>()
+                listaGenere?.each {
+                    genere = it
+                    singolare = genere.singolare
+                    attivita = Attivita.findBySingolare(singolare)
+                    if (attivita) {
+                        if (!listaAttivita.contains(attivita)) {
+                            listaAttivita.add(attivita)
+                        }// fine del blocco if
+                    }// fine del blocco if
+                } // fine del ciclo each
+            }// fine del blocco if
+        }// fine del blocco if
+
+        return listaAttivita
+    } // fine del metodo
+
+    /**
+     * Elabora la where nazionalità per la query del singolo paragrafo
+     */
+    public static String whereParagrafoNazionalita(String nazionalitaPlurale) {
+        String where = ''
+        String tag = ' nazionalita_link_id='
+        String tagOr = ' OR'
+        ArrayList<Nazionalita> listaNazionalita = getListaNazionalita(nazionalitaPlurale)
+        Nazionalita nazionalita
+        long codice
+
+        if (nazionalitaPlurale) {
+            listaNazionalita?.each {
+                nazionalita = it
+                codice = nazionalita.id
+                where += tag + codice + tagOr
+            } // fine del ciclo each
+            where = LibTesto.levaCoda(where, tagOr)
+        }// fine del blocco if
+
+        return where
+    } // fine del metodo
+
+    /**
+     * Conteggio delle voci presenti in BioGrails per ogni nazionalità
+     */
+    public static int bioGrailsCount(Nazionalita nazionalita) {
+        return bioGrailsCount(nazionalita?.plurale)
+    }// fine del metodo
+
+    /**
+     * Conteggio delle voci presenti in BioGrails per ogni nazionalità
+     */
+    public static int bioGrailsCount(String nazionalitaPlurale) {
+        int numPersone = 0
+        String whereNazionalita
+
+        if (nazionalitaPlurale) {
+            nazionalitaPlurale = LibTesto.primaMinuscola(nazionalitaPlurale)
+            whereNazionalita = whereParagrafoNazionalita(nazionalitaPlurale)
+            numPersone = LibBio.bioGrailsCount(whereNazionalita)
+        }// fine del blocco if
+
+        return numPersone
+    }// fine del metodo
+
+    /**
+     * creazione di una nazionalita
+     * controlla se è normale o grande, per inizializzare la classe corrispondente
+     */
+    public boolean uploadNazionalita(Nazionalita nazionalita, BioService bioService) {
+        boolean registrata = false
+        int numRecords
+        String whereNazionalita
+        String nazionalitaPlurale
+
+        if (nazionalita) {
+            nazionalitaPlurale = LibTesto.primaMinuscola(nazionalita.plurale)
+            whereNazionalita = whereParagrafoNazionalita(nazionalitaPlurale)
+            numRecords = LibBio.bioGrailsCount(whereNazionalita)
+
+            if (numRecords < Pref.getInt(LibBio.MAX_VOCI_PAGINA_NAZIONALITA, 10000)) {
+                registrata = ListaNazionalita.uploadNazionalita(nazionalita, bioService)
+            } else {
+                registrata = ListaNazionalitaGrandi.uploadNazionalita(nazionalita, bioService)
+            }// fine del blocco if-else
+        }// fine del blocco if
+
+        return registrata
+    } // fine del metodo
+
+    /**
      * creazione delle liste partendo da BioGrails
      * elabora e crea tutte le nazionalità
      */
     public int uploadAllNazionalita(BioService bioService) {
         int nazionalitaModificate = 0
-        ArrayList<Nazionalita> listaNazionalita = getListaNazionalita()
+        ArrayList<Nazionalita> listaNazionalita = getListaAllNazionalita()
 
         listaNazionalita?.each {
-            if (ListaNazionalita.uploadNazionalita(it, bioService)) {
+            if (uploadNazionalita(it, bioService)) {
                 nazionalitaModificate++
             }// fine del blocco if
         } // fine del ciclo each
 
         return nazionalitaModificate
     } // fine del metodo
+
 
 } // fine della service classe

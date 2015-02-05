@@ -97,6 +97,8 @@ class ListaAnnoMorto extends ListaAnno {
             }
             listaBiografie = results
         }// fine del blocco if
+
+        super.elaboraListaBiografie()
     }// fine del metodo
 
     /**

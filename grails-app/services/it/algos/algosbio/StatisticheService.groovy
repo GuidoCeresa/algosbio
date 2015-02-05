@@ -13,6 +13,7 @@
 
 package it.algos.algosbio
 
+import it.algos.algoslib.LibArray
 import it.algos.algoslib.LibTesto
 import it.algos.algoslib.LibTime
 import it.algos.algoslib.LibWiki
@@ -60,6 +61,7 @@ class StatisticheService {
      * Aggiorna la pagina wiki di servizio delle nazionalità
      */
     public nazionalitaUsate() {
+        boolean debug = Pref.getBool(LibBio.DEBUG, false)
         String titolo = PATH + 'Nazionalità'
         String testo = ''
         String summary = Pref.getStr(LibBio.SUMMARY)
@@ -71,7 +73,11 @@ class StatisticheService {
         testo += getTestoBottom(AttivitaNazionalita.nazionalita)
 
         if (titolo && testo && summary) {
-            new Edit(titolo, testo, summary)
+            if (debug) {
+                new Edit('Utente:Biobot/2', testo, summary)
+            } else {
+                new Edit(titolo, testo, summary)
+            }// fine del blocco if-else
         }// fine del blocco if
     }// fine del metodo
 
@@ -89,7 +95,6 @@ class StatisticheService {
             testo += "{{StatBio|data=$dataCorrente}}"
             testo += '</noinclude>'
             testo += A_CAPO
-            testo += A_CAPO
         }// fine del blocco if
 
         // valore di ritorno
@@ -102,45 +107,53 @@ class StatisticheService {
     private String getTestoBody(AttivitaNazionalita tipoAttNaz, int numUsate, int numNonUsate) {
         // variabili e costanti locali di lavoro
         String testo = ''
+        int numRecords = BioGrails.count()
+        String numVoci = LibTesto.formatNum(numRecords)
+        numVoci = LibWiki.setBold(numVoci)
+        String ref1 = "Le nazionalità sono quelle '''convenzionalmente''' [[Discussioni progetto:Biografie/Nazionalità|previste]] dalla comunità ed inserite nell'[[$NazionalitaService.TITOLO|elenco]] utilizzato dal [[template:Bio|template Bio]]"
+        String ref2 = "La '''differenza''' tra le voci della categoria e quelle utilizzate è dovuta allo specifico utilizzo del [[template:Bio|template Bio]] ed in particolare all'uso del parametro Categorie=NO"
+        String ref3 = "Si tratta di attività '''originariamente''' discusse ed inserite nell'[[$NazionalitaService.TITOLO|elenco]] che non sono mai state utilizzate o che sono state in un secondo tempo sostituite da altre denominazioni"
+        ref1 = LibWiki.setRef(ref1)
+        ref2 = LibWiki.setRef(ref2)
+        ref3 = LibWiki.setRef(ref3)
 
-        testo += '==Usate=='
-        testo += A_CAPO
+        testo += '==Nazionalità usate=='
         testo += A_CAPO
         switch (tipoAttNaz) {
-            case AttivitaNazionalita.attivita:
-                testo += "'''$numUsate''' attività '''effettivamente utilizzate''' nelle voci biografiche che usano il [[template:Bio|template Bio]]."
-                testo += A_CAPO
-                testo += this.creaTabellaAttivita()
-                break
             case AttivitaNazionalita.nazionalita:
-                testo += "'''$numUsate''' nazionalità '''effettivamente utilizzate''' nelle voci biografiche che usano il [[template:Bio|template Bio]]."
+                testo += "'''$numUsate''' nazionalità $ref1 '''effettivamente utilizzate''' nelle [[:Categoria:BioBot|$numVoci]] $ref2 voci biografiche che usano il [[template:Bio|template Bio]]."
                 testo += A_CAPO
                 testo += this.creaTabellaNazionalita()
                 break
+            case AttivitaNazionalita.attivita:
+                testo += "'''$numUsate''' attività '''effettivamente utilizzate''' nelle [[:Categoria:BioBot|$numVoci]] $ref2 voci biografiche che usano il [[template:Bio|template Bio]]."
+                testo += A_CAPO
+                testo += this.creaTabellaAttivita()
+                break
             default: // caso non definito
                 break
         } // fine del blocco switch
         testo += A_CAPO
         testo += A_CAPO
-        testo += '==Non usate=='
-        testo += A_CAPO
+        testo += '==Nazionalità non usate=='
         testo += A_CAPO
         switch (tipoAttNaz) {
-            case AttivitaNazionalita.attivita:
-                testo += "'''$numNonUsate''' attività presenti nella [[Template:Bio/plurale attività|tabella]] ma '''non utilizzate''' in nessuna voce biografica"
-                testo += A_CAPO
-                testo += this.creaTabellaAttivitaNonUsate()
-                break
             case AttivitaNazionalita.nazionalita:
-                testo += "'''$numNonUsate''' nazionalità presenti nella [[Template:Bio/plurale nazionalità|tabella]] ma '''non utilizzate''' in nessuna voce biografica"
+                testo += "'''$numNonUsate''' nazionalità presenti nel [[$AttivitaService.TITOLO|modulo]] ma '''non utilizzate''' $ref3 in nessuna voce biografica"
                 testo += A_CAPO
                 testo += this.creaTabellaNazionalitaNonUsate()
                 break
+            case AttivitaNazionalita.attivita:
+                testo += "'''$numNonUsate''' attività presenti nel [[$NazionalitaService.TITOLO|modulo]] ma '''non utilizzate''' in nessuna voce biografica"
+                testo += A_CAPO
+                testo += this.creaTabellaAttivitaNonUsate()
+                break
             default: // caso non definito
                 break
         } // fine del blocco switch
         testo += A_CAPO
-        testo += A_CAPO
+
+        return testo
     }// fine del metodo
 
     /**
@@ -150,6 +163,11 @@ class StatisticheService {
         String testo = ''
         boolean loMettoPerchéFunziona = false
 
+        testo += '==Note=='
+        testo += A_CAPO
+        testo += '<references/>'
+        testo += A_CAPO
+        testo += A_CAPO
         testo += '==Voci correlate=='
         testo += A_CAPO
         if (loMettoPerchéFunziona) {
@@ -162,6 +180,8 @@ class StatisticheService {
                 testo += '*[[Progetto:Biografie/Nazionalità]]'
                 break
             case AttivitaNazionalita.nazionalita:
+                testo += '*[[Discussioni progetto:Biografie/Nazionalità|Progetto:Biografie/Nazionalità]]'
+                testo += A_CAPO
                 testo += '*[[Progetto:Biografie/Attività]]'
                 break
             default: // caso non definito
@@ -174,9 +194,9 @@ class StatisticheService {
         testo += A_CAPO
         testo += '*[[:Categoria:Bio parametri]]'
         testo += A_CAPO
-        testo += '*[[:Categoria:Bio attività]]'
-        testo += A_CAPO
         testo += '*[[:Categoria:Bio nazionalità]]'
+        testo += A_CAPO
+        testo += '*[[:Categoria:Bio attività]]'
         testo += A_CAPO
         testo += '*[https://it.wikipedia.org/w/index.php?title=Modulo:Bio/Plurale_attività&action=edit Lista delle attività nel modulo (protetto)]'
         testo += A_CAPO
@@ -228,23 +248,27 @@ class StatisticheService {
      */
     def creaTabellaNazionalita() {
         // variabili e costanti locali di lavoro
-        String testoTabella
+        String testoTabella = ''
         ArrayList listaRighe = new ArrayList()
-        def listaNazionalita
+        ArrayList<Nazionalita> listaNazionalita
         def mappa = new HashMap()
-        int k = 0
+        int pos = 0
+        int numVoci
 
-        listaRighe.add(getRigaTitolo(AttivitaNazionalita.nazionalita))
-        listaNazionalita = NazionalitaService.getLista()
-        listaNazionalita?.each {
-            k++
-            listaRighe.add(nazionalitaService.getRigaNazionalita(k, it))
-        }// fine di each
+        listaNazionalita = NazionalitaService.getListaAllNazionalita()
+        for (Nazionalita nazionalita : listaNazionalita) {
+            numVoci = NazionalitaService.bioGrailsCount(nazionalita)
+            if (numVoci > 0) {
+                pos++
+                listaRighe.add(nazionalitaService.getRigaNazionalita(pos, nazionalita, numVoci))
+            }// fine del blocco if
+        } // fine del ciclo for-each
 
         //costruisce il testo della tabella
+        mappa.put('titoli', getArrayTitolo(AttivitaNazionalita.nazionalita))
         mappa.put('lista', listaRighe)
-        mappa.put('width', '60')
-//        mappa.putAt('align', TipoAllineamento.secondaSinistra)
+        mappa.put('width', '70')
+        mappa.put('align', TipoAllineamento.randomBaseSin)
         testoTabella = WikiLib.creaTabellaSortable(mappa)
 
         // valore di ritorno
@@ -312,25 +336,51 @@ class StatisticheService {
     } // fine della closure
 
     /**
+     * Restituisce la riga del titolo della tabella delle attività
+     */
+    private String getRigaTitolo(AttivitaNazionalita tipoAttNaz) {
+        return LibArray.creaStringa(getArrayTitolo(tipoAttNaz), ',')
+    }// fine del metodo
+
+    /**
      * Restituisce l'array delle riga del titolo della tabella delle attività
      */
-    def getRigaTitolo(AttivitaNazionalita tipoAttNaz) {
-        // variabili e costanti locali di lavoro
-        def riga = ''
+    private ArrayList getArrayTitolo(AttivitaNazionalita tipoAttNaz) {
+        def lista = new ArrayList()
+        String tagSpazio = '&nbsp;'
+        boolean usaDueColonne = Pref.getBool(LibBio.USA_DUE_COLONNE_STATISTICHE_NAZIONALITA, false)
+        String ref1 = "Nelle liste le biografie sono suddivise per attività rilevanti della persona. "
+        ref1 += "Se il numero di voci di un paragrafo diventa rilevante, vengono create delle sottopagine specifiche di quella attività. "
+        ref1 += "Le sottopagine sono suddivise a loro volta in paragrafi alfabetici secondo l'iniziale del cognome."
+        ref1 = LibWiki.setRef(ref1)
+        String ref2 = "Le categorie possono avere sottocategorie e suddivisioni diversamente articolate e possono avere anche voci che hanno implementato la categoria stessa al di fuori del [[template:Bio|template Bio]]."
+        ref2 = LibWiki.setRef(ref2)
 
         switch (tipoAttNaz) {
             case AttivitaNazionalita.attivita:
-                riga = ["'''#'''", "'''attività utilizzate'''", "'''prima'''", "'''seconda'''", "'''terza'''", "'''totale'''"]
+                lista.add(LibWiki.setBold('#'))
+                lista.add(LibWiki.setBold('attività utilizzate'))
+                lista.add(LibWiki.setBold('prima'))
+                lista.add(LibWiki.setBold('seconda'))
+                lista.add(LibWiki.setBold('terza'))
+                lista.add(LibWiki.setBold('totale'))
                 break
             case AttivitaNazionalita.nazionalita:
-                riga = ["'''#'''", "'''nazionalità utilizzate'''", "'''num'''"]
+                lista.add(LibWiki.setBold(tagSpazio + tagSpazio + tagSpazio + tagSpazio + '#'))
+                if (usaDueColonne) {
+                    lista.add(tagSpazio + LibWiki.setBold('lista') + " $ref1")
+                    lista.add(tagSpazio + LibWiki.setBold('categoria') + " $ref2")
+                } else {
+                    lista.add(LibWiki.setBold('nazionalità utilizzate'))
+                }// fine del blocco if-else
+                lista.add(LibWiki.setBold(tagSpazio + tagSpazio + tagSpazio + tagSpazio + 'voci'))
                 break
             default: // caso non definito
                 break
         } // fine del blocco switch
 
         // valore di ritorno
-        return riga
+        return lista
     }// fine del metodo
 
     /**

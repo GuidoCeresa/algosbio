@@ -36,6 +36,7 @@ abstract class ListaBio {
     //Nati il 9 marzo, Nati nel 1934, Persone di nome Mario, Progetto:Biografie/Attività/Politici, ecc
     protected String titoloPaginaMadre = ''
     protected ArrayList<BioGrails> listaBiografie
+    protected int numPersone = 0
     protected int numDidascalie = 0
 
     protected boolean usaTavolaContenuti = Pref.getBool(LibBio.USA_TAVOLA_CONTENUTI, true)
@@ -164,7 +165,7 @@ abstract class ListaBio {
         EditBio paginaModificata
         Risultato risultato
 
-        if (listaBiografie) {
+        if (numPersone > 0) {
             //header
             testo += this.elaboraHead()
 
@@ -274,7 +275,6 @@ abstract class ListaBio {
     private String elaboraTemplateAvviso() {
         String testo = ''
         String dataCorrente = LibTime.getGioMeseAnnoLungo(new Date())
-        int numPersone = listaBiografie.size()
         String personeTxt = LibTesto.formatNum(numPersone)
 
         testo += tagTemplateBio
@@ -335,10 +335,11 @@ abstract class ListaBio {
      * Sovrascritto
      */
     protected String elaboraBody() {
-        int numPersone = listaBiografie.size()
+        String testo = ''
+
         boolean usaColonne = usaDoppiaColonna
         int maxRigheColonne = Pref.getInt(LibBio.MAX_RIGHE_COLONNE)
-        String testo = elaboraBodyDidascalie()
+        testo = elaboraBodyDidascalie()
 
         if (usaColonne && (numPersone > maxRigheColonne)) {
             testo = WikiLib.listaDueColonne(testo.trim())
@@ -439,13 +440,23 @@ abstract class ListaBio {
      */
     protected String elaboraBodyParagrafo(def mappa) {
         String chiaveParagrafo
-        String titoloParagrafo
         ArrayList<BioGrails> listaVoci
-        ArrayList<BioGrails> listaVociOrdinate
-        ArrayList<String> listaDidascalie
 
         chiaveParagrafo = mappa.key
         listaVoci = mappa.value
+
+        return elaboraBodyParagrafo(chiaveParagrafo, listaVoci)
+    }// fine del metodo
+
+    /**
+     * Singolo paragrafo
+     * Decide se ci sono sottopagine
+     */
+    protected String elaboraBodyParagrafo(String chiaveParagrafo, ArrayList<BioGrails> listaVoci) {
+        String titoloParagrafo
+        ArrayList<BioGrails> listaVociOrdinate
+        ArrayList<String> listaDidascalie
+
         listaVociOrdinate = ordinaVoci(listaVoci)
         listaDidascalie = estraeListaDidascalie(listaVociOrdinate)
         numDidascalie += listaDidascalie.size()
@@ -515,13 +526,12 @@ abstract class ListaBio {
         String testoOut = testoBody
         String testoIni = ''
         String testoEnd = '}}'
-        int numVoci = listaBiografie.size()
 
         testoIni += "{{${titoloTemplate}"
         testoIni += aCapo
         testoIni += "|titolo=${titoloPagina}"
         testoIni += aCapo
-        testoIni += "|voci=${numVoci}"
+        testoIni += "|voci=${numPersone}"
         testoIni += aCapo
         testoIni += "|testo="
         testoIni += aCapo
@@ -800,8 +810,9 @@ abstract class ListaBio {
     protected String elaboraParagrafo(String chiaveParagrafo, String titoloParagrafo, ArrayList<BioGrails> listaVociOrdinate, ArrayList<String> listaDidascalie) {
         String testo = ''
         int num = listaDidascalie.size()
+        boolean troppeVoci = (num >= maxVociParagrafo)
 
-        if (usaSottopagine && num >= maxVociParagrafo) {
+        if (usaSottopagine && troppeVoci) {
             testo += elaboraParagrafoSottoPagina(chiaveParagrafo, titoloParagrafo, listaVociOrdinate)
         } else {
             testo += elaboraParagrafoNormale(titoloParagrafo, listaDidascalie)
@@ -921,6 +932,9 @@ abstract class ListaBio {
      * Sovrascritto
      */
     protected elaboraListaBiografie() {
+        if (listaBiografie) {
+            numPersone = listaBiografie.size()
+        }// fine del blocco if
     }// fine del metodo
 
     /**
