@@ -15,7 +15,7 @@ class UploadJob {
 
     //--codifica dell'orario di attivazione
     //--MON, TUE, WED, THU, FRI, SAT, SUN
-    private static String cronExpressionUpload = "0 0 8 ? * MON,WED,FRI" //--alle 8 lunedì, mercoledì e venerdì
+    private static String cronExpressionUpload = "0 0 7 ? * MON,WED,FRI" //--alle 7 lunedì, mercoledì e venerdì
 
     static triggers = {
         cron name: 'upload', cronExpression: cronExpressionUpload
