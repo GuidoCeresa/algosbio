@@ -1,5 +1,6 @@
 package it.algos.algosbio
 
+import it.algos.algoslib.LibTesto
 import it.algos.algospref.Pref
 import it.algos.algoswiki.Edit
 
@@ -24,26 +25,25 @@ class EditBio extends Edit {
         paginaDaRegistrare = true
         boolean registraSoloModificheSostanziali = Pref.getBool(LibBio.REGISTRA_SOLO_MODIFICHE_SOSTANZIALI)
         String testoOld = super.getTestoPrimaRequest()
-//        String tagInizioVoceSignificativa = '</noinclude>'
-        String tagInizioVoceSignificativa = '}}'
-        String testoOldSignificativo = ''
         String testoNew = super.getTestoNew()
+        String testoOldSignificativo = ''
         String testoNewSignificativo
+        String tagIniA = 'ListaBio'
+        String tagIniB = 'StatBio'
+        String tagEnd = '}}'
 
         if (registraSoloModificheSostanziali) {
             if (testoOld) {
-                testoOldSignificativo = testoOld.substring(testoOld.indexOf(tagInizioVoceSignificativa))
+                testoOldSignificativo = LibTesto.testoSuccessivo(testoOld, tagEnd, tagIniA, tagIniB)
             }// fine del blocco if
             if (testoNew) {
-                testoNewSignificativo = testoNew.substring(testoNew.indexOf(tagInizioVoceSignificativa))
+                testoNewSignificativo = LibTesto.testoSuccessivo(testoNew, tagEnd, tagIniA, tagIniB)
             }// fine del blocco if
             if (testoOldSignificativo && testoNewSignificativo) {
                 if (testoNewSignificativo.equals(testoOldSignificativo)) {
-                    def stop
                     paginaDaRegistrare = false
                 }// fine del blocco if
             }// fine del blocco if
-            def stop2
         }// fine del blocco if
     } // fine del metodo
 

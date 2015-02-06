@@ -75,7 +75,7 @@ grails.project.dependency.resolution = {
         compile ":mail:1.0.6"
 
         //--plugin della algos
-        compile ":algos:1.43"
+        compile ":algos:1.44"
         compile ":algoswiki:0.95"
 
 

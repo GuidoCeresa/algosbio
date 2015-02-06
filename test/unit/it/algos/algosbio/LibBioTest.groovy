@@ -261,12 +261,12 @@ class LibBioTest extends GroovyTestCase {
         ottenuto = LibBio.checkNome(nome)
         assert previsto == ottenuto
 
-        nome ="'Alā al-Dīn Kayqubād"
+        nome = "'Alā al-Dīn Kayqubād"
         previsto = true
         ottenuto = LibBio.checkNome(nome)
         assert previsto == ottenuto
 
-        nome ="'Alā"
+        nome = "'Alā"
         previsto = true
         ottenuto = LibBio.checkNome(nome)
         assert previsto == ottenuto
