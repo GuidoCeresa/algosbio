@@ -889,7 +889,7 @@ abstract class ListaBio {
         return LibTesto.primaMaiuscola(soggetto) + '/' + chiaveParagrafo
     }// fine del metodo
 
-    protected static String getParagrafoDidascalia(ArrayList<String> listaDidascalie) {
+    protected  String getParagrafoDidascalia(ArrayList<String> listaDidascalie) {
         String testo = ''
         String didascalia
 

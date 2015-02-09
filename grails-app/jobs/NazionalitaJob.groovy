@@ -18,7 +18,7 @@ class NazionalitaJob {
 
     //--codifica dell'orario di attivazione
     //--MON, TUE, WED, THU, FRI, SAT, SUN
-    private static String cronExpressionNazionalita = '0 0 8 ? * SAT' //--tutti i sabati alle 8
+    private static String cronExpressionNazionalita = '0 0 7 ? * SAT' //--tutti i sabati alle 7
 
     static triggers = {
         cron name: 'nazionalita', cronExpression: cronExpressionNazionalita

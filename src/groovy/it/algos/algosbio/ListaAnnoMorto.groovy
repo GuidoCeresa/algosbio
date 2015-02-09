@@ -68,6 +68,7 @@ class ListaAnnoMorto extends ListaAnno {
         return chiave
     }// fine del metodo
 
+
     /**
      * Piede della pagina
      * Sovrascritto

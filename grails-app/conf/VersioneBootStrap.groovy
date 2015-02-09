@@ -921,6 +921,18 @@ class VersioneBootStrap {
             pref.save(flush: true)
             versioneService.newVersione('Preferenze', 'USA_DUE_COLONNE_STATISTICHE_NAZIONALITA di default true')
         }// fine del blocco if
+
+        //--creata una nuova preferenza
+        if (versioneService && versioneService.installaVersione(100)) {
+            Pref pref = new Pref()
+            pref.ordine = Pref.list().size() + 1
+            pref.code = LibBio.USA_GIORNI_RAGGRUPPATI
+            pref.descrizione = "Nelle liste di anni, raggruppa le voci per giorno"
+            pref.type = Type.booleano
+            pref.bool = true
+            pref.save(flush: true)
+            versioneService.newVersione('Preferenze', 'USA_GIORNI_RAGGRUPPATI di default true')
+        }// fine del blocco if
     }// fine della closure
 
 

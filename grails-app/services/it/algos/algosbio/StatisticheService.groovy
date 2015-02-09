@@ -27,6 +27,12 @@ import it.algos.algoswiki.WikiLib
 
 class StatisticheService {
 
+    // utilizzo di un service con la businessLogic per l'elaborazione dei dati
+    // il service viene iniettato automaticamente
+    def bioGrailsService
+    def giornoService
+    def annoService
+    def bioService
     def attivitaService
     def nazionalitaService
 
@@ -803,6 +809,35 @@ class StatisticheService {
 
         /* valore di ritorno */
         return anno
+    }// fine del metodo
+
+    /**
+     *
+     */
+    public uploadAll() {
+        if (Pref.getBool(LibBio.USA_LISTE_BIO_GIORNI)) {
+            if (bioService && giornoService) {
+                giornoService.uploadGiorniNascita(bioService)
+                giornoService.uploadGiorniMorte(bioService)
+            }// fine del blocco if
+        } else {
+            if (bioGrailsService) {
+                bioGrailsService.uploadGiorniNascita()
+                bioGrailsService.uploadGiorniMorte()
+            }// fine del blocco if
+        }// fine del blocco if-else
+
+        if (Pref.getBool(LibBio.USA_LISTE_BIO_ANNI)) {
+            if (bioService && annoService) {
+                annoService.uploadAnniNascita(bioService)
+                annoService.uploadAnniMorte(bioService)
+            }// fine del blocco if
+        } else {
+            if (bioGrailsService) {
+                bioGrailsService.uploadAnniNascita()
+                bioGrailsService.uploadAnniMorte()
+            }// fine del blocco if
+        }// fine del blocco if-else
     }// fine del metodo
 
 } // fine della service classe

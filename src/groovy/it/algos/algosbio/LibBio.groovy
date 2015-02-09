@@ -101,6 +101,7 @@ class LibBio {
     public static final String USA_TITOLO_PARAGRAFO_NAZ_ATT_LINK_PROGETTO = 'usaParagrafoNazAttProgetto'
     public static final String USA_ATTIVITA_MULTIPLE = 'usaAttivitaMultiple'
     public static final String USA_DUE_COLONNE_STATISTICHE_NAZIONALITA = 'usaDueColonneStatisticheNazionalita'
+    public static final String USA_GIORNI_RAGGRUPPATI = 'usaGiorniRaggruppati'
 
     // campi di una mappa
     public static final String MAPPA_TITOLO_PARAGRAFO = 'titoloParagrafo'

@@ -13,7 +13,7 @@ class AttivitaJob {
 
     //--codifica dell'orario di attivazione
     //--MON, TUE, WED, THU, FRI, SAT, SUN
-    private static String cronExpressionAttivita =  '0 0 8 ? * THU' //--tutti i giovedi alle 8
+    private static String cronExpressionAttivita =  '0 0 7 ? * THU' //--tutti i giovedi alle 7
 
     static triggers = {
         cron name: 'attivita', cronExpression: cronExpressionAttivita

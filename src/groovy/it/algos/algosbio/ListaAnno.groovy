@@ -48,7 +48,6 @@ abstract class ListaAnno extends ListaCrono {
         }// fine del blocco if
     }// fine del metodo
 
-
     /**
      * Titolo della pagina da creare/caricare su wikipedia
      * Sovrascritto
@@ -78,7 +77,6 @@ abstract class ListaAnno extends ListaCrono {
 
         titoloPagina = titolo
     }// fine del metodo
-
 
     /**
      * Voce principale a cui tornare
@@ -129,6 +127,46 @@ abstract class ListaAnno extends ListaCrono {
         return elaboraTemplate(testoIn, 'Lista persone per anno')
     }// fine del metodo
 
+    protected String getParagrafoDidascalia(ArrayList<String> listaDidascalie) {
+        String testo = ''
+        String didascalia
+        String tag = ']]'
+        String tagSep = tag + ' -'
+        int pos
+        String giornoOld = ''
+        String giornoTmp
+
+        if (Pref.getBool(LibBio.USA_GIORNI_RAGGRUPPATI, true)) {
+            listaDidascalie?.each {
+                didascalia = it
+                if (didascalia.contains(tagSep)) {
+                    pos = didascalia.indexOf(tag)
+                    pos += tag.length()
+                    giornoTmp = didascalia.substring(0, pos)
+                    giornoTmp = giornoTmp.trim()
+                    if (!giornoTmp.equals(giornoOld)) {
+                        testo += '*'
+                        testo += giornoTmp
+                        testo += aCapo
+                    }// fine del blocco if
+                    pos = didascalia.indexOf(tagSep)
+                    pos += tagSep.length()
+                    didascalia = didascalia.substring(pos)
+                    didascalia = didascalia.trim()
+                    giornoOld = giornoTmp
+                    testo += '*'
+                }// fine del blocco if
+                testo += '*'
+                testo += didascalia
+                testo += aCapo
+            }// fine del ciclo each
+        } else {
+            testo = super.getParagrafoDidascalia(listaDidascalie)
+        }// fine del blocco if-else
+
+        return testo.trim()
+    }// fine del metodo
+
     /**
      * Piede della pagina
      * Elaborazione base
@@ -150,7 +188,6 @@ abstract class ListaAnno extends ListaCrono {
 
         return finale(testo)
     }// fine del metodo
-
 
     /**
      * Recupera il singolo Anno come progressivo dall'inizio
@@ -178,7 +215,6 @@ abstract class ListaAnno extends ListaCrono {
 
         return anno
     }// fine del metodo
-
 
     /**
      * Elabora e crea le liste dell'anno indicato (nascita e morte) e le uploada sul server wiki
