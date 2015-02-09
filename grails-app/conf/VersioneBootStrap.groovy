@@ -926,12 +926,12 @@ class VersioneBootStrap {
         if (versioneService && versioneService.installaVersione(100)) {
             Pref pref = new Pref()
             pref.ordine = Pref.list().size() + 1
-            pref.code = LibBio.USA_GIORNI_RAGGRUPPATI
-            pref.descrizione = "Nelle liste di anni, raggruppa le voci per giorno"
+            pref.code = LibBio.USA_GIORNI_ANNI_RAGGRUPPATI
+            pref.descrizione = "Nelle liste di giorni ed anni, raggruppa le voci per giorno/anno"
             pref.type = Type.booleano
             pref.bool = true
             pref.save(flush: true)
-            versioneService.newVersione('Preferenze', 'USA_GIORNI_RAGGRUPPATI di default true')
+            versioneService.newVersione('Preferenze', 'USA_GIORNI_ANNI_RAGGRUPPATI di default true')
         }// fine del blocco if
     }// fine della closure
 

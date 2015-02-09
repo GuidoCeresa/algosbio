@@ -127,45 +127,6 @@ abstract class ListaAnno extends ListaCrono {
         return elaboraTemplate(testoIn, 'Lista persone per anno')
     }// fine del metodo
 
-    protected String getParagrafoDidascalia(ArrayList<String> listaDidascalie) {
-        String testo = ''
-        String didascalia
-        String tag = ']]'
-        String tagSep = tag + ' -'
-        int pos
-        String giornoOld = ''
-        String giornoTmp
-
-        if (Pref.getBool(LibBio.USA_GIORNI_RAGGRUPPATI, true)) {
-            listaDidascalie?.each {
-                didascalia = it
-                if (didascalia.contains(tagSep)) {
-                    pos = didascalia.indexOf(tag)
-                    pos += tag.length()
-                    giornoTmp = didascalia.substring(0, pos)
-                    giornoTmp = giornoTmp.trim()
-                    if (!giornoTmp.equals(giornoOld)) {
-                        testo += '*'
-                        testo += giornoTmp
-                        testo += aCapo
-                    }// fine del blocco if
-                    pos = didascalia.indexOf(tagSep)
-                    pos += tagSep.length()
-                    didascalia = didascalia.substring(pos)
-                    didascalia = didascalia.trim()
-                    giornoOld = giornoTmp
-                    testo += '*'
-                }// fine del blocco if
-                testo += '*'
-                testo += didascalia
-                testo += aCapo
-            }// fine del ciclo each
-        } else {
-            testo = super.getParagrafoDidascalia(listaDidascalie)
-        }// fine del blocco if-else
-
-        return testo.trim()
-    }// fine del metodo
 
     /**
      * Piede della pagina

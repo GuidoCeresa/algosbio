@@ -50,5 +50,75 @@ class ListaCrono extends ListaBio {
         return ''
     }// fine del metodo
 
+    protected String getParagrafoDidascalia(ArrayList<String> listaDidascalie) {
+        String testo = ''
+        String didascalia
+        String voceTmp
+        String tag = ']]'
+        String sep = ' - '
+        String tagSep = tag + sep
+        int pos
+        int posVoce
+        String dataTmp
+        LinkedHashMap mappa = new LinkedHashMap()
+        ArrayList lista = null
+
+        if (Pref.getBool(LibBio.USA_GIORNI_ANNI_RAGGRUPPATI, true)) {
+            listaDidascalie?.each {
+                didascalia = it
+                if (didascalia.contains(tagSep)) {
+                    pos = didascalia.indexOf(tag)
+                    pos += tag.length()
+                    dataTmp = didascalia.substring(0, pos)
+                    dataTmp = dataTmp.trim()
+                    posVoce = didascalia.indexOf(tagSep)
+                    posVoce += tagSep.length()
+                    voceTmp = didascalia.substring(posVoce)
+                    voceTmp = voceTmp.trim()
+                } else {
+                    dataTmp = ''
+                    voceTmp = didascalia
+                }// fine del blocco if-else
+                if (mappa.containsKey(dataTmp)) {
+                    lista = (ArrayList) mappa.get(dataTmp)
+                    lista.add(voceTmp)
+                } else {
+                    lista = new ArrayList()
+                    lista.add(voceTmp)
+                    mappa.put(dataTmp, lista)
+                }// fine del blocco if-else
+            }// fine del ciclo each
+
+            mappa?.each { key, value ->
+                if (key.equals('')) {
+                    value?.each {
+                        testo += '*'
+                        testo += it
+                        testo += aCapo
+                    } // fine del ciclo each
+                } else {
+                    if (value && value instanceof ArrayList && value.size() == 1) {
+                        testo += '*'
+                        testo += key + sep + value.get(0)
+                        testo += aCapo
+                    } else {
+                        testo += '*'
+                        testo += key
+                        testo += aCapo
+                        value?.each {
+                            testo += '**'
+                            testo += it
+                            testo += aCapo
+                        } // fine del ciclo each
+                    }// fine del blocco if-else
+                }// fine del blocco if-else
+            } // fine del ciclo each
+
+        } else {
+            testo = super.getParagrafoDidascalia(listaDidascalie)
+        }// fine del blocco if-else
+
+        return testo.trim()
+    }// fine del metodo
 
 }// fine della classe
