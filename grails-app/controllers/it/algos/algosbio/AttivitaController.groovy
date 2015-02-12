@@ -130,6 +130,46 @@ class AttivitaController {
         redirect(action: 'list')
     } // fine del metodo
 
+    //--aggiornamento della pagina di statistica
+    def statistiche() {
+        params.tipo = TipoDialogo.conferma
+        params.avviso = []
+        params.avviso.add('Creazione della pagina di sintesi con le statistiche.')
+        params.avviso.add("Normalmente viene creata alla fine dell'upload delle attività")
+        params.returnController = 'attivita'
+        params.returnAction = 'statisticheDopoConferma'
+        redirect(controller: 'dialogo', action: 'box', params: params)
+    } // fine del metodo
+
+    //--aggiornamento della pagina di statistica
+    def statisticheDopoConferma() {
+        String valore
+        boolean continua = false
+
+        if (params.valore) {
+            if (params.valore instanceof String) {
+                valore = (String) params.valore
+                if (valore.equals(DialogoController.DIALOGO_CONFERMA)) {
+                    if (grailsApplication && grailsApplication.config.login) {
+                        continua = true
+                    } else {
+                        flash.message = 'Devi essere loggato per poter modificare le pagine sul server wiki'
+                    }// fine del blocco if-else
+                }// fine del blocco if
+            }// fine del blocco if
+        }// fine del blocco if
+
+        if (continua) {
+            if (statisticheService) {
+                statisticheService?.attivitaUsate()
+            }// fine del blocco if
+        } else {
+            flash.error = "Annullata l'operazione di creazione delle statistiche"
+        }// fine del blocco if-else
+
+        redirect(action: 'list')
+    } // fine del metodo
+
     def list(Integer max) {
         params.max = Math.min(max ?: 100, 100)
         ArrayList menuExtra
@@ -146,6 +186,7 @@ class AttivitaController {
         menuExtra = [
                 [cont: 'attivita', action: 'download', icon: 'frecciagiu', title: 'Download'],
                 [cont: 'attivita', action: 'uploadAttivita', icon: 'frecciasu', title: 'Upload All'],
+                [cont: 'attivita', action: 'statistiche', icon: 'frecciasu', title: 'Statistiche']
         ]
         // fine della definizione
 

@@ -21,6 +21,7 @@ environments {
     development {
         dataSource {
             dbCreate = "update" // one of 'create', 'create-drop','update'
+//            url = "jdbc:mysql://localhost/${dataBase}?useUnicode=yes&characterEncoding=UTF-8&autoReconnect=true"
             url = "jdbc:mysql://localhost/${dataBase}?useUnicode=yes&characterEncoding=UTF-8&autoReconnect=true"
         } // end of dataSource
     } // end of development

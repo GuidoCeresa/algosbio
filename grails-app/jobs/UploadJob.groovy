@@ -7,9 +7,6 @@ import it.algos.algospref.Pref
 class UploadJob {
     // utilizzo di un service con la businessLogic per l'elaborazione dei dati
     // il service viene iniettato automaticamente
-//    def bioGrailsService
-//    def giornoService
-//    def annoService
     def statisticheService
     def bioService
 
@@ -24,31 +21,6 @@ class UploadJob {
     def execute() {
         //--flag di attivazione
         if (Pref.getBool(LibBio.USA_CRONO_UPLOAD)) {
-
-//            if (Pref.getBool(LibBio.USA_LISTE_BIO_GIORNI)) {
-//                if (bioService && giornoService) {
-//                    giornoService.uploadGiorniNascita(bioService)
-//                    giornoService.uploadGiorniMorte(bioService)
-//                }// fine del blocco if
-//            } else {
-//                if (bioGrailsService) {
-//                    bioGrailsService.uploadGiorniNascita()
-//                    bioGrailsService.uploadGiorniMorte()
-//                }// fine del blocco if
-//            }// fine del blocco if-else
-//
-//            if (Pref.getBool(LibBio.USA_LISTE_BIO_ANNI)) {
-//                if (bioService && annoService) {
-//                    annoService.uploadAnniNascita(bioService)
-//                    annoService.uploadAnniMorte(bioService)
-//                }// fine del blocco if
-//            } else {
-//                if (bioGrailsService) {
-//                    bioGrailsService.uploadAnniNascita()
-//                    bioGrailsService.uploadAnniMorte()
-//                }// fine del blocco if
-//            }// fine del blocco if-else
-
             if (statisticheService) {
                 statisticheService.uploadAll()
                 statisticheService.paginaSintesi()

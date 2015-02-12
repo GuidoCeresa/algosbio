@@ -17,6 +17,7 @@ import it.algos.algos.DialogoController
 import it.algos.algos.TipoDialogo
 import it.algos.algoslib.Lib
 import it.algos.algoslib.LibTesto
+import it.algos.algospref.Pref
 import it.algos.algospref.Preferenze
 import org.codehaus.groovy.grails.commons.DefaultGrailsDomainClass
 import org.hibernate.SessionFactory
@@ -246,7 +247,7 @@ class BioWikiController {
     private boolean dialogoConfermato() {
         boolean isDialogoConfermato = false
         String valore
-        boolean debug = Preferenze.getBool((String) grailsApplication.config.debug)
+        boolean debug = Pref.getBool(LibBio.DEBUG)
         flash.message = 'Operazione annullata. Le voci biografiche non sono state modificate.'
 
         if (params.valore) {

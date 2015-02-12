@@ -47,7 +47,7 @@ class StatisticheService {
      * Aggiorna la pagina wiki di servizio delle attività
      */
     public attivitaUsate() {
-        // variabili e costanti locali di lavoro
+        boolean debug = Pref.getBool(LibBio.DEBUG, false)
         String titolo = PATH + 'Attività'
         String testo = ''
         String summary = Pref.getStr(LibBio.SUMMARY)
@@ -59,7 +59,11 @@ class StatisticheService {
         testo += getTestoBottom(AttivitaNazionalita.attivita)
 
         if (titolo && testo && summary) {
-            new Edit(titolo, testo, summary)
+            if (debug) {
+                new Edit('Utente:Biobot/2', testo, summary)
+            } else {
+                new Edit(titolo, testo, summary)
+            }// fine del blocco if-else
         }// fine del blocco if
     }// fine del metodo
 
@@ -91,7 +95,6 @@ class StatisticheService {
      * Costruisce il testo iniziale della pagina statistiche
      */
     private static String getTestoTop() {
-        // variabili e costanti locali di lavoro
         String testo = ''
         String dataCorrente = LibTime.getGioMeseAnnoLungo(new Date())
 
@@ -111,7 +114,6 @@ class StatisticheService {
      * Costruisce il testo variabile della pagina
      */
     private String getTestoBody(AttivitaNazionalita tipoAttNaz, int numUsate, int numNonUsate) {
-        // variabili e costanti locali di lavoro
         String testo = ''
         int numRecords = BioGrails.count()
         String numVoci = LibTesto.formatNum(numRecords)

@@ -218,8 +218,7 @@ class BioWikiService {
         // variabili e costanti locali di lavoro
         ArrayList<Integer> listaRecordsModificatiBio
         ArrayList<Integer> listaRecordsModificatiWiki
-        int maxDownload
-        boolean debug = Preferenze.getBool((String) grailsApplication.config.debug)
+        boolean debug = Pref.getBool(LibBio.DEBUG)
         ArrayList listaRecordsDatabaseTime
         ArrayList listaRecordsDaControllareTime
         int vociControllate = 0
@@ -231,25 +230,17 @@ class BioWikiService {
         long durata
         String oldDataTxt
 
-        if (debug) {
-            log.warn 'Modalita debug'
-            this.download(idDebug)
-            return 1
-        }// fine del blocco if
+//        if (debug) {
+//            log.warn 'Modalita debug'
+//            this.download(idDebug)
+//            return 1
+//        }// fine del blocco if
 
         // messaggio di log
         log.warn 'Metodo di controllo voci ed aggiornamento records esistenti'
 
         //--Recupera la lista completa dei records presenti nel database
-        listaRecordsDatabaseTime = creaListaRecordsDatabaseTime()
-
-        //--Limita eventualmente la lista secondo i parametri usaLimiteDownload e maxDownload
-        if (Pref.getBool(LibBio.USA_LIMITE_DOWNLOAD)) {
-            maxDownload = Pref.getInt(LibBio.MAX_DOWNLOAD)
-            listaRecordsDaControllareTime = LibArray.estraArray(listaRecordsDatabaseTime, maxDownload)
-        } else {
-            listaRecordsDaControllareTime = listaRecordsDatabaseTime
-        }// fine del blocco if-else
+        listaRecordsDaControllareTime = creaListaRecordsDatabaseTime()
         vociControllate = listaRecordsDaControllareTime.size()
 
         //--Crea la lista delle voci effettivamente modificate sul server wikipedia dall'ultimo controllo
@@ -258,6 +249,16 @@ class BioWikiService {
         //--Crea la lista delle voci che hanno modificato specificatamente il template bio (e non il resto della voce)
 //        listaRecordsModificatiBio = getListaModificateBio(listaRecordsModificatiWiki)
         listaRecordsModificatiBio = listaRecordsModificatiWiki
+
+//        if (debug) {
+//            listaRecordsModificatiBio.add(4937650)
+//            listaRecordsModificatiBio.add(4917439)
+//        }// fine del blocco if
+
+        // patch provvisoria per una voce con 'caratteri' utf8mb4 -> [[Eunjung]]
+        if (listaRecordsModificatiBio.contains(4937650)) {
+            listaRecordsModificatiBio.remove(listaRecordsModificatiBio.indexOf(4937650))
+        }// fine del blocco if
 
         //--Crea o modifica i records corrispondenti alle voci nuove ed a quelle che hanno modificato il template bio
         this.regolaVociNuoveModificate(listaRecordsModificatiBio)
@@ -435,10 +436,16 @@ class BioWikiService {
      *      ultimaLettura (Timestamp)
      */
     private static ArrayList creaListaRecordsDatabaseTime() {
-        // variabili e costanti locali di lavoro
         ArrayList lista
+        int maxDownload
 
-        lista = BioWiki.executeQuery("select pageid,ultimaLettura from BioWiki order by ultimaLettura asc")
+        //--Limita eventualmente la lista secondo i parametri usaLimiteDownload e maxDownload
+        if (Pref.getBool(LibBio.USA_LIMITE_DOWNLOAD)) {
+            maxDownload = Pref.getInt(LibBio.MAX_DOWNLOAD)
+            lista = BioWiki.executeQuery("select pageid,ultimaLettura from BioWiki order by ultimaLettura asc", [max: maxDownload])
+        } else {
+            lista = BioWiki.executeQuery("select pageid,ultimaLettura from BioWiki order by ultimaLettura asc")
+        }// fine del blocco if-else
 
         if (!lista) {
             log.warn "La lista di pageids/ultimaLettura e vuota"

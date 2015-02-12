@@ -167,7 +167,7 @@ class NazionalitaController {
         menuExtra = [
                 [cont: 'nazionalita', action: 'download', icon: 'frecciagiu', title: 'Download'],
                 [cont: 'nazionalita', action: 'uploadNazionalita', icon: 'frecciasu', title: 'Upload'],
-                [cont: 'nazionalita', action: 'statistiche', icon: 'frecciasu', title: 'Statistiche'],
+                [cont: 'nazionalita', action: 'statistiche', icon: 'frecciasu', title: 'Statistiche']
         ]
         // fine della definizione
 

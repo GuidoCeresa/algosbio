@@ -54,6 +54,7 @@ public class WrapBio {
     // nel package generico groovy/java, il service NON viene iniettato automaticamente
     LogWikiService logWikiService = new LogWikiService()
 
+    static boolean transactional = false
     public static String tagAvviso = ' <!--Parametro bio inesistente-->'
 
     private HashMap mappaPar
