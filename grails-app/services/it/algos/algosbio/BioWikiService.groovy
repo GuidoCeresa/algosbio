@@ -229,6 +229,7 @@ class BioWikiService {
         long fine
         long durata
         String oldDataTxt
+        ArrayList<Esclusi> esclusi
 
 //        if (debug) {
 //            log.warn 'Modalita debug'
@@ -250,15 +251,17 @@ class BioWikiService {
 //        listaRecordsModificatiBio = getListaModificateBio(listaRecordsModificatiWiki)
         listaRecordsModificatiBio = listaRecordsModificatiWiki
 
-//        if (debug) {
-//            listaRecordsModificatiBio.add(4937650)
-//            listaRecordsModificatiBio.add(4917439)
-//        }// fine del blocco if
-
-        // patch provvisoria per una voce con 'caratteri' utf8mb4 -> [[Eunjung]]
-        if (listaRecordsModificatiBio.contains(4937650)) {
-            listaRecordsModificatiBio.remove(listaRecordsModificatiBio.indexOf(4937650))
+        if (debug) {
+            listaRecordsModificatiBio.add(4937650)
+            listaRecordsModificatiBio.add(4917439)
         }// fine del blocco if
+
+        // patch provvisoria per una voce con 'caratteri' utf8mb4 -> tipo ->  [[Eunjung]]
+        // le legge da una lista, modificabile 'al volo'
+        esclusi = Esclusi.list()
+        esclusi?.each {
+            listaRecordsModificatiBio.remove(listaRecordsModificatiBio.indexOf(it.pageid))
+        } // fine del ciclo each
 
         //--Crea o modifica i records corrispondenti alle voci nuove ed a quelle che hanno modificato il template bio
         this.regolaVociNuoveModificate(listaRecordsModificatiBio)
@@ -959,13 +962,14 @@ class BioWikiService {
         }// fine del blocco if
 
         if (continua) {
-            wrapBio = new WrapBio(pageid)
-            if (wrapBio.getStatoBio() == StatoBio.bioNormale || wrapBio.getStatoBio() == StatoBio.bioIncompleto) {
-                wrapBio.registraBioWiki()
-            } else {
-                title = wrapBio.getTitoloVoce()
-                log.error "download - La voce ${title}, non è stata registrata"
-            }// fine del blocco if-else
+            BioWiki.withTransaction {
+                wrapBio = new WrapBio(pageid)
+                if (wrapBio.getStatoBio() == StatoBio.bioNormale || wrapBio.getStatoBio() == StatoBio.bioIncompleto) {
+                    wrapBio.registraBioWiki()
+                } else {
+                    title = wrapBio.getTitoloVoce()
+                    log.error "download - La voce ${title}, non è stata registrata"
+                }// fine del blocco if-else
 
 //            testoOld = wrapBio.getTestoVoceOriginale().length()
 //            testoNew = wrapBio.getTestoVoceFinale().length()
@@ -977,6 +981,7 @@ class BioWikiService {
 //                wrapBio.getBioRegistrabile().controllato = true
 //            }// fine del blocco if-else
 //            wrapBio.registraRecordDbSql()
+            }// fine della transazione
         }// fine del blocco if
 
         // valore di ritorno

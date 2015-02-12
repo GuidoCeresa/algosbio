@@ -64,7 +64,7 @@ class ${className}Controller {
         //--titolo visibile sopra la table dei dati
         titoloLista = 'Elenco di '
         titoloLista += Lib.Txt.formatNum(${className}.list(params).size())
-        titoloLista += ' records di antroponimi su un totale di ' + Lib.Txt.formatNum(recordsTotali)
+        titoloLista += ' records su un totale di ' + Lib.Txt.formatNum(recordsTotali)
 
         //--presentazione della view (index), secondo il modello
         //--menuExtra e campiLista possono essere nulli o vuoti

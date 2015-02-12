@@ -112,6 +112,7 @@
         <br>
         <li class="controller"><g:link controller="Pref">Pref</g:link></li>
         <li class="controller"><g:link controller="LoginWiki">Login</g:link></li>
+        <li class="controller"><g:link controller="Esclusi">Esclusioni</g:link></li>
         <br>
         <li class="controller"><g:link controller="Localita">Localita</g:link></li>
         <li class="controller"><g:link controller="Professione">Professioni</g:link></li>
