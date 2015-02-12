@@ -230,6 +230,7 @@ class BioWikiService {
         long durata
         String oldDataTxt
         ArrayList<Esclusi> esclusi
+        int codEscluso
 
 //        if (debug) {
 //            log.warn 'Modalita debug'
@@ -260,7 +261,10 @@ class BioWikiService {
         // le legge da una lista, modificabile 'al volo'
         esclusi = Esclusi.list()
         esclusi?.each {
-            listaRecordsModificatiBio.remove(listaRecordsModificatiBio.indexOf(it.pageid))
+            codEscluso=it.pageid
+            if (esclusi.contains(codEscluso)) {
+                listaRecordsModificatiBio.remove(listaRecordsModificatiBio.indexOf(it.pageid))
+            }// fine del blocco if
         } // fine del ciclo each
 
         //--Crea o modifica i records corrispondenti alle voci nuove ed a quelle che hanno modificato il template bio
