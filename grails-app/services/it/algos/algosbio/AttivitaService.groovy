@@ -24,8 +24,9 @@ class AttivitaService {
     // il service NON viene iniettato automaticamente (perché è nel plugin)
     WikiService wikiService = new WikiService()
 
-
-    public static String TITOLO = 'Modulo:Bio/Plurale attività'
+    public static String TITOLO = 'Modulo:Bio/Plurale nazionalità'
+    public static String TAG_PROGETTO = 'Progetto:Biografie/Attività/'
+    public static String TAG_PARAGRAFO = 'Progetto:Biografie/Nazionalità/'
 
     /**
      * Aggiorna i records leggendoli dalla pagina wiki
@@ -156,7 +157,7 @@ class AttivitaService {
 
         if (attivitaPlurale) {
             attivitaPlurale = LibTesto.primaMinuscola(attivitaPlurale)
-            whereAttivita = NazionalitaService.whereParagrafoAttivita(attivitaPlurale,'')
+            whereAttivita = NazionalitaService.whereParagrafoAttivita(attivitaPlurale, '')
             numPersone = LibBio.bioGrailsCount(whereAttivita)
         }// fine del blocco if
 
@@ -347,5 +348,132 @@ class AttivitaService {
         return getListaNonUsate()?.size()
     } // fine del metodo
 
+    /**
+     * Chiave di selezione del paragrafo con link
+     */
+    public static String elaboraTitoloParagrafoAttivita(String chiaveParagrafo, String tagParagrafoNullo) {
+        String titoloParagrafo
+        String pipe = '|'
+        String plurale = ''
+//        String singolare
+//        Attivita attivita
+//        Genere genere
+
+//        if (chiaveParagrafo) {
+//            plurale = LibTesto.primaMinuscola(chiaveParagrafo)
+//            genere = Genere.findByPlurale(plurale)
+//            if (genere) {
+//                singolare = genere.singolare
+//                if (singolare) {
+//                    attivita = Attivita.findBySingolare(singolare)
+//                    if (attivita) {
+//                        plurale = attivita.plurale
+//                        plurale = LibTesto.primaMaiuscola(plurale)
+//                    }// fine del blocco if
+//                }// fine del blocco if
+//            }// fine del blocco if
+//        }// fine del blocco if
+
+        if (chiaveParagrafo.equals(tagParagrafoNullo)) {
+            titoloParagrafo = chiaveParagrafo
+        } else {
+            plurale = LibTesto.primaMaiuscola(chiaveParagrafo)
+            titoloParagrafo = TAG_PARAGRAFO + plurale + pipe + plurale
+            titoloParagrafo = LibWiki.setQuadre(titoloParagrafo)
+        }// fine del blocco if-else
+
+        return titoloParagrafo
+    }// fine del metodo
+
+    /**
+     * Ritorna una lista di tutte le nazionalità distinta
+     */
+    public static ArrayList<Attivita> getListaAllAttivita() {
+        ArrayList<Attivita> lista = new ArrayList<Attivita>()
+        ArrayList<String> listaPlurali = getListaPlurali()
+        Attivita attivita
+
+        listaPlurali?.each {
+            attivita = Attivita.findByPlurale(it)
+            if (attivita) {
+                lista.add(attivita)
+            }// fine del blocco if
+        }// fine di each
+
+        // valore di ritorno
+        return lista
+    } // fine del metodo
+
+    /**
+     * Elabora la where attività per la query del singolo paragrafo
+     */
+    public static String whereParagrafoAttivita(String attivitaPlurale) {
+        String where = ''
+        String tag = ' attivita_link_id='
+        String tag2 = ' attivita2link_id='
+        String tag3 = ' attivita3link_id='
+        String tagOr = ' OR'
+        ArrayList<Attivita> listaAttivita = Attivita.findAllByPlurale(attivitaPlurale)
+        boolean attivitaMultiple = true
+        Attivita attivita
+        long codice
+
+        if (attivitaPlurale) {
+            listaAttivita?.each {
+                attivita = it
+                codice = attivita.id
+                where += tag + codice + tagOr
+                if (attivitaMultiple) {
+                    where += tag2 + codice + tagOr
+                    where += tag3 + codice + tagOr
+                }// fine del blocco if
+            } // fine del ciclo each
+            where = LibTesto.levaCoda(where, tagOr)
+        }// fine del blocco if
+
+        return where
+    } // fine del metodo
+
+    /**
+     * creazione di una attività
+     * controlla se è normale o grande, per inizializzare la classe corrispondente
+     */
+    public boolean uploadAttivita(Attivita attivita, BioService bioService) {
+        boolean registrata = false
+        int numRecords
+        String whereAttivita
+        String attivitaPlurale
+
+        if (attivita) {
+            attivitaPlurale = LibTesto.primaMinuscola(attivita.plurale)
+            whereAttivita = whereParagrafoAttivita(attivitaPlurale)
+            numRecords = LibBio.bioGrailsCount(whereAttivita)
+
+            if (numRecords < Pref.getInt(LibBio.MAX_VOCI_PAGINA_ATTIVITA, 10000)) {
+                registrata = ListaAttivita.uploadAttivita(attivita, bioService)
+            } else { // @TODO manca classe specifica per grandi numeri
+                registrata = ListaAttivita.uploadAttivita(attivita, bioService)
+            }// fine del blocco if-else
+        }// fine del blocco if
+
+        return registrata
+    } // fine del metodo
+
+    /**
+     * creazione delle liste partendo da BioGrails
+     * elabora e crea tutte le attività
+     */
+    public int uploadAllAttivita(BioService bioService) {
+        int attivitaModificate = 0
+        ArrayList<Attivita> listaAttivita = getListaAllAttivita()
+
+        listaAttivita?.each {
+            if (uploadAttivita(it, bioService)) {
+                attivitaModificate++
+            }// fine del blocco if
+        } // fine del ciclo each
+
+        return attivitaModificate
+    } // fine del metodo
 
 } // fine della service classe

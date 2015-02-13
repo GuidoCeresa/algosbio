@@ -10,16 +10,10 @@ import it.algos.algoswiki.WikiLib
  */
 class ListaNazionalita extends ListaBio {
 
-//    private static String TAG_PROGETTO = 'Progetto:Biografie/Nazionalità/'
-//    private static String TAG_PARAGRAFO = 'Progetto:Biografie/Attività/'
     private String testoPrincipale = ''
 
     public ListaNazionalita() {
         super((Object) null)
-    }// fine del costruttore
-
-    public ListaNazionalita(Nazionalita nazionalita) {
-        super(nazionalita)
     }// fine del costruttore
 
     public ListaNazionalita(Nazionalita nazionalita, BioService bioService) {
@@ -233,42 +227,6 @@ class ListaNazionalita extends ListaBio {
         return titoloParagrafo
     }// fine del metodo
 
-//    /**
-//     * Chiave di selezione del paragrafo con link
-//     */
-//    private String elaboraTitoloParagrafoNazionalita(String chiaveParagrafo, ArrayList<BioGrails> listaVoci) {
-//        String titoloParagrafo
-//        String pipe = '|'
-//        String singolare
-//        String plurale = LibTesto.primaMaiuscola(chiaveParagrafo)
-//        Attivita attivita
-//        BioGrails bio = listaVoci.get(0)
-//        Genere genere
-//
-//        if (bio) {
-//            plurale = LibTesto.primaMinuscola(plurale)
-//            genere = Genere.findByPlurale(plurale)
-//            if (genere) {
-//                singolare = genere.singolare
-//                if (singolare) {
-//                    attivita = Attivita.findBySingolare(singolare)
-//                    if (attivita) {
-//                        plurale = attivita.plurale
-//                        plurale = LibTesto.primaMaiuscola(plurale)
-//                    }// fine del blocco if
-//                }// fine del blocco if
-//            }// fine del blocco if
-//        }// fine del blocco if
-//
-//        if (chiaveParagrafo.equals(tagParagrafoNullo)) {
-//            titoloParagrafo = chiaveParagrafo
-//        } else {
-//            titoloParagrafo = NazionalitaService.TAG_PARAGRAFO + plurale + pipe + chiaveParagrafo
-//            titoloParagrafo = LibWiki.setQuadre(titoloParagrafo)
-//        }// fine del blocco if-else
-//
-//        return titoloParagrafo
-//    }// fine del metodo
 
     /**
      * Recupera la Nazionalita

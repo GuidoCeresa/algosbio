@@ -55,6 +55,7 @@ abstract class ListaBio {
     protected int maxVociParagrafo = 100
     protected String tagLivelloParagrafo = '=='
     protected String tagParagrafoNullo = 'Altre...'
+    protected String tagParagrafoAlfabetico = '...'
     public boolean registrata = false
     public boolean esistonoUominiDonne = false
 
@@ -465,6 +466,7 @@ abstract class ListaBio {
         return elaboraParagrafo(chiaveParagrafo, titoloParagrafo, listaVociOrdinate, listaDidascalie)
     }// fine del metodo
 
+
     protected static String attivitaPluralePerGenere(BioGrails bio) {
         String plurale
         String singolare = bio.attivita
@@ -482,6 +484,7 @@ abstract class ListaBio {
 
         return plurale
     }// fine del metodo
+
 
     protected static String attivitaSecondaPluralePerGenere(BioGrails bio) {
         String plurale
@@ -676,7 +679,7 @@ abstract class ListaBio {
         if (chiave) {
             chiave = chiave.substring(0, 1).toUpperCase()
         } else {
-            chiave = tagParagrafoNullo
+            chiave = tagParagrafoAlfabetico
         }// fine del blocco if-else
 
         return chiave
@@ -811,8 +814,9 @@ abstract class ListaBio {
         String testo = ''
         int num = listaDidascalie.size()
         boolean troppeVoci = (num >= maxVociParagrafo)
+        boolean chiaveNonAlfabetica = (!chiaveParagrafo.equals(tagParagrafoAlfabetico))
 
-        if (usaSottopagine && troppeVoci) {
+        if (usaSottopagine && troppeVoci && chiaveNonAlfabetica) {
             testo += elaboraParagrafoSottoPagina(chiaveParagrafo, titoloParagrafo, listaVociOrdinate)
         } else {
             testo += elaboraParagrafoNormale(titoloParagrafo, listaDidascalie)
@@ -889,7 +893,7 @@ abstract class ListaBio {
         return LibTesto.primaMaiuscola(soggetto) + '/' + chiaveParagrafo
     }// fine del metodo
 
-    protected  String getParagrafoDidascalia(ArrayList<String> listaDidascalie) {
+    protected String getParagrafoDidascalia(ArrayList<String> listaDidascalie) {
         String testo = ''
         String didascalia
 
@@ -952,6 +956,7 @@ abstract class ListaBio {
         if (mappaIn && mappaIn.size() > 1) {
             listaChiavi = mappaIn.keySet()
             listaChiavi.remove(tagParagrafoNullo) //elimino l'asterisco (per metterlo in fondo)
+            listaChiavi.remove(tagParagrafoAlfabetico) //elimino l'asterisco (per metterlo in fondo)
             listaChiavi = ordinaChiavi(listaChiavi)
             if (listaChiavi) {
                 mappaOut = new LinkedHashMap()
@@ -965,6 +970,10 @@ abstract class ListaBio {
                 valore = mappaIn.get(tagParagrafoNullo)
                 if (valore) {
                     mappaOut.put(tagParagrafoNullo, valore)
+                }// fine del blocco if
+                valore = mappaIn.get(tagParagrafoAlfabetico)
+                if (valore) {
+                    mappaOut.put(tagParagrafoAlfabetico, valore)
                 }// fine del blocco if
             }// fine del blocco if
         }// fine del blocco if

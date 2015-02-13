@@ -17,6 +17,7 @@ import it.algos.algos.DialogoController
 import it.algos.algos.TipoDialogo
 import it.algos.algoslib.Lib
 import it.algos.algoslib.LibTesto
+import it.algos.algospref.Pref
 import it.algos.algoswiki.Login
 import org.codehaus.groovy.grails.commons.DefaultGrailsDomainClass
 import org.springframework.dao.DataIntegrityViolationException
@@ -34,6 +35,7 @@ class AttivitaController {
     def attivitaService
     def listaService
     def statisticheService
+    def bioService
     def mailService
 
     def index() {
@@ -107,7 +109,11 @@ class AttivitaController {
     //--passa al metodo effettivo senza nessun dialogo di conferma
     def uploadAttivita() {
         if (grailsApplication && grailsApplication.config.login) {
-            listaService.uploadAttivita()
+            if (bioService && Pref.getBool(LibBio.USA_LISTE_BIO_ATTIVITA)) {
+                attivitaService?.uploadAllAttivita(bioService)
+            } else {
+                listaService.uploadAttivita()
+            }// fine del blocco if-else
             statisticheService.attivitaUsate()
         } else {
             flash.error = 'Devi essere loggato per effettuare un upload di pagine sul server wiki'
@@ -118,11 +124,16 @@ class AttivitaController {
     //--elabora e crea le liste dell'attivita indicato e lo uploada sul server wiki
     //--passa al metodo effettivo senza nessun dialogo di conferma
     def uploadSingolaAttivita(Long id) {
-        def attivita = Attivita.get(id)
-        String plurale = attivita.plurale
+        Attivita attivita = Attivita.get(id)
+        String plurale
 
         if (grailsApplication && grailsApplication.config.login) {
-            new BioAttivita(plurale).registraPagina()
+            if (bioService && Pref.getBool(LibBio.USA_LISTE_BIO_ATTIVITA)) {
+                attivitaService?.uploadAttivita(attivita, bioService)
+            } else {
+                plurale = attivita?.plurale
+                new BioAttivita(plurale).registraPagina()
+            }// fine del blocco if-else
             flash.info = "Eseguito upload delle liste dell'attivita sul server wiki"
         } else {
             flash.error = 'Devi essere loggato per effettuare un upload di pagine sul server wiki'

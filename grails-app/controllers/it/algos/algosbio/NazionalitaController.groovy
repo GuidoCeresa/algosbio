@@ -35,7 +35,6 @@ class NazionalitaController {
     def listaService
     def statisticheService
     def bioService
-    def annoService
 
     def index() {
         redirect(action: 'list', params: params)

@@ -945,6 +945,31 @@ class VersioneBootStrap {
             pref.save(flush: true)
             versioneService.newVersione('Preferenze', 'USA_DUE_COLONNE_STATISTICHE_ATTIVITA di default true')
         }// fine del blocco if
+
+        //--creata una nuova preferenza
+        if (versioneService && versioneService.installaVersione(102)) {
+            Pref pref = new Pref()
+            pref.ordine = Pref.list().size() + 1
+            pref.code = LibBio.USA_SUDDIVISIONE_UOMO_DONNA_ATT
+            pref.descrizione = 'Suddivide in uomini e donne le liste di attività'
+            pref.type = Type.booleano
+            pref.bool = false
+            pref.save(flush: true)
+            versioneService.newVersione('Preferenze', 'USA_SUDDIVISIONE_UOMO_DONNA_ATT di default false')
+        }// fine del blocco if
+
+        //--creata una nuova preferenza
+        if (versioneService && versioneService.installaVersione(103)) {
+            Pref pref = new Pref()
+            pref.ordine = Pref.list().size() + 1
+            pref.code = LibBio.MAX_VOCI_PAGINA_ATTIVITA
+            pref.descrizione = 'Numero di voci di attività per attivare la creazione per pagine separate'
+            pref.type = Type.intero
+            pref.intero = 10000
+            pref.save(flush: true)
+            versioneService.newVersione('Preferenze', 'MAX_VOCI_PAGINA_ATTIVITA di default 10.000')
+        }// fine del blocco if
+
     }// fine della closure
 
 
