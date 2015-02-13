@@ -5,6 +5,8 @@ import it.algos.algoslib.LibTime
 import it.algos.algoslib.LibWiki
 import it.algos.algospref.Pref
 import it.algos.algoswiki.Edit
+import it.algos.algoswiki.TipoAllineamento
+import it.algos.algoswiki.WikiLib
 
 /**
  * Created by gac on 11/02/15.
@@ -12,6 +14,7 @@ import it.algos.algoswiki.Edit
 abstract class Statistiche {
 
     protected static String PATH = 'Progetto:Biografie/'
+    protected static String DISCUSSIONI_PATH = 'Discussioni ' + PATH
     protected static String A_CAPO = '\n'
     protected static HashMap mappaSintesi = new HashMap()
     protected static int NUOVA_ATTESA = 5
@@ -19,6 +22,7 @@ abstract class Statistiche {
     protected static boolean USA_SPAZI = true
     protected static String TITOLO = 'Modulo:Bio/Plurale'
     protected String nomeAttNaz
+    protected String inversoNomeAttNaz
 
     public Statistiche() {
         elaboraParametri()
@@ -131,10 +135,36 @@ abstract class Statistiche {
 
     /**
      * Tabella AttNaz utilizzate
+     */
+    private String creaTabellaUsate() {
+        String testoTabella
+        HashMap mappa = new HashMap()
+
+        mappa.put('titoli', arrayTitolo())
+        mappa.put('lista', listaRigheUsate())
+        mappa.put('width', '70')
+        mappa.put('align', TipoAllineamento.randomBaseSin)
+        testoTabella = WikiLib.creaTabellaSortable(mappa)
+
+        // valore di ritorno
+        return testoTabella
+    }// fine del metodo
+
+    /**
+     /**
+     * Restituisce l'array delle riga del titolo della tabella delle attività
      * Sovrascritto
      */
-    protected String creaTabellaUsate() {
-        return ''
+    protected ArrayList arrayTitolo() {
+        return null
+    }// fine del metodo
+
+    /**
+     * Singole righe della tabella
+     * Sovrascritto
+     */
+    protected ArrayList listaRigheUsate() {
+        return null
     }// fine del metodo
 
     /**
@@ -142,7 +172,39 @@ abstract class Statistiche {
      * Sovrascritto
      */
     protected String creaTabellaNonUsate() {
-        return ''
+        String testoTabella
+        def mappa = new HashMap()
+
+        //costruisce il testo della tabella
+        mappa.put('titoli', arrayTitoloNonUsate())
+        mappa.put('lista', listaRigheNonUsate())
+        mappa.put('width', '60')
+        testoTabella = WikiLib.creaTabellaSortable(mappa)
+
+        return testoTabella
+    }// fine del metodo
+
+    /**
+     /**
+     * Restituisce l'array delle riga del titolo della tabella delle attività/nazionalità NON utilizzate
+     */
+    private ArrayList arrayTitoloNonUsate() {
+        ArrayList listaTitoli = new ArrayList()
+        String pos = '#'
+        String testo = "$nomeAttNaz non utilizzate"
+
+        listaTitoli.add(LibWiki.setBold(pos))
+        listaTitoli.add(LibWiki.setBold(testo))
+
+        return listaTitoli
+    }// fine del metodo
+
+    /**
+     * Singole righe della tabella
+     * Sovrascritto
+     */
+    protected ArrayList listaRigheNonUsate() {
+        return null
     }// fine del metodo
 
     /**
@@ -150,7 +212,38 @@ abstract class Statistiche {
      * Sovrascritto
      */
     protected String getTestoBottom() {
-        return ''
+        String testo = ''
+
+        testo += '==Note=='
+        testo += A_CAPO
+        testo += '<references/>'
+        testo += A_CAPO
+        testo += A_CAPO
+        testo += '==Voci correlate=='
+        testo += A_CAPO
+        testo += A_CAPO
+        testo += "*[[$DISCUSSIONI_PATH$nomeAttNaz]]"
+        testo += A_CAPO
+        testo += "*[[$PATH$inversoNomeAttNaz]]"
+        testo += A_CAPO
+        testo += '*[[:Categoria:Bio parametri]]'
+        testo += A_CAPO
+        testo += '*[[:Categoria:Bio nazionalità]]'
+        testo += A_CAPO
+        testo += '*[[:Categoria:Bio attività]]'
+        testo += A_CAPO
+        testo += '*[https://it.wikipedia.org/w/index.php?title=Modulo:Bio/Plurale_nazionalità&action=edit Lista delle nazionalità nel modulo (protetto)]'
+        testo += A_CAPO
+        testo += '*[https://it.wikipedia.org/w/index.php?title=Modulo:Bio/Plurale_attività&action=edit Lista delle attività nel modulo (protetto)]'
+        testo += A_CAPO
+        testo += A_CAPO
+        testo += '<noinclude>'
+        testo += '[[Categoria:Progetto Biografie|{{PAGENAME}}]]'
+        testo += '</noinclude>'
+
+        // valore di ritorno
+        return testo
     }// fine del metodo
+
 
 } // fine della classe

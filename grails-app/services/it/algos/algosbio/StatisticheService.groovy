@@ -47,48 +47,14 @@ class StatisticheService {
      * Aggiorna la pagina wiki di servizio delle attività
      */
     public attivitaUsate() {
-        boolean debug = Pref.getBool(LibBio.DEBUG, false)
-        String titolo = PATH + 'Attività'
-        String testo = ''
-        String summary = Pref.getStr(LibBio.SUMMARY)
-        int numUsate = AttivitaService.numAttivita()
-        int numNonUsate = AttivitaService.numAttivitaNonUsate()
-
-        testo += getTestoTop()
-        testo += getTestoBody(AttivitaNazionalita.attivita, numUsate, numNonUsate)
-        testo += getTestoBottom(AttivitaNazionalita.attivita)
-
-        if (titolo && testo && summary) {
-            if (debug) {
-                new Edit('Utente:Biobot/2', testo, summary)
-            } else {
-                new Edit(titolo, testo, summary)
-            }// fine del blocco if-else
-        }// fine del blocco if
+        new StatisticheAttivita()
     }// fine del metodo
 
     /**
      * Aggiorna la pagina wiki di servizio delle nazionalità
      */
     public nazionalitaUsate() {
-        boolean debug = Pref.getBool(LibBio.DEBUG, false)
-        String titolo = PATH + 'Nazionalità'
-        String testo = ''
-        String summary = Pref.getStr(LibBio.SUMMARY)
-        int numUsate = NazionalitaService.numNazionalita()
-        int numNonUsate = NazionalitaService.numNazionalitaNonUsate()
-
-        testo += getTestoTop()
-        testo += getTestoBody(AttivitaNazionalita.nazionalita, numUsate, numNonUsate)
-        testo += getTestoBottom(AttivitaNazionalita.nazionalita)
-
-        if (titolo && testo && summary) {
-            if (debug) {
-                new Edit('Utente:Biobot/2', testo, summary)
-            } else {
-                new Edit(titolo, testo, summary)
-            }// fine del blocco if-else
-        }// fine del blocco if
+        new StatisticheNazionalita()
     }// fine del metodo
 
     /**
@@ -110,245 +76,12 @@ class StatisticheService {
         return testo
     }// fine del metodo
 
-    /**
-     * Costruisce il testo variabile della pagina
-     */
-    private String getTestoBody(AttivitaNazionalita tipoAttNaz, int numUsate, int numNonUsate) {
-        String testo = ''
-        int numRecords = BioGrails.count()
-        String numVoci = LibTesto.formatNum(numRecords)
-        numVoci = LibWiki.setBold(numVoci)
-        String ref1 = "Le nazionalità sono quelle '''convenzionalmente''' [[Discussioni progetto:Biografie/Nazionalità|previste]] dalla comunità ed inserite nell'[[$NazionalitaService.TITOLO|elenco]] utilizzato dal [[template:Bio|template Bio]]"
-        String ref2 = "La '''differenza''' tra le voci della categoria e quelle utilizzate è dovuta allo specifico utilizzo del [[template:Bio|template Bio]] ed in particolare all'uso del parametro Categorie=NO"
-        String ref3 = "Si tratta di attività '''originariamente''' discusse ed inserite nell'[[$NazionalitaService.TITOLO|elenco]] che non sono mai state utilizzate o che sono state in un secondo tempo sostituite da altre denominazioni"
-        ref1 = LibWiki.setRef(ref1)
-        ref2 = LibWiki.setRef(ref2)
-        ref3 = LibWiki.setRef(ref3)
 
-        testo += '==Nazionalità usate=='
-        testo += A_CAPO
-        switch (tipoAttNaz) {
-            case AttivitaNazionalita.nazionalita:
-                testo += "'''$numUsate''' nazionalità $ref1 '''effettivamente utilizzate''' nelle [[:Categoria:BioBot|$numVoci]] $ref2 voci biografiche che usano il [[template:Bio|template Bio]]."
-                testo += A_CAPO
-                testo += this.creaTabellaNazionalita()
-                break
-            case AttivitaNazionalita.attivita:
-                testo += "'''$numUsate''' attività '''effettivamente utilizzate''' nelle [[:Categoria:BioBot|$numVoci]] $ref2 voci biografiche che usano il [[template:Bio|template Bio]]."
-                testo += A_CAPO
-                testo += this.creaTabellaAttivita()
-                break
-            default: // caso non definito
-                break
-        } // fine del blocco switch
-        testo += A_CAPO
-        testo += A_CAPO
-        testo += '==Nazionalità non usate=='
-        testo += A_CAPO
-        switch (tipoAttNaz) {
-            case AttivitaNazionalita.nazionalita:
-                testo += "'''$numNonUsate''' nazionalità presenti nel [[$AttivitaService.TITOLO|modulo]] ma '''non utilizzate''' $ref3 in nessuna voce biografica"
-                testo += A_CAPO
-                testo += this.creaTabellaNazionalitaNonUsate()
-                break
-            case AttivitaNazionalita.attivita:
-                testo += "'''$numNonUsate''' attività presenti nel [[$NazionalitaService.TITOLO|modulo]] ma '''non utilizzate''' in nessuna voce biografica"
-                testo += A_CAPO
-                testo += this.creaTabellaAttivitaNonUsate()
-                break
-            default: // caso non definito
-                break
-        } // fine del blocco switch
-        testo += A_CAPO
 
-        return testo
-    }// fine del metodo
 
-    /**
-     * Costruisce il testo finale della pagina
-     */
-    private String getTestoBottom(AttivitaNazionalita tipoAttNaz) {
-        String testo = ''
-        boolean loMettoPerchéFunziona = false
 
-        testo += '==Note=='
-        testo += A_CAPO
-        testo += '<references/>'
-        testo += A_CAPO
-        testo += A_CAPO
-        testo += '==Voci correlate=='
-        testo += A_CAPO
-        if (loMettoPerchéFunziona) {
-            testo += A_CAPO
-            testo += '*[[Progetto:Biografie/Statistiche]]'
-        }// fine del blocco if
-        testo += A_CAPO
-        switch (tipoAttNaz) {
-            case AttivitaNazionalita.attivita:
-                testo += '*[[Progetto:Biografie/Nazionalità]]'
-                break
-            case AttivitaNazionalita.nazionalita:
-                testo += '*[[Discussioni progetto:Biografie/Nazionalità|Progetto:Biografie/Nazionalità]]'
-                testo += A_CAPO
-                testo += '*[[Progetto:Biografie/Attività]]'
-                break
-            default: // caso non definito
-                break
-        } // fine del blocco switch
-        if (loMettoPerchéFunziona) {
-            testo += A_CAPO
-            testo += '*[[Progetto:Biografie/Parametri]]'
-        }// fine del blocco if
-        testo += A_CAPO
-        testo += '*[[:Categoria:Bio parametri]]'
-        testo += A_CAPO
-        testo += '*[[:Categoria:Bio nazionalità]]'
-        testo += A_CAPO
-        testo += '*[[:Categoria:Bio attività]]'
-        testo += A_CAPO
-        testo += '*[https://it.wikipedia.org/w/index.php?title=Modulo:Bio/Plurale_attività&action=edit Lista delle attività nel modulo (protetto)]'
-        testo += A_CAPO
-        testo += '*[https://it.wikipedia.org/w/index.php?title=Modulo:Bio/Plurale_nazionalità&action=edit Lista delle nazionalità nel modulo (protetto)]'
-        testo += A_CAPO
-        testo += A_CAPO
-        testo += '<noinclude>'
-        testo += '[[Categoria:Progetto Biografie|{{PAGENAME}}]]'
-        testo += '</noinclude>'
 
-        // valore di ritorno
-        return testo
-    }// fine del metodo
 
-    /**
-     * Costruisce la tabella delle attività
-     *
-     * @return testo
-     */
-    def creaTabellaAttivita() {
-        // variabili e costanti locali di lavoro
-        String testoTabella
-        ArrayList listaRighe = new ArrayList()
-        def listaAttivita
-        def mappa = new HashMap()
-        int k = 0
-
-        listaRighe.add(getRigaTitolo(AttivitaNazionalita.attivita))
-        listaAttivita = AttivitaService.getLista()
-        listaAttivita?.each {
-            k++
-            listaRighe.add(attivitaService.getRigaAttivita(k, it))
-        }// fine di each
-
-        //costruisce il testo della tabella
-        mappa.put('lista', listaRighe)
-        mappa.put('width', '60')
-//        mappa.putAt('align', TipoAllineamento.secondaSinistra)
-        testoTabella = WikiLib.creaTabellaSortable(mappa)
-
-        // valore di ritorno
-        return testoTabella
-    }// fine del metodo
-
-    /**
-     * Costruisce la tabella delle attività
-     *
-     * @return testo
-     */
-    def creaTabellaNazionalita() {
-        // variabili e costanti locali di lavoro
-        String testoTabella = ''
-        ArrayList listaRighe = new ArrayList()
-        ArrayList<Nazionalita> listaNazionalita
-        def mappa = new HashMap()
-        int pos = 0
-        int numVoci
-
-        listaNazionalita = NazionalitaService.getListaAllNazionalita()
-        for (Nazionalita nazionalita : listaNazionalita) {
-            numVoci = NazionalitaService.bioGrailsCount(nazionalita)
-            if (numVoci > 0) {
-                pos++
-                listaRighe.add(nazionalitaService.getRigaNazionalita(pos, nazionalita, numVoci))
-            }// fine del blocco if
-        } // fine del ciclo for-each
-
-        //costruisce il testo della tabella
-        mappa.put('titoli', getArrayTitolo(AttivitaNazionalita.nazionalita))
-        mappa.put('lista', listaRighe)
-        mappa.put('width', '70')
-        mappa.put('align', TipoAllineamento.randomBaseSin)
-        testoTabella = WikiLib.creaTabellaSortable(mappa)
-
-        // valore di ritorno
-        return testoTabella
-    }// fine del metodo
-
-    /**
-     * Costruisce la tabella delle attività NON utilizzate
-     *
-     * @return testo
-     */
-    def creaTabellaAttivitaNonUsate() {
-        // variabili e costanti locali di lavoro
-        String testoTabella
-        def listaRighe = new ArrayList()
-        def listaAttivita
-        def mappa = new HashMap()
-        int k = 0
-
-        listaRighe.add(getRigaTitoloNonUsate(AttivitaNazionalita.attivita))
-        listaAttivita = AttivitaService.getListaNonUsate()
-        listaAttivita?.each {
-            k++
-            listaRighe.add(attivitaService.getRigaAttivitaNonUsate(k, it))
-        }// fine di each
-
-        //costruisce il testo della tabella
-        mappa.put('lista', listaRighe)
-        mappa.put('width', '60')
-//        mappa.putAt('align', TipoAllineamento.secondaSinistra)
-        testoTabella = WikiLib.creaTabellaSortable(mappa)
-
-        // valore di ritorno
-        return testoTabella
-    } // fine della closure
-
-    /**
-     * Costruisce la tabella delle nazionalità NON utilizzate
-     *
-     * @return testo
-     */
-    def creaTabellaNazionalitaNonUsate() {
-        // variabili e costanti locali di lavoro
-        String testoTabella
-        def listaRighe = new ArrayList()
-        def listaNazionalita
-        def mappa = new HashMap()
-        int k = 0
-
-        listaRighe.add(getRigaTitoloNonUsate(AttivitaNazionalita.attivita))
-        listaNazionalita = NazionalitaService.getListaNonUsate()
-        listaNazionalita?.each {
-            k++
-            listaRighe.add(nazionalitaService.getRigaNazionalitaNonUsate(k, it))
-        }// fine di each
-
-        //costruisce il testo della tabella
-        mappa.put('lista', listaRighe)
-        mappa.put('width', '60')
-//        mappa.putAt('align', TipoAllineamento.secondaSinistra)
-        testoTabella = WikiLib.creaTabellaSortable(mappa)
-
-        // valore di ritorno
-        return testoTabella
-    } // fine della closure
-
-    /**
-     * Restituisce la riga del titolo della tabella delle attività
-     */
-    private String getRigaTitolo(AttivitaNazionalita tipoAttNaz) {
-        return LibArray.creaStringa(getArrayTitolo(tipoAttNaz), ',')
-    }// fine del metodo
 
     /**
      * Restituisce l'array delle riga del titolo della tabella delle attività
@@ -389,28 +122,6 @@ class StatisticheService {
 
         // valore di ritorno
         return lista
-    }// fine del metodo
-
-    /**
-     * Restituisce l'array delle riga del titolo della tabella delle attività NON utilizzate
-     */
-    def getRigaTitoloNonUsate(AttivitaNazionalita tipoAttNaz) {
-        // variabili e costanti locali di lavoro
-        def riga = ''
-
-        switch (tipoAttNaz) {
-            case AttivitaNazionalita.attivita:
-                riga = ["'''#'''", "'''attività non utilizzate'''"]
-                break
-            case AttivitaNazionalita.nazionalita:
-                riga = ["'''#'''", "'''nazionalità non utilizzate'''"]
-                break
-            default: // caso non definito
-                break
-        } // fine del blocco switch
-
-        // valore di ritorno
-        return riga
     }// fine del metodo
 
     public enum AttivitaNazionalita {

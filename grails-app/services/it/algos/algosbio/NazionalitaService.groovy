@@ -175,7 +175,7 @@ class NazionalitaService {
      *
      * Lista del campo ''plurale'' come stringa
      */
-    public static getListaNonUsate() {
+    public static ArrayList<String> getListaNonUsate() {
         // variabili e costanti locali di lavoro
         def lista = new ArrayList()
         def listaPlurali
@@ -255,7 +255,7 @@ class NazionalitaService {
      *
      *  -plurale dell'attività
      */
-    public getRigaNazionalitaNonUsate(num, plurale) {
+    public static getRigaNazionalitaNonUsate(num, plurale) {
         // variabili e costanti locali di lavoro
         def riga = new ArrayList()
 

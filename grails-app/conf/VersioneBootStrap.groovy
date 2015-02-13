@@ -933,6 +933,18 @@ class VersioneBootStrap {
             pref.save(flush: true)
             versioneService.newVersione('Preferenze', 'USA_GIORNI_ANNI_RAGGRUPPATI di default true')
         }// fine del blocco if
+
+        //--creata una nuova preferenza
+        if (versioneService && versioneService.installaVersione(101)) {
+            Pref pref = new Pref()
+            pref.ordine = Pref.list().size() + 1
+            pref.code = LibBio.USA_DUE_COLONNE_STATISTICHE_ATTIVITA
+            pref.descrizione = "Nelle statistiche di attività, usa sei colonne: liste e categorie (oltre ai numeri)"
+            pref.type = Type.booleano
+            pref.bool = true
+            pref.save(flush: true)
+            versioneService.newVersione('Preferenze', 'USA_DUE_COLONNE_STATISTICHE_ATTIVITA di default true')
+        }// fine del blocco if
     }// fine della closure
 
 

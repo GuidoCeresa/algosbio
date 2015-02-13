@@ -141,6 +141,29 @@ class AttivitaService {
     } // fine del metodo
 
     /**
+     * Conteggio delle voci presenti in BioGrails per ogni attività
+     */
+    public static int bioGrailsCount(Attivita attivita) {
+        return bioGrailsCount(attivita?.plurale)
+    }// fine del metodo
+
+    /**
+     * Conteggio delle voci presenti in BioGrails per ogni attività
+     */
+    public static int bioGrailsCount(String attivitaPlurale) {
+        int numPersone = 0
+        String whereAttivita
+
+        if (attivitaPlurale) {
+            attivitaPlurale = LibTesto.primaMinuscola(attivitaPlurale)
+            whereAttivita = NazionalitaService.whereParagrafoAttivita(attivitaPlurale,'')
+            numPersone = LibBio.bioGrailsCount(whereAttivita)
+        }// fine del blocco if
+
+        return numPersone
+    }// fine del metodo
+
+    /**
      * Ritorna una lista di una mappa per ogni attività distinta
      *
      * La mappa contiene:
@@ -248,7 +271,7 @@ class AttivitaService {
      *  -numero di voci che nel campo attivita2 usano tutti records di attività che hanno quel plurale
      *  -numero di voci che nel campo attivita3 usano tutti records di attività che hanno quel plurale
      */
-    def getRigaAttivita = { num, mappa ->
+    def static getRigaAttivita = { num, mappa ->
         // variabili e costanti locali di lavoro
         def riga = new ArrayList()
         boolean usaListe = true
@@ -297,7 +320,7 @@ class AttivitaService {
      *
      *  -plurale dell'attività
      */
-    public getRigaAttivitaNonUsate(num, plurale) {
+    public static getRigaAttivitaNonUsate(num, plurale) {
         // variabili e costanti locali di lavoro
         def riga = new ArrayList()
 
@@ -323,5 +346,6 @@ class AttivitaService {
     public static numAttivitaNonUsate() {
         return getListaNonUsate()?.size()
     } // fine del metodo
+
 
 } // fine della service classe

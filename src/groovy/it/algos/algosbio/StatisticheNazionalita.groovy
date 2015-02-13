@@ -4,6 +4,8 @@ import it.algos.algoslib.LibTesto
 import it.algos.algoslib.LibWiki
 import it.algos.algospref.Pref
 import it.algos.algoswiki.Edit
+import it.algos.algoswiki.TipoAllineamento
+import it.algos.algoswiki.WikiLib
 
 /**
  * Created by gac on 11/02/15.
@@ -24,8 +26,8 @@ class StatisticheNazionalita extends Statistiche {
     protected elaboraParametri() {
         super.elaboraParametri()
         nomeAttNaz = 'Nazionalità'
+        inversoNomeAttNaz = 'Attività'
     }// fine del metodo
-
 
     /**
      * Numero AttNaz utilizzate
@@ -46,21 +48,118 @@ class StatisticheNazionalita extends Statistiche {
     }// fine del metodo
 
     /**
-     * Tabella AttNaz utilizzate
+     * Restituisce l'array delle riga del titolo della tabella delle attività
      * Sovrascritto
      */
     @Override
-    protected String creaTabellaUsate() {
-        return ''
+    protected ArrayList arrayTitolo() {
+        ArrayList lista = new ArrayList()
+        boolean usaDueColonne = Pref.getBool(LibBio.USA_DUE_COLONNE_STATISTICHE_NAZIONALITA, true)
+        String ref1 = "Nelle liste le biografie sono suddivise per attività rilevanti della persona. "
+        ref1 += "Se il numero di voci di un paragrafo diventa rilevante, vengono create delle sottopagine specifiche di quella attività. "
+        ref1 += "Le sottopagine sono suddivise a loro volta in paragrafi alfabetici secondo l'iniziale del cognome."
+        ref1 = LibWiki.setRef(ref1)
+        String ref2 = "Le categorie possono avere sottocategorie e suddivisioni diversamente articolate e possono avere anche voci che hanno implementato la categoria stessa al di fuori del [[template:Bio|template Bio]]."
+        ref2 = LibWiki.setRef(ref2)
+
+        lista.add(LibWiki.setBold(SPAZIO + SPAZIO + SPAZIO + SPAZIO + '#'))
+        if (usaDueColonne) {
+            lista.add(SPAZIO + LibWiki.setBold('lista') + " $ref1")
+            lista.add(SPAZIO + LibWiki.setBold('categoria') + " $ref2")
+        } else {
+            lista.add(LibWiki.setBold('nazionalità utilizzate'))
+        }// fine del blocco if-else
+        lista.add(LibWiki.setBold(SPAZIO + SPAZIO + SPAZIO + SPAZIO + 'voci'))
+
+        // valore di ritorno
+        return lista
     }// fine del metodo
 
     /**
-     * Tabella AttNaz non utilizzate
+     * Singole righe della tabella
      * Sovrascritto
      */
     @Override
-    protected String creaTabellaNonUsate() {
-        return ''
+    protected ArrayList listaRigheUsate() {
+        ArrayList listaRighe = new ArrayList()
+        ArrayList<Nazionalita> listaNazionalita
+        int pos = 0
+        int numVoci
+
+        listaNazionalita = NazionalitaService.getListaAllNazionalita()
+        for (Nazionalita nazionalita : listaNazionalita) {
+            numVoci = NazionalitaService.bioGrailsCount(nazionalita)
+            if (numVoci > 0) {
+                pos++
+                listaRighe.add(getRigaNazionalita(pos, nazionalita, numVoci))
+            }// fine del blocco if
+        } // fine del ciclo for-each
+
+        return listaRighe
+    }// fine del metodo
+
+    /**
+     * Restituisce l'array delle riga del parametro per le nazionalita
+     * La mappa contiene:
+     *  -plurale dell'attività
+     *  -numero di voci che nel campo nazionalita usano tutti records di nazionalita che hanno quel plurale
+     */
+    public static ArrayList getRigaNazionalita(int pos, Nazionalita nazionalita, int numVoci) {
+        // variabili e costanti locali di lavoro
+        ArrayList riga = new ArrayList()
+        String tagCat = ':Categoria:'
+        String tagListe = StatisticheService.PATH + 'Nazionalità/'
+        String pipe = '|'
+        String plurale = ''
+        String lista
+        String categoria = ''
+        boolean usaDueColonne = Pref.getBool(LibBio.USA_DUE_COLONNE_STATISTICHE_NAZIONALITA, true)
+
+        if (nazionalita) {
+            plurale = nazionalita.plurale
+            numVoci = NazionalitaService.bioGrailsCount(plurale)
+            lista = tagListe + LibTesto.primaMaiuscola(plurale) + pipe + LibTesto.primaMinuscola(plurale)
+            lista = LibWiki.setQuadre(lista)
+            lista = SPAZIO + lista
+            if (usaDueColonne) {
+                categoria = tagCat + LibTesto.primaMinuscola(plurale) + pipe + plurale
+                categoria = LibWiki.setQuadre(categoria)
+                categoria = SPAZIO + categoria
+            }// fine del blocco if
+        } else {
+            lista = plurale
+        }// fine del blocco if-else
+
+        //riga.add(getColore(mappa))
+        riga.add(pos)
+        riga.add(lista)
+        if (usaDueColonne) {
+            riga.add(categoria)
+        }// fine del blocco if
+        riga.add(numVoci)
+
+        // valore di ritorno
+        return riga
+    } // fine della closure
+
+    /**
+     * Singole righe della tabella
+     * Sovrascritto
+     */
+    @Override
+    protected ArrayList listaRigheNonUsate() {
+        ArrayList listaRighe = new ArrayList()
+        ArrayList listaNazionalita
+        int pos = 0
+
+        listaNazionalita = NazionalitaService.getListaNonUsate()
+        for (String nazionalita : listaNazionalita) {
+            pos++
+            listaRighe.add(NazionalitaService.getRigaNazionalitaNonUsate(pos, nazionalita))
+        } // fine del ciclo for-each
+
+        // valore di ritorno
+        return listaRighe
     }// fine del metodo
 
 } // fine della classe
