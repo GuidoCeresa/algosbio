@@ -495,7 +495,6 @@ class NazionalitaService {
                     attivita = Attivita.findBySingolare(singolare)
                     if (attivita) {
                         plurale = attivita.plurale
-                        plurale = LibTesto.primaMaiuscola(plurale)
                     }// fine del blocco if
                 }// fine del blocco if
             }// fine del blocco if
@@ -504,6 +503,7 @@ class NazionalitaService {
         if (chiaveParagrafo.equals(tagParagrafoNullo)) {
             titoloParagrafo = chiaveParagrafo
         } else {
+            plurale = LibTesto.primaMaiuscola(plurale)
             titoloParagrafo = TAG_PARAGRAFO + plurale + pipe + chiaveParagrafo
             titoloParagrafo = LibWiki.setQuadre(titoloParagrafo)
         }// fine del blocco if-else

@@ -223,6 +223,11 @@ class ListaAttivita extends ListaBio {
         attivitaMadre = LibTesto.primaMaiuscola(attivitaMadre)
         String tagCategoria = "[[Categoria:Bio attività|${attivita}]]"
 
+        //corregge categoria
+        if (attivitaMadre.contains(SLASH)) {
+            attivitaMadre = LibTesto.levaDopo(attivitaMadre, SLASH)
+        }// fine del blocco if
+
         testo += aCapo
         testo += super.getVociCorrelate()
         testo += aCapo

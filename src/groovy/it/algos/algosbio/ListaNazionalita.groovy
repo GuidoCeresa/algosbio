@@ -191,6 +191,11 @@ class ListaNazionalita extends ListaBio {
             }// fine del blocco if
         }// fine del blocco if
 
+        //corregge categoria
+        if (nazionalitaMadre.contains(SLASH)) {
+            nazionalitaMadre = LibTesto.levaDopo(nazionalitaMadre, SLASH)
+        }// fine del blocco if
+
         testo += aCapo
         testo += super.getVociCorrelate()
         testo += aCapo

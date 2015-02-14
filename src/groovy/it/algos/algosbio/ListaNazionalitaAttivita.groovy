@@ -47,50 +47,49 @@ class ListaNazionalitaAttivita extends ListaNazionalita {
         sottoVoce.elaboraPagina()
     }// fine del metodo
 
-    /**
-     * Piede della pagina
-     * Sovrascritto
-     */
-    @Override
-    protected String elaboraFooter() {
-        String testo = ''
-        String nazionalita = soggetto
-        String nazionalitaMadre = soggettoMadre
-        nazionalita = LibTesto.primaMaiuscola(nazionalita)
-        nazionalitaMadre = LibTesto.primaMaiuscola(nazionalitaMadre)
-        String tagCategoria = "[[Categoria:Bio nazionalità|${nazionalita}]]"
-        String tagSlash = '/'
-
-        if (numDidascalie > listaBiografie?.size()) {
-            testo += aCapo
-            testo += super.getNote('Alcune persone sono citate più volte perché hanno diverse attività')
-            if (usaSuddivisioneUomoDonna && esistonoUominiDonne) {
-                testo += aCapo
-            }// fine del blocco if
-        }// fine del blocco if
-
-        //corregge categoria
-        if (nazionalitaMadre.contains(tagSlash)) {
-            nazionalitaMadre = LibTesto.levaDopo(nazionalitaMadre, tagSlash)
-        }// fine del blocco if
-
-        testo += aCapo
-        testo += super.getVociCorrelate()
-        testo += aCapo
-        testo += "*[[:Categoria:${nazionalitaMadre}]]"
-        testo += aCapo
-        testo += '*[[Progetto:Biografie/Nazionalità]]'
-        testo += aCapo
-        testo += aCapo
-        testo += '{{Portale|biografie}}'
-        testo += aCapo
-        if (usaInclude) {
-            testo += LibBio.setNoInclude(tagCategoria)
-        } else {
-            testo += tagCategoria
-        }// fine del blocco if-else
-
-        return testo
-    }// fine del metodo
+//    /**
+//     * Piede della pagina
+//     * Sovrascritto
+//     */
+//    @Override
+//    protected String elaboraFooter() {
+//        String testo = ''
+//        String nazionalita = soggetto
+//        String nazionalitaMadre = soggettoMadre
+//        nazionalita = LibTesto.primaMaiuscola(nazionalita)
+//        nazionalitaMadre = LibTesto.primaMaiuscola(nazionalitaMadre)
+//        String tagCategoria = "[[Categoria:Bio nazionalità|${nazionalita}]]"
+//
+//        if (numDidascalie > listaBiografie?.size()) {
+//            testo += aCapo
+//            testo += super.getNote('Alcune persone sono citate più volte perché hanno diverse attività')
+//            if (usaSuddivisioneUomoDonna && esistonoUominiDonne) {
+//                testo += aCapo
+//            }// fine del blocco if
+//        }// fine del blocco if
+//
+//        //corregge categoria
+//        if (nazionalitaMadre.contains(SLASH)) {
+//            nazionalitaMadre = LibTesto.levaDopo(nazionalitaMadre, SLASH)
+//        }// fine del blocco if
+//
+//        testo += aCapo
+//        testo += super.getVociCorrelate()
+//        testo += aCapo
+//        testo += "*[[:Categoria:${nazionalitaMadre}]]"
+//        testo += aCapo
+//        testo += '*[[Progetto:Biografie/Nazionalità]]'
+//        testo += aCapo
+//        testo += aCapo
+//        testo += '{{Portale|biografie}}'
+//        testo += aCapo
+//        if (usaInclude) {
+//            testo += LibBio.setNoInclude(tagCategoria)
+//        } else {
+//            testo += tagCategoria
+//        }// fine del blocco if-else
+//
+//        return testo
+//    }// fine del metodo
 
 }// fine della classe

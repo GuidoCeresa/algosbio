@@ -19,6 +19,7 @@ import it.algos.algoslib.Lib
 import it.algos.algoslib.LibArray
 import it.algos.algoslib.LibTesto
 import it.algos.algoslib.LibTime
+import it.algos.algoslib.LibWiki
 import it.algos.algoslogo.Evento
 import it.algos.algospref.LibPref
 import it.algos.algospref.Pref
@@ -840,6 +841,7 @@ class BioService {
             testoOut = LibTesto.levaDopoRef(testoOut)
             testoOut = LibTesto.levaDopoNote(testoOut)
             testoOut = LibTesto.levaDopoGraffe(testoOut)
+            testoOut = LibWiki.setNoQuadre(testoOut)
             testoOut = testoOut.trim()
         }// fine del blocco if
 

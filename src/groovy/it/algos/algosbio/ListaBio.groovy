@@ -28,6 +28,7 @@ abstract class ListaBio {
 
     protected static String aCapo = '\n'
     protected static String SPAZIO = ' '
+    protected static  String SLASH  = '/'
 
     protected Object oggetto    //Giorno, Anno, Antroponimo, Attivita, ecc
     protected String soggetto   //9 marzo, 1934, Mario, Politici, ecc
@@ -184,8 +185,8 @@ abstract class ListaBio {
         if (testo) {
             testo = testo.trim()
             if (debug) {
-                paginaModificata = new EditBio('Utente:Biobot/2', testo, summary)
-                registrata = paginaModificata.registrata
+//                paginaModificata = new EditBio('Utente:Biobot/2', testo, summary)
+//                registrata = paginaModificata.registrata
             } else {
                 paginaModificata = new EditBio(titoloPagina, testo, summary)
                 registrata = paginaModificata.registrata
