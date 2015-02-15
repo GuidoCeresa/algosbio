@@ -181,6 +181,23 @@ class AttivitaController {
         redirect(action: 'list')
     } // fine del metodo
 
+
+    def test() {
+        def lista = LibListe.getAttivitaPlurale()
+        int num = LibListe.getAttivitaNum()
+        int num2 = LibListe.getAttivitaUsateNum()
+        int num3 = LibListe.getAttivitaNonUsateNum()
+        def listaAtt = LibListe.getAttivita()
+        def lista2 = LibListe.getAttivitaUsate()
+        def lista3 = LibListe.getAttivitaNonUsate()
+        def lista4 = LibListe.getAttivitaPluraleUsate()
+        def lista5 = LibListe.getAttivitaPluraleNonUsate()
+        def mappa = LibListe.getAttivitaMappa()
+        def paragrafi = LibListe.getAttivitaParagrafi()
+
+        def stop
+    } // fine del metodo
+
     def list(Integer max) {
         params.max = Math.min(max ?: 100, 100)
         ArrayList menuExtra
@@ -197,7 +214,8 @@ class AttivitaController {
         menuExtra = [
                 [cont: 'attivita', action: 'download', icon: 'frecciagiu', title: 'Download'],
                 [cont: 'attivita', action: 'uploadAttivita', icon: 'frecciasu', title: 'Upload All'],
-                [cont: 'attivita', action: 'statistiche', icon: 'frecciasu', title: 'Statistiche']
+                [cont: 'attivita', action: 'statistiche', icon: 'frecciasu', title: 'Statistiche'],
+                [cont: 'attivita', action: 'test', icon: 'frecciasu', title: 'Test']
         ]
         // fine della definizione
 

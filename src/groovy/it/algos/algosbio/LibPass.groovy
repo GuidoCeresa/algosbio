@@ -22,4 +22,4 @@ class LibPass {
         return testoCodificato
     }// fine del metodo
 
-}// fine della classe
+}// fine della classe statica

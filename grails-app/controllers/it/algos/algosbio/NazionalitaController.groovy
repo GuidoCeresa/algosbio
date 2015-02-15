@@ -150,6 +150,27 @@ class NazionalitaController {
     } // fine del metodo
 
 
+    def test() {
+        def lista = LibListe.getNazioniPlurale()
+        int tot = LibListe.getNazioniNum()
+        int usate = LibListe.getNazioniUsateNum()
+        int nonUsate = LibListe.getNazioniNonUsateNum()
+        def listaB = LibListe.getNazioni()
+        def listac = LibListe.getNazioniUsate()
+        def listad = LibListe.getNazioniNonUsate()
+        def listaPluraliUsati = LibListe.getNazioniPluraleUsate()
+        def listaPluraliNonUsati = LibListe.getNazioniPluraleNonUsate()
+        def listaMappe = LibListe.getNazioniMappa()
+
+        def alfa= LibListe.getNazioneMappa('Afghani')
+        def beta= LibListe.getNazioneMappa('afghani')
+        def delta= LibListe.getNazioneMappa('afghano')
+        def gamma= LibListe.getNazioneMappa('afghana')
+
+        def stop
+    } // fine del metodo
+
+
     def list(Integer max) {
         params.max = Math.min(max ?: 100, 100)
         ArrayList menuExtra
@@ -166,7 +187,8 @@ class NazionalitaController {
         menuExtra = [
                 [cont: 'nazionalita', action: 'download', icon: 'frecciagiu', title: 'Download'],
                 [cont: 'nazionalita', action: 'uploadNazionalita', icon: 'frecciasu', title: 'Upload'],
-                [cont: 'nazionalita', action: 'statistiche', icon: 'frecciasu', title: 'Statistiche']
+                [cont: 'nazionalita', action: 'statistiche', icon: 'frecciasu', title: 'Statistiche'],
+                [cont: 'nazionalita', action: 'test', icon: 'frecciasu', title: 'Test']
         ]
         // fine della definizione
 

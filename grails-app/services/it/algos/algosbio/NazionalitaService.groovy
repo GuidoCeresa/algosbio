@@ -141,7 +141,6 @@ class NazionalitaService {
      *  -numero di voci che nel campo nazionalità usano tutti records di nazionalità che hanno quel plurale
      */
     public static ArrayList getLista() {
-        // variabili e costanti locali di lavoro
         def lista = new ArrayList()
         def listaPlurali
         def mappa
@@ -176,7 +175,6 @@ class NazionalitaService {
      * Lista del campo ''plurale'' come stringa
      */
     public static ArrayList<String> getListaNonUsate() {
-        // variabili e costanti locali di lavoro
         def lista = new ArrayList()
         def listaPlurali
         def mappa
