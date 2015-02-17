@@ -160,7 +160,7 @@ class NazionalitaController {
         def listad = LibListe.getNazioniNonUsate()
         def listaPluraliUsati = LibListe.getNazioniPluraleUsate()
         def listaPluraliNonUsati = LibListe.getNazioniPluraleNonUsate()
-        def listaMappe = LibListe.getNazioniMappa()
+        def listaMappe = LibListe.getNazioniMappaAll()
 
         def alfa= LibListe.getNazioneMappa('Afghani')
         def beta= LibListe.getNazioneMappa('afghani')
@@ -168,6 +168,7 @@ class NazionalitaController {
         def gamma= LibListe.getNazioneMappa('afghana')
 
         def stop
+        redirect(action: 'list')
     } // fine del metodo
 
 

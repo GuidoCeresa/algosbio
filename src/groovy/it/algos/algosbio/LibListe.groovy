@@ -17,8 +17,18 @@ import it.algos.algospref.Pref
  */
 abstract class LibListe {
 
-    public static String MAPPA_PLURALE = 'pluraleMinuscolo'
-    public static String MAPPA_LISTA = 'listaNazionalita'
+    public static String MAPPA_NOME_ATTIVITA = 'nomeAttivita'
+    public static String MAPPA_NOME_NAZIONALITA = 'nomeNazionalita'
+    public static String MAPPA_ATTIVITA = 'attivita'
+    public static String MAPPA_NAZIONALITA = 'nazionalita'
+    public static String MAPPA_PARAGRAFO = 'titoloParagrafo'
+    public static String MAPPA_PARAGRAFO_UOMINI = 'titoloParagrafoUomini'
+    public static String MAPPA_PARAGRAFO_DONNE = 'titoloParagrafoDonne'
+    public static String MAPPA_LISTA_NAZIONALITA = 'listaNazionalita'
+    public static String MAPPA_LISTA_ATTIVITA = 'listaAttivita'
+    public static String MAPPA_BIO_PRIMA = 'bioPrima'      // usata da Attivita
+    public static String MAPPA_BIO_SECONDA = 'bioSeconda'  // usata da Attivita
+    public static String MAPPA_BIO_TERZA = 'bioTerza'      // usata da Attivita
     public static String MAPPA_BIO_UOMINI = 'bioUomini'                 // usata da Nazionalita
     public static String MAPPA_BIO_UOMINI_PRIMA = 'bioUominiPrima'      // usata da Attivita
     public static String MAPPA_BIO_UOMINI_SECONDA = 'bioUominiSeconda'  // usata da Attivita
@@ -34,6 +44,8 @@ abstract class LibListe {
     public static String MAPPA_USATA_UOMINI = 'usataUomini'
     public static String MAPPA_USATA_DONNE = 'usataDonne'
     public static String MAPPA_USATA = 'usata'
+    public static String UOMO = 'M'
+    public static String DONNA = 'F'
 
     private static int div = 100
     private static String sec = 'decimi di secondo'
@@ -280,26 +292,41 @@ abstract class LibListe {
      *  -numero di voci BioGrails maschili che nel campo nazionalitàLink usano i records della lista
      *  -numero di voci BioGrails femminili che nel campo nazionalitàLink usano i records della lista
      */
-    public static HashMap<String, ?> getNazioneMappa(String plurale) {
+    public static HashMap<String, ?> getNazioneMappa(String nome) {
         HashMap<String, ?> mappa = new HashMap<String, ?>()
         ArrayList<Nazionalita> listaNazionalita
+        Nazionalita nazionalitaSingola
         Nazionalita nazionalitaTmp
         int bioUomini = 0
         int bioDonne = 0
         int bioTotale
+        String nomeMinuscolo = LibTesto.primaMinuscola(nome)
+        String titoloParagrafo = ''
 
-        listaNazionalita = Nazionalita.findAllByPlurale(plurale)
+        listaNazionalita = Nazionalita.findAllByPlurale(nomeMinuscolo)
         if (listaNazionalita && listaNazionalita.size() > 0) {
             listaNazionalita.each {
                 nazionalitaTmp = it
-                bioUomini += BioGrails.countByNazionalitaLinkAndSesso(nazionalitaTmp, 'M')
-                bioDonne += BioGrails.countByNazionalitaLinkAndSesso(nazionalitaTmp, 'F')
+                bioUomini += BioGrails.countByNazionalitaLinkAndSesso(nazionalitaTmp, UOMO)
+                bioDonne += BioGrails.countByNazionalitaLinkAndSesso(nazionalitaTmp, DONNA)
             }// fine di each
-        }// fine del blocco if
+            if (nazionalitaTmp) {
+                titoloParagrafo = nazionalitaTmp.plurale
+            }// fine del blocco if
+        } else {
+            nazionalitaSingola = Nazionalita.findBySingolare(nomeMinuscolo)
+            if (nazionalitaSingola) {
+                bioUomini += BioGrails.countByNazionalitaLinkAndSesso(nazionalitaSingola, UOMO)
+                bioDonne += BioGrails.countByNazionalitaLinkAndSesso(nazionalitaSingola, DONNA)
+                titoloParagrafo = nazionalitaSingola.plurale
+            }// fine del blocco if
+        }// fine del blocco if-else
+        titoloParagrafo = LibTesto.primaMaiuscola(titoloParagrafo)
         bioTotale = bioUomini + bioDonne
 
-        mappa.put(MAPPA_PLURALE, plurale)
-        mappa.put(MAPPA_LISTA, listaNazionalita)
+        mappa.put(MAPPA_NAZIONALITA, nomeMinuscolo)
+        mappa.put(MAPPA_PARAGRAFO, titoloParagrafo)
+        mappa.put(MAPPA_LISTA_NAZIONALITA, listaNazionalita)
         mappa.put(MAPPA_BIO_UOMINI, bioUomini)
         mappa.put(MAPPA_BIO_DONNE, bioDonne)
         mappa.put(MAPPA_BIO_TOTALE, bioTotale)
@@ -331,16 +358,11 @@ abstract class LibListe {
      *  -numero di voci BioGrails maschili che nel campo nazionalitàLink usano i records della lista
      *  -numero di voci BioGrails femminili che nel campo nazionalitàLink usano i records della lista
      */
-    public static ArrayList<HashMap<String, ?>> getNazioniMappa() {
+    public static ArrayList<HashMap<String, ?>> getNazioniMappaAll() {
         ArrayList<HashMap<String, ?>> listaMappe = null
         HashMap<String, ?> mappa = null
         ArrayList<String> listaPlurali
-        ArrayList<Nazionalita> listaNazionalita = null
         String plurale
-        Nazionalita nazionalitaTmp
-        int bioUomini = 0
-        int bioDonne = 0
-        int bioTotale = 0
         boolean debug = Pref.getBool(LibBio.DEBUG, false)
         long inizio = System.currentTimeMillis()
         long fine
@@ -351,41 +373,8 @@ abstract class LibListe {
         if (listaPlurali && listaPlurali.size() > 0) {
             listaMappe = new ArrayList<HashMap<String, ?>>()
             listaPlurali?.each {
-                mappa = new HashMap<String, ?>()
                 plurale = it
-                bioUomini = 0
-                bioDonne = 0
-                bioTotale = 0
-                listaNazionalita = Nazionalita.findAllByPlurale(plurale)
-                if (listaNazionalita && listaNazionalita.size() > 0) {
-                    listaNazionalita.each {
-                        nazionalitaTmp = it
-                        bioUomini += BioGrails.countByNazionalitaLinkAndSesso(nazionalitaTmp, 'M')
-                        bioDonne += BioGrails.countByNazionalitaLinkAndSesso(nazionalitaTmp, 'F')
-                    }// fine di each
-                }// fine del blocco if
-                bioTotale = bioUomini + bioDonne
-
-                mappa.put(MAPPA_PLURALE, plurale)
-                mappa.put(MAPPA_LISTA, listaNazionalita)
-                mappa.put(MAPPA_BIO_UOMINI, bioUomini)
-                mappa.put(MAPPA_BIO_DONNE, bioDonne)
-                mappa.put(MAPPA_BIO_TOTALE, bioTotale)
-                if (bioUomini > 0) {
-                    mappa.put(MAPPA_USATA_UOMINI, true)
-                } else {
-                    mappa.put(MAPPA_USATA_UOMINI, false)
-                }// fine del blocco if-else
-                if (bioDonne > 0) {
-                    mappa.put(MAPPA_USATA_DONNE, true)
-                } else {
-                    mappa.put(MAPPA_USATA_DONNE, false)
-                }// fine del blocco if-else
-                if (bioTotale > 0) {
-                    mappa.put(MAPPA_USATA, true)
-                } else {
-                    mappa.put(MAPPA_USATA, false)
-                }// fine del blocco if-else
+                mappa = getNazioneMappa(plurale)
                 listaMappe.add(mappa)
             }// fine di each
         }// fine del blocco if
@@ -416,7 +405,7 @@ abstract class LibListe {
         long durata
         String tempo
 
-        listaMappe = getNazioniMappa()
+        listaMappe = getNazioniMappaAll()
         if (listaMappe && listaMappe.size() > 0) {
             righe = new ArrayList<ArrayList<String>>()
             listaMappe?.each {
@@ -684,6 +673,399 @@ abstract class LibListe {
     } // fine del metodo
 
     /**
+     * Mappa di una attività multipla con suddivisione uomo/donna
+     */
+    public static LinkedHashMap<String, ?> getAttivitaMappaMultiplaUomoDonna(String nome) {
+        LinkedHashMap<String, ?> mappa = new LinkedHashMap<String, ?>()
+        ArrayList<Attivita> listaAttivita
+        Attivita attivitaSingola = null
+        Attivita attivitaTmp
+        int bioPrima = 0
+        int bioSeconda = 0
+        int bioTerza = 0
+        int bioUominiPrima = 0
+        int bioUominiSeconda = 0
+        int bioUominiTerza = 0
+        int bioDonnePrima = 0
+        int bioDonneSeconda = 0
+        int bioDonneTerza = 0
+        int bioTotale
+        int bioTotalePrima
+        int bioTotaleSeconda
+        int bioTotaleTerza
+        String nomeMinuscolo = LibTesto.primaMinuscola(nome)
+        String titoloParagrafoUomini = ''
+        String titoloParagrafoDonne = ''
+        boolean usaPlurale
+        Genere genere
+        String singolare
+        boolean usataUomini = false
+        boolean usataDonne = false
+
+        listaAttivita = Attivita.findAllByPlurale(nomeMinuscolo)
+        if (listaAttivita && listaAttivita.size() > 0) {
+            usaPlurale = true
+            listaAttivita.each {
+                attivitaTmp = it
+                bioUominiPrima += BioGrails.countByAttivitaLinkAndSesso(attivitaTmp, UOMO)
+                bioDonnePrima += BioGrails.countByAttivitaLinkAndSesso(attivitaTmp, DONNA)
+                bioUominiSeconda += BioGrails.countByAttivita2LinkAndSesso(attivitaTmp, UOMO)
+                bioDonneSeconda += BioGrails.countByAttivita2LinkAndSesso(attivitaTmp, DONNA)
+                bioUominiTerza += BioGrails.countByAttivita3LinkAndSesso(attivitaTmp, UOMO)
+                bioDonneTerza += BioGrails.countByAttivita3LinkAndSesso(attivitaTmp, DONNA)
+
+                singolare = attivitaTmp.singolare
+                genere = Genere.findBySingolare(singolare)
+                if (genere) {
+                    if (genere.sesso.equals(UOMO)) {
+                        titoloParagrafoUomini = genere.plurale
+                    }// fine del blocco if
+                    if (genere.sesso.equals(DONNA)) {
+                        titoloParagrafoDonne = genere.plurale
+                    }// fine del blocco if
+                }// fine del blocco if
+            }// fine di each
+        } else {
+            usaPlurale = false
+            attivitaSingola = Attivita.findBySingolare(nomeMinuscolo)
+            if (attivitaSingola) {
+                bioPrima += BioGrails.countByAttivitaLink(attivitaSingola)
+                bioSeconda += BioGrails.countByAttivita2Link(attivitaSingola)
+                bioTerza += BioGrails.countByAttivita3Link(attivitaSingola)
+
+                singolare = attivitaSingola.singolare
+                genere = Genere.findBySingolare(singolare)
+                if (genere) {
+                    if (genere.sesso.equals(UOMO)) {
+                        titoloParagrafoUomini = genere.plurale
+                    }// fine del blocco if
+                    if (genere.sesso.equals(DONNA)) {
+                        titoloParagrafoDonne = genere.plurale
+                    }// fine del blocco if
+                }// fine del blocco if
+            }// fine del blocco if
+        }// fine del blocco if-else
+
+        titoloParagrafoUomini = LibTesto.primaMaiuscola(titoloParagrafoUomini)
+        titoloParagrafoDonne = LibTesto.primaMaiuscola(titoloParagrafoDonne)
+
+        mappa.put(MAPPA_NOME_ATTIVITA, nomeMinuscolo)
+        if (usaPlurale) {
+            bioTotalePrima = bioUominiPrima + bioDonnePrima
+            bioTotaleSeconda = bioUominiSeconda + bioDonneSeconda
+            bioTotaleTerza = bioUominiTerza + bioDonneTerza
+            bioTotale = bioTotalePrima + bioTotaleSeconda + bioTotaleTerza
+
+            if ((bioUominiPrima + bioUominiSeconda + bioUominiTerza) > 0) {
+                usataUomini = true
+            }// fine del blocco if
+            if ((bioDonnePrima + bioDonneSeconda + bioDonneTerza) > 0) {
+                usataDonne = true
+            }// fine del blocco if
+
+            if (bioTotale > 0) {
+                mappa.put(MAPPA_USATA, true)
+            } else {
+                mappa.put(MAPPA_USATA, false)
+            }// fine del blocco if-else
+            mappa.put(MAPPA_USATA_UOMINI, usataUomini)
+            mappa.put(MAPPA_USATA_DONNE, usataDonne)
+            mappa.put(MAPPA_LISTA_ATTIVITA, listaAttivita)
+            mappa.put(MAPPA_PARAGRAFO_UOMINI, titoloParagrafoUomini)
+            mappa.put(MAPPA_PARAGRAFO_DONNE, titoloParagrafoDonne)
+            mappa.put(MAPPA_BIO_UOMINI_PRIMA, bioUominiPrima)
+            mappa.put(MAPPA_BIO_DONNE_PRIMA, bioDonnePrima)
+            mappa.put(MAPPA_BIO_TOTALE_PRIMA, bioTotalePrima)
+            mappa.put(MAPPA_BIO_UOMINI_SECONDA, bioUominiSeconda)
+            mappa.put(MAPPA_BIO_DONNE_SECONDA, bioDonneSeconda)
+            mappa.put(MAPPA_BIO_TOTALE_SECONDA, bioTotaleSeconda)
+            mappa.put(MAPPA_BIO_UOMINI_TERZA, bioUominiTerza)
+            mappa.put(MAPPA_BIO_DONNE_TERZA, bioDonneTerza)
+            mappa.put(MAPPA_BIO_TOTALE_TERZA, bioTotaleTerza)
+            mappa.put(MAPPA_BIO_TOTALE, bioTotale)
+        } else {
+            bioTotale = bioPrima + bioSeconda + bioTerza
+
+            if (bioTotale > 0) {
+                mappa.put(MAPPA_USATA, true)
+            } else {
+                mappa.put(MAPPA_USATA, false)
+            }// fine del blocco if-else
+            if (titoloParagrafoUomini) {
+                mappa.put(MAPPA_USATA_UOMINI, true)
+            }// fine del blocco if
+            if (titoloParagrafoDonne) {
+                mappa.put(MAPPA_USATA_DONNE, true)
+            }// fine del blocco if
+            mappa.put(MAPPA_ATTIVITA, attivitaSingola)
+            if (titoloParagrafoUomini) {
+                mappa.put(MAPPA_PARAGRAFO_UOMINI, titoloParagrafoUomini)
+            }// fine del blocco if
+            if (titoloParagrafoDonne) {
+                mappa.put(MAPPA_PARAGRAFO_DONNE, titoloParagrafoDonne)
+            }// fine del blocco if
+            mappa.put(MAPPA_BIO_PRIMA, bioPrima)
+            mappa.put(MAPPA_BIO_SECONDA, bioSeconda)
+            mappa.put(MAPPA_BIO_TERZA, bioTerza)
+            mappa.put(MAPPA_BIO_TOTALE, bioTotale)
+
+        }// fine del blocco if-else
+
+        return mappa
+    } // fine del metodo
+
+    /**
+     * Mappa di una attività multipla indifferenziata uomo/donna
+     */
+    public static LinkedHashMap<String, ?> getAttivitaMappaMultiplaIndifferenziata(String nome) {
+        LinkedHashMap<String, ?> mappa = new LinkedHashMap<String, ?>()
+        ArrayList<Attivita> listaAttivita
+        Attivita attivitaSingola
+        Attivita attivitaTmp = null
+        int bioPrima = 0
+        int bioSeconda = 0
+        int bioTerza = 0
+        int bioTotale
+        String nomeMinuscolo = LibTesto.primaMinuscola(nome)
+        String titoloParagrafo = ''
+        String plurale
+
+        listaAttivita = Attivita.findAllByPlurale(nomeMinuscolo)
+        if (!listaAttivita) {
+            attivitaSingola = Attivita.findBySingolare(nomeMinuscolo)
+            if (attivitaSingola) {
+                plurale = attivitaSingola.plurale
+                listaAttivita = Attivita.findAllByPlurale(plurale)
+            }// fine del blocco if
+        }// fine del blocco if
+
+        if (listaAttivita && listaAttivita.size() > 0) {
+            listaAttivita.each {
+                attivitaTmp = it
+                bioPrima += BioGrails.countByAttivitaLink(attivitaTmp)
+                bioSeconda += BioGrails.countByAttivita2Link(attivitaTmp)
+                bioTerza += BioGrails.countByAttivita3Link(attivitaTmp)
+            }// fine di each
+            if (attivitaTmp) {
+                titoloParagrafo = attivitaTmp.plurale
+            }// fine del blocco if
+        }// fine del blocco if
+        bioTotale = bioPrima + bioSeconda + bioTerza
+        titoloParagrafo = LibTesto.primaMaiuscola(titoloParagrafo)
+
+        mappa.put(MAPPA_NOME_ATTIVITA, nomeMinuscolo)
+        if (bioTotale > 0) {
+            mappa.put(MAPPA_USATA, true)
+        } else {
+            mappa.put(MAPPA_USATA, false)
+        }// fine del blocco if-else
+        if (listaAttivita && listaAttivita.size() > 1) {
+            mappa.put(MAPPA_LISTA_ATTIVITA, listaAttivita)
+        } else {
+            mappa.put(MAPPA_ATTIVITA, attivitaTmp)
+        }// fine del blocco if-else
+        mappa.put(MAPPA_PARAGRAFO, titoloParagrafo)
+        mappa.put(MAPPA_BIO_PRIMA, bioPrima)
+        mappa.put(MAPPA_BIO_SECONDA, bioSeconda)
+        mappa.put(MAPPA_BIO_TERZA, bioTerza)
+        mappa.put(MAPPA_BIO_TOTALE, bioTotale)
+
+        return mappa
+    } // fine del metodo
+
+    /**
+     * Mappa di una attività singola con suddivisione uomo/donna
+     */
+    public static LinkedHashMap<String, ?> getAttivitaMappaSingolaUomoDonna(String nome) {
+        LinkedHashMap<String, ?> mappa = new LinkedHashMap<String, ?>()
+        ArrayList<Attivita> listaAttivita
+        Attivita attivitaSingola = null
+        Attivita attivitaTmp
+        int bioUomini = 0
+        int bioDonne = 0
+        int bioTotale
+        int bioSingolo = 0
+        String nomeMinuscolo = LibTesto.primaMinuscola(nome)
+        String titoloParagrafoUomini = ''
+        String titoloParagrafoDonne = ''
+        boolean usaPlurale
+        Genere genere
+        String singolare
+        boolean usataUomini = false
+        boolean usataDonne = false
+
+        listaAttivita = Attivita.findAllByPlurale(nomeMinuscolo)
+        if (listaAttivita && listaAttivita.size() > 0) {
+            usaPlurale = true
+            listaAttivita.each {
+                attivitaTmp = it
+                bioUomini += BioGrails.countByAttivitaLinkAndSesso(attivitaTmp, UOMO)
+                bioDonne += BioGrails.countByAttivitaLinkAndSesso(attivitaTmp, DONNA)
+
+                singolare = attivitaTmp.singolare
+                genere = Genere.findBySingolare(singolare)
+                if (genere) {
+                    if (genere.sesso.equals(UOMO)) {
+                        titoloParagrafoUomini = genere.plurale
+                    }// fine del blocco if
+                    if (genere.sesso.equals(DONNA)) {
+                        titoloParagrafoDonne = genere.plurale
+                    }// fine del blocco if
+                }// fine del blocco if
+            }// fine di each
+        } else {
+            usaPlurale = false
+            attivitaSingola = Attivita.findBySingolare(nomeMinuscolo)
+            if (attivitaSingola) {
+                bioSingolo += BioGrails.countByAttivitaLink(attivitaSingola)
+
+                singolare = attivitaSingola.singolare
+                genere = Genere.findBySingolare(singolare)
+                if (genere) {
+                    if (genere.sesso.equals(UOMO)) {
+                        titoloParagrafoUomini = genere.plurale
+                    }// fine del blocco if
+                    if (genere.sesso.equals(DONNA)) {
+                        titoloParagrafoDonne = genere.plurale
+                    }// fine del blocco if
+                }// fine del blocco if
+            }// fine del blocco if
+        }// fine del blocco if-else
+
+        titoloParagrafoUomini = LibTesto.primaMaiuscola(titoloParagrafoUomini)
+        titoloParagrafoDonne = LibTesto.primaMaiuscola(titoloParagrafoDonne)
+
+        mappa.put(MAPPA_NOME_ATTIVITA, nomeMinuscolo)
+        if (usaPlurale) {
+            bioTotale = bioUomini + bioDonne
+
+            if ((bioUomini) > 0) {
+                usataUomini = true
+            }// fine del blocco if
+            if ((bioDonne) > 0) {
+                usataDonne = true
+            }// fine del blocco if
+
+            if (bioTotale > 0) {
+                mappa.put(MAPPA_USATA, true)
+            } else {
+                mappa.put(MAPPA_USATA, false)
+            }// fine del blocco if-else
+            mappa.put(MAPPA_USATA_UOMINI, usataUomini)
+            mappa.put(MAPPA_USATA_DONNE, usataDonne)
+            mappa.put(MAPPA_LISTA_ATTIVITA, listaAttivita)
+            mappa.put(MAPPA_PARAGRAFO_UOMINI, titoloParagrafoUomini)
+            mappa.put(MAPPA_PARAGRAFO_DONNE, titoloParagrafoDonne)
+            mappa.put(MAPPA_BIO_UOMINI, bioUomini)
+            mappa.put(MAPPA_BIO_DONNE, bioDonne)
+            mappa.put(MAPPA_BIO_TOTALE, bioTotale)
+        } else {
+            if (bioSingolo > 0) {
+                mappa.put(MAPPA_USATA, true)
+            } else {
+                mappa.put(MAPPA_USATA, false)
+            }// fine del blocco if-else
+            if (titoloParagrafoUomini) {
+                mappa.put(MAPPA_USATA_UOMINI, true)
+            }// fine del blocco if
+            if (titoloParagrafoDonne) {
+                mappa.put(MAPPA_USATA_DONNE, true)
+            }// fine del blocco if
+            mappa.put(MAPPA_ATTIVITA, attivitaSingola)
+            if (titoloParagrafoUomini) {
+                mappa.put(MAPPA_PARAGRAFO_UOMINI, titoloParagrafoUomini)
+            }// fine del blocco if
+            if (titoloParagrafoDonne) {
+                mappa.put(MAPPA_PARAGRAFO_DONNE, titoloParagrafoDonne)
+            }// fine del blocco if
+            mappa.put(MAPPA_BIO_TOTALE, bioSingolo)
+        }// fine del blocco if-else
+
+        return mappa
+    } // fine del metodo
+
+    /**
+     * Mappa di una attività singola indifferenziata uomo/donna
+     */
+    public static LinkedHashMap<String, ?> getAttivitaMappaSingolaIndifferenziata(String nome) {
+        LinkedHashMap<String, ?> mappa = new LinkedHashMap<String, ?>()
+        ArrayList<Attivita> listaAttivita
+        Attivita attivitaSingola
+        Attivita attivitaTmp = null
+        int bioTotale = 0
+        String nomeMinuscolo = LibTesto.primaMinuscola(nome)
+        String titoloParagrafo = ''
+        String plurale
+
+        listaAttivita = Attivita.findAllByPlurale(nomeMinuscolo)
+        if (!listaAttivita) {
+            attivitaSingola = Attivita.findBySingolare(nomeMinuscolo)
+            if (attivitaSingola) {
+                plurale = attivitaSingola.plurale
+                listaAttivita = Attivita.findAllByPlurale(plurale)
+            }// fine del blocco if
+        }// fine del blocco if
+
+        if (listaAttivita && listaAttivita.size() > 0) {
+            listaAttivita.each {
+                attivitaTmp = it
+                bioTotale += BioGrails.countByAttivitaLink(attivitaTmp)
+            }// fine di each
+            if (attivitaTmp) {
+                titoloParagrafo = attivitaTmp.plurale
+            }// fine del blocco if
+        }// fine del blocco if
+        titoloParagrafo = LibTesto.primaMaiuscola(titoloParagrafo)
+
+        mappa.put(MAPPA_NOME_ATTIVITA, nomeMinuscolo)
+        if (bioTotale > 0) {
+            mappa.put(MAPPA_USATA, true)
+        } else {
+            mappa.put(MAPPA_USATA, false)
+        }// fine del blocco if-else
+        if (listaAttivita && listaAttivita.size() > 1) {
+            mappa.put(MAPPA_LISTA_ATTIVITA, listaAttivita)
+        } else {
+            mappa.put(MAPPA_ATTIVITA, attivitaTmp)
+        }// fine del blocco if-else
+        mappa.put(MAPPA_PARAGRAFO, titoloParagrafo)
+        mappa.put(MAPPA_BIO_TOTALE, bioTotale)
+
+        return mappa
+    } // fine del metodo
+
+    /**
+     * Mappa di una attività
+     *
+     * La mappa contiene:
+     *  -plurale dell'attività
+     *  -lista degli id dei records di Attivita che hanno quel plurale
+     *  -numero di voci BioGrails maschili che nel campo attivitàLink (attività2Link e attività3Link) usano i records della lista
+     *  -numero di voci BioGrails femminili che nel campo attivitàLink (attività2Link e attività3Link) usano i records della lista
+     */
+    public static LinkedHashMap<String, ?> getAttivitaMappa(String nome) {
+        LinkedHashMap<String, ?> mappa
+        boolean usaSuddivisioneUomoDonna = Pref.getBool(LibBio.USA_SUDDIVISIONE_UOMO_DONNA_ATT, false)
+        boolean attivitaMultiple = Pref.getBool(LibBio.USA_ATTIVITA_MULTIPLE, false)
+
+        if (usaSuddivisioneUomoDonna) {
+            if (attivitaMultiple) {
+                mappa = getAttivitaMappaMultiplaUomoDonna(nome)
+            } else {
+                mappa = getAttivitaMappaSingolaUomoDonna(nome)
+            }// fine del blocco if-else
+        } else {
+            if (attivitaMultiple) {
+                mappa = getAttivitaMappaMultiplaIndifferenziata(nome)
+            } else {
+                mappa = getAttivitaMappaSingolaIndifferenziata(nome)
+            }// fine del blocco if-else
+        }// fine del blocco if-else
+
+        return mappa
+    } // fine del metodo
+
+    /**
      * Lista di una mappa per ogni attività distinta
      *
      * La mappa contiene:
@@ -692,27 +1074,12 @@ abstract class LibListe {
      *  -numero di voci BioGrails maschili che nel campo attivitàLink (attività2Link e attività3Link) usano i records della lista
      *  -numero di voci BioGrails femminili che nel campo attivitàLink (attività2Link e attività3Link) usano i records della lista
      */
-    public static ArrayList<HashMap<String, ?>> getAttivitaMappa() {
+    public static ArrayList<HashMap<String, ?>> getAttivitaMappaAll() {
         ArrayList<HashMap<String, ?>> listaMappe = null
-        HashMap<String, ?> mappa = null
+        LinkedHashMap<String, ?> mappa = null
         ArrayList<String> listaPlurali
-        ArrayList<Attivita> listaAttivita = null
         String plurale
-        Attivita attivitaTmp
-        int bioUomini = 0
-        int bioUominiPrima = 0
-        int bioUominiSeconda = 0
-        int bioUominiTerza = 0
-        int bioDonne = 0
-        int bioDonnePrima = 0
-        int bioDonneSeconda = 0
-        int bioDonneTerza = 0
-        int bioTotale = 0
-        int bioTotalePrima = 0
-        int bioTotaleSeconda = 0
-        int bioTotaleTerza = 0
         boolean debug = Pref.getBool(LibBio.DEBUG, false)
-        boolean attivitaMultiple = Pref.getBool(LibBio.USA_ATTIVITA_MULTIPLE, false)
         long inizio = System.currentTimeMillis()
         long fine
         long durata
@@ -720,81 +1087,10 @@ abstract class LibListe {
 
         listaPlurali = getAttivitaPlurale()
         if (listaPlurali && listaPlurali.size() > 0) {
-            listaMappe = new ArrayList<HashMap<String, ?>>()
+            listaMappe = new ArrayList<LinkedHashMap<String, ?>>()
             listaPlurali?.each {
-                mappa = new HashMap<String, ?>()
                 plurale = it
-                bioUomini = 0
-                bioDonne = 0
-                bioTotale = 0
-                listaAttivita = Attivita.findAllByPlurale(plurale)
-                if (listaAttivita && listaAttivita.size() > 0) {
-                    listaAttivita.each {
-                        attivitaTmp = it
-                        if (attivitaMultiple) {
-                            bioUominiPrima += BioGrails.countByAttivitaLinkAndSesso(attivitaTmp, 'M')
-                            bioDonnePrima += BioGrails.countByAttivitaLinkAndSesso(attivitaTmp, 'F')
-                            bioUominiSeconda += BioGrails.countByAttivita2LinkAndSesso(attivitaTmp, 'M')
-                            bioDonneSeconda += BioGrails.countByAttivita2LinkAndSesso(attivitaTmp, 'F')
-                            bioUominiTerza += BioGrails.countByAttivita3LinkAndSesso(attivitaTmp, 'M')
-                            bioDonneTerza += BioGrails.countByAttivita3LinkAndSesso(attivitaTmp, 'F')
-                        } else {
-                            bioUomini += BioGrails.countByAttivitaLinkAndSesso(attivitaTmp, 'M')
-                            bioDonne += BioGrails.countByAttivitaLinkAndSesso(attivitaTmp, 'F')
-                        }// fine del blocco if-else
-                    }// fine di each
-                }// fine del blocco if
-
-                mappa.put(MAPPA_PLURALE, plurale)
-                mappa.put(MAPPA_LISTA, listaAttivita)
-
-                if (attivitaMultiple) {
-                    bioTotalePrima = bioUominiPrima + bioDonnePrima
-                    bioTotaleSeconda = bioUominiSeconda + bioDonneSeconda
-                    bioTotaleTerza = bioUominiTerza + bioDonneTerza
-                    bioTotale = bioTotalePrima + bioTotaleSeconda + bioTotaleTerza
-                    mappa.put(MAPPA_BIO_UOMINI_PRIMA, bioUominiPrima)
-                    mappa.put(MAPPA_BIO_DONNE_PRIMA, bioDonnePrima)
-                    mappa.put(MAPPA_BIO_TOTALE_PRIMA, bioTotalePrima)
-                    mappa.put(MAPPA_BIO_UOMINI_SECONDA, bioUominiSeconda)
-                    mappa.put(MAPPA_BIO_DONNE_SECONDA, bioDonneSeconda)
-                    mappa.put(MAPPA_BIO_TOTALE_SECONDA, bioTotaleSeconda)
-                    mappa.put(MAPPA_BIO_UOMINI_TERZA, bioUominiTerza)
-                    mappa.put(MAPPA_BIO_DONNE_TERZA, bioDonneTerza)
-                    mappa.put(MAPPA_BIO_TOTALE_TERZA, bioTotaleTerza)
-                    mappa.put(MAPPA_BIO_TOTALE, bioTotale)
-                    if ((bioUominiPrima + bioUominiSeconda + bioUominiTerza) > 0) {
-                        mappa.put(MAPPA_USATA_UOMINI, true)
-                    } else {
-                        mappa.put(MAPPA_USATA_UOMINI, false)
-                    }// fine del blocco if-else
-                    if ((bioDonnePrima + bioDonneSeconda + bioDonneTerza) > 0) {
-                        mappa.put(MAPPA_USATA_DONNE, true)
-                    } else {
-                        mappa.put(MAPPA_USATA_DONNE, false)
-                    }// fine del blocco if-else
-                } else {
-                    bioTotale = bioUomini + bioDonne
-                    mappa.put(MAPPA_BIO_UOMINI, bioUomini)
-                    mappa.put(MAPPA_BIO_DONNE, bioDonne)
-                    mappa.put(MAPPA_BIO_TOTALE, bioTotale)
-                    if (bioUomini > 0) {
-                        mappa.put(MAPPA_USATA_UOMINI, true)
-                    } else {
-                        mappa.put(MAPPA_USATA_UOMINI, false)
-                    }// fine del blocco if-else
-                    if (bioDonne > 0) {
-                        mappa.put(MAPPA_USATA_DONNE, true)
-                    } else {
-                        mappa.put(MAPPA_USATA_DONNE, false)
-                    }// fine del blocco if-else
-                }// fine del blocco if-else
-                if (bioTotale > 0) {
-                    mappa.put(MAPPA_USATA, true)
-                } else {
-                    mappa.put(MAPPA_USATA, false)
-                }// fine del blocco if-else
-
+                mappa = getAttivitaMappa(plurale)
                 listaMappe.add(mappa)
             }// fine di each
         }// fine del blocco if
@@ -812,10 +1108,11 @@ abstract class LibListe {
 
     /**
      * Lista dei titoli dei paragrafi per tutte le attività
+     * Suddivisi tra uomini e donne
      */
-    public static ArrayList<String> getAttivitaParagrafi() {
+    public static ArrayList<String> getAttivitaParagrafiUomoDonna() {
         ArrayList<String> listaParagrafi = null
-        ArrayList<String> listaPlurali = null
+        ArrayList<String> listaPlurali
         boolean usaSuddivisioneUomoDonna = Pref.getBool(LibBio.USA_SUDDIVISIONE_UOMO_DONNA_ATT, false)
         String plurale
 
@@ -823,6 +1120,7 @@ abstract class LibListe {
             listaPlurali = getAttivitaPlurale()
             if (listaPlurali && listaPlurali.size() > 0) {
                 listaParagrafi = new ArrayList<String>()
+
 
                 listaPlurali?.each {
                     plurale = it
@@ -832,6 +1130,84 @@ abstract class LibListe {
 
         } else {
             listaParagrafi = getAttivitaPlurale()
+        }// fine del blocco if-else
+
+        return listaParagrafi
+    } // fine del metodo
+
+    /**
+     * Lista dei titoli dei paragrafi per tutte le attività
+     * Indifferenziati. Senza suddivisione tra uomini e donne
+     */
+    public static ArrayList<String> getAttivitaParagrafiIndifferenziati() {
+        return getAttivitaPlurale()
+    } // fine del metodo
+
+    /**
+     * Lista dei titoli dei paragrafi per tutte le attività
+     * Suddivisi tra uomini e donne
+     */
+    public static ArrayList<String> getAttivitaParagrafiUomoDonnaUsati() {
+        ArrayList<String> listaParagrafi = null
+        ArrayList<String> listaPlurali
+        boolean usaSuddivisioneUomoDonna = Pref.getBool(LibBio.USA_SUDDIVISIONE_UOMO_DONNA_ATT, false)
+        String plurale
+
+        if (usaSuddivisioneUomoDonna) {
+            listaPlurali = getAttivitaPlurale()
+            if (listaPlurali && listaPlurali.size() > 0) {
+                listaParagrafi = new ArrayList<String>()
+
+
+                listaPlurali?.each {
+                    plurale = it
+                } // fine del ciclo each
+
+            }// fine del blocco if
+
+        } else {
+            listaParagrafi = getAttivitaPlurale()
+        }// fine del blocco if-else
+
+        return listaParagrafi
+    } // fine del metodo
+
+    /**
+     * Lista dei titoli dei paragrafi per tutte le attività
+     * Indifferenziati. Senza suddivisione tra uomini e donne
+     */
+    public static ArrayList<String> getAttivitaParagrafiIndifferenziatiUsati() {
+        return getAttivitaPlurale()
+    } // fine del metodo
+
+
+    /**
+     * Lista dei titoli dei paragrafi per tutte le attività
+     */
+    public static ArrayList<String> getAttivitaParagrafi() {
+        ArrayList<String> listaParagrafi
+        boolean usaSuddivisioneUomoDonna = Pref.getBool(LibBio.USA_SUDDIVISIONE_UOMO_DONNA_ATT, false)
+
+        if (usaSuddivisioneUomoDonna) {
+            listaParagrafi = getAttivitaParagrafiUomoDonna()
+        } else {
+            listaParagrafi = getAttivitaParagrafiIndifferenziati()
+        }// fine del blocco if-else
+
+        return listaParagrafi
+    } // fine del metodo
+
+    /**
+     * Lista dei titoli dei paragrafi per tutte le attività
+     */
+    public static ArrayList<String> getAttivitaParagrafiUsati() {
+        ArrayList<String> listaParagrafi
+        boolean usaSuddivisioneUomoDonna = Pref.getBool(LibBio.USA_SUDDIVISIONE_UOMO_DONNA_ATT, false)
+
+        if (usaSuddivisioneUomoDonna) {
+            listaParagrafi = getAttivitaParagrafiUomoDonnaUsati()
+        } else {
+            listaParagrafi = getAttivitaParagrafiIndifferenziatiUsati()
         }// fine del blocco if-else
 
         return listaParagrafi

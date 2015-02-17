@@ -183,19 +183,37 @@ class AttivitaController {
 
 
     def test() {
-        def lista = LibListe.getAttivitaPlurale()
-        int num = LibListe.getAttivitaNum()
-        int num2 = LibListe.getAttivitaUsateNum()
-        int num3 = LibListe.getAttivitaNonUsateNum()
-        def listaAtt = LibListe.getAttivita()
-        def lista2 = LibListe.getAttivitaUsate()
-        def lista3 = LibListe.getAttivitaNonUsate()
-        def lista4 = LibListe.getAttivitaPluraleUsate()
-        def lista5 = LibListe.getAttivitaPluraleNonUsate()
-        def mappa = LibListe.getAttivitaMappa()
         def paragrafi = LibListe.getAttivitaParagrafi()
 
+//        def lista = LibListe.getAttivitaPlurale()
+//        int num = LibListe.getAttivitaNum()
+//        int num2 = LibListe.getAttivitaUsateNum()
+//        int num3 = LibListe.getAttivitaNonUsateNum()
+//        def listaAtt = LibListe.getAttivita()
+//        def lista2 = LibListe.getAttivitaUsate()
+//        def lista3 = LibListe.getAttivitaNonUsate()
+//        def lista4 = LibListe.getAttivitaPluraleUsate()
+//        def lista5 = LibListe.getAttivitaPluraleNonUsate()
+//        def mappa = LibListe.getAttivitaMappaAll()
+//
+//        def alfa1 = LibListe.getAttivitaMappaMultiplaUomoDonna('Abati e badesse')
+//        def alfa2 = LibListe.getAttivitaMappaMultiplaUomoDonna('Abate')
+//        def delta = LibListe.getAttivitaMappaMultiplaUomoDonna('abate')
+//        def gamma = LibListe.getAttivitaMappaMultiplaUomoDonna('badessa')
+
+//        def beta1 = LibListe.getAttivitaMappaMultiplaIndifferenziata('Abati e badesse')
+//        def beta2 = LibListe.getAttivitaMappaMultiplaIndifferenziata('abate')
+//        def depp = LibListe.getAttivitaMappaMultiplaIndifferenziata('badessa')
+
+//        def delta1 = LibListe.getAttivitaMappaSingolaUomoDonna('Abati e badesse')
+//        def delta2 = LibListe.getAttivitaMappaSingolaUomoDonna('abate')
+
+//        def gamma1 = LibListe.getAttivitaMappaSingolaIndifferenziata('Abati e badesse')
+//        def gamma2 = LibListe.getAttivitaMappaSingolaIndifferenziata('abate')
+
+        def par1 = LibListe.getAttivitaParagrafiIndifferenziati()
         def stop
+        redirect(action: 'list')
     } // fine del metodo
 
     def list(Integer max) {

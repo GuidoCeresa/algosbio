@@ -37,7 +37,7 @@ class BioListaTest extends GroovyTestCase {
 //    public static LinkedHashMap getMappaNazionalita(ArrayList<BioGrails> listaVoci) {
     void testGetMappaNazionalita() {
         LinkedHashMap mappa
-        Attivita attivita = Attivita.findByPlurale('Anatomisti')
+        Attivita attivita = Attivita.findByPlurale('anatomisti')
         ArrayList<BioGrails> listaVoci = BioGrails.findAllByAttivitaLink(attivita)
 
         mappa = BioLista.getMappaNazionalita(listaVoci)
