@@ -133,11 +133,11 @@ class ListaNazionalitaGrandi extends ListaBio {
      * Sovrascritto
      */
     @Override
-    protected creazioneSottopagina(String chiaveParagrafo, String titoloParagrafo, ArrayList<BioGrails> listaVociOrdinate) {
+    protected creazioneSottopagina(String chiaveParagrafo, String titoloParagrafo, ArrayList<BioGrails> listaVociOrdinate, String tagSesso) {
         ListaBio sottoVoce
 
         //creazione della sottopagina
-        sottoVoce = new ListaNazionalitaAttivita(elaboraSoggettoSpecifico(chiaveParagrafo), false)
+        sottoVoce = new ListaNazionalitaAttivita(elaboraSoggettoSpecifico(chiaveParagrafo, tagSesso), false)
         sottoVoce.listaBiografie = listaVociOrdinate
         sottoVoce.numPersone = listaVociOrdinate.size()
         sottoVoce.titoloPaginaMadre = titoloPagina
@@ -145,13 +145,40 @@ class ListaNazionalitaGrandi extends ListaBio {
         sottoVoce.elaboraPagina()
     }// fine del metodo
 
+
+    /**
+     * Elabora soggetto specifico
+     */
+    protected String elaboraSoggettoSpecifico(String chiaveParagrafo, String tagSesso) {
+        LinkedHashMap<String, ?> mappa = LibListe.getAttivitaMappaMultiplaUomoDonna(chiaveParagrafo)
+        String titoloParagrafo=''
+
+        if (tagSesso.equals(UOMINI)) {
+            if (mappa[LibListe.MAPPA_PARAGRAFO_UOMINI]) {
+                titoloParagrafo = mappa[LibListe.MAPPA_PARAGRAFO_UOMINI]
+            }// fine del blocco if
+        }// fine del blocco if
+
+        if (tagSesso.equals(DONNE)) {
+            if (mappa[LibListe.MAPPA_PARAGRAFO_DONNE]) {
+                titoloParagrafo = mappa[LibListe.MAPPA_PARAGRAFO_DONNE]
+            }// fine del blocco if
+        }// fine del blocco if
+
+        if (chiaveParagrafo.equals('Cantanti')) {
+            def stop
+        }// fine del blocco if
+
+        return super.elaboraSoggettoSpecifico(titoloParagrafo, '')
+    }// fine del metodo
+
     /**
      * Titolo della sottopagina
      * Sovrascritto
      */
     @Override
-    protected String getTitoloSottovoce(String chiaveParagrafo) {
-        return TAG_PROGETTO + elaboraSoggettoSpecifico(chiaveParagrafo)
+    protected String getTitoloSottovoce(String chiaveParagrafo, String tagSesso) {
+        return TAG_PROGETTO + elaboraSoggettoSpecifico(chiaveParagrafo, tagSesso)
     }// fine del metodo
 
     /**
@@ -185,26 +212,25 @@ class ListaNazionalitaGrandi extends ListaBio {
         ArrayList<String> paragrafiAttFemminili
         ArrayList<String> paragrafiAttAmbigenere
         String nazionalitaPlurale = getPlurale()
-        String tagUomini = 'M'
-        String tagDonne = 'F'
 
         if (usaSuddivisioneUomoDonna) {
             testo += '=Uomini='
             testo += aCapo
+            def para = LibListe.getAttivitaParagrafiUomo()
             paragrafiAttMaschili = paragrafiAttivitaMaschili()
             paragrafiAttMaschili?.each {
-                testo += elaboraParagrafo(nazionalitaPlurale, it, tagUomini)
+                testo += elaboraParagrafo(nazionalitaPlurale, it, UOMINI)
             } // fine del ciclo each
-            testo += elaboraParagrafo(nazionalitaPlurale, '', tagUomini)
+            testo += elaboraParagrafo(nazionalitaPlurale, '', UOMINI)
 
             testo += aCapo
             testo += '=Donne='
             testo += aCapo
             paragrafiAttFemminili = paragrafiAttivitaFemminili()
             paragrafiAttFemminili?.each {
-                testo += elaboraParagrafo(nazionalitaPlurale, it, tagDonne)
+                testo += elaboraParagrafo(nazionalitaPlurale, it, DONNE)
             } // fine del ciclo each
-            testo += elaboraParagrafo(nazionalitaPlurale, '', tagDonne)
+            testo += elaboraParagrafo(nazionalitaPlurale, '', DONNE)
 
             esistonoUominiDonne = true
         } else {
@@ -265,9 +291,6 @@ class ListaNazionalitaGrandi extends ListaBio {
     @Override
     protected String elaboraTitoloParagrafo(String chiaveParagrafo, ArrayList<BioGrails> listaVoci) {
         String titoloParagrafo
-
-        String a = tagAltre
-        String b = tagAltri
 
         if (Pref.getBool(LibBio.USA_TITOLO_PARAGRAFO_NAZ_ATT_LINK_PROGETTO, true)) {
             if (chiaveParagrafo.equals(tagAltri) || chiaveParagrafo.equals(tagAltre)) {
@@ -346,17 +369,17 @@ class ListaNazionalitaGrandi extends ListaBio {
             if (chiaveParagrafo) {
                 chiaveParagrafo = LibTesto.primaMaiuscola(chiaveParagrafo)
             } else {
-                if (sesso && sesso.equals('F')) {
+                if (sesso && sesso.equals(DONNE)) {
                     chiaveParagrafo = tagAltre
                 } else {
                     chiaveParagrafo = tagAltri
                 }// fine del blocco if-else
             }// fine del blocco if-else
             if (numRecords < maxVociParagrafo) {
-                testo += super.elaboraBodyParagrafo(chiaveParagrafo, lista)
+                testo += super.elaboraBodyParagrafo(chiaveParagrafo, lista, sesso)
             } else {
                 titoloParagrafo = elaboraTitoloParagrafo(chiaveParagrafo, lista)
-                testo += super.elaboraParagrafoSottoPagina(chiaveParagrafo, titoloParagrafo, lista)
+                testo += super.elaboraParagrafoSottoPagina(chiaveParagrafo, titoloParagrafo, lista, sesso)
             }// fine del blocco if-else
         }// fine del blocco if
 
@@ -419,25 +442,6 @@ class ListaNazionalitaGrandi extends ListaBio {
 
         return lista
     } // fine del metodo
-
-//    /**
-//     * Crea il singolo paragrafo nella pagina principale
-//     */
-//    private String creaParagrafoPrincipale(String paragrafo, ArrayList<BioGrails> lista) {
-//        String testo
-//
-//        testo = super.elaboraBodyParagrafo(paragrafo, lista)
-//        return testo
-//    } // fine del metodo
-
-//    /**
-//     * Crea la sottopagina per il paragrafo troppo grande
-//     * Lascia il rinvio nella pagina principale
-//     */
-//    private String creaParagrafoSottopagina(String paragrafo, ArrayList<BioGrails> lista) {
-//        creazioneSottopagina(paragrafo, '', lista)
-//        return elaborazioneRimando(chiaveParagrafo, titoloParagrafo)
-//    } // fine del metodo
 
     /**
      * Elabora e crea la lista della nazionalità indicata e la uploada sul server wiki

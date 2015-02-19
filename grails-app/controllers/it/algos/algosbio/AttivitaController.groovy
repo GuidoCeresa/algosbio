@@ -183,7 +183,7 @@ class AttivitaController {
 
 
     def test() {
-        def paragrafi = LibListe.getAttivitaParagrafi()
+//    def paragrafi = LibListe.getAttivitaParagrafi()
 
 //        def lista = LibListe.getAttivitaPlurale()
 //        int num = LibListe.getAttivitaNum()
@@ -196,7 +196,10 @@ class AttivitaController {
 //        def lista5 = LibListe.getAttivitaPluraleNonUsate()
 //        def mappa = LibListe.getAttivitaMappaAll()
 //
-//        def alfa1 = LibListe.getAttivitaMappaMultiplaUomoDonna('Abati e badesse')
+        def alfa1 = LibListe.getAttivitaMappaMultiplaUomoDonna('Cantanti')
+        def alfa2 = LibListe.getAttivitaMappaMultiplaUomoDonna('Cantante')
+        def alfa3 = LibListe.getAttivitaMappaMultiplaUomoDonna('cantanti')
+        def alfa4 = LibListe.getAttivitaMappaMultiplaUomoDonna('cantante')
 //        def alfa2 = LibListe.getAttivitaMappaMultiplaUomoDonna('Abate')
 //        def delta = LibListe.getAttivitaMappaMultiplaUomoDonna('abate')
 //        def gamma = LibListe.getAttivitaMappaMultiplaUomoDonna('badessa')
@@ -211,7 +214,15 @@ class AttivitaController {
 //        def gamma1 = LibListe.getAttivitaMappaSingolaIndifferenziata('Abati e badesse')
 //        def gamma2 = LibListe.getAttivitaMappaSingolaIndifferenziata('abate')
 
-        def par1 = LibListe.getAttivitaParagrafiIndifferenziati()
+//        def par1 = LibListe.getAttivitaParagrafiUomo()
+//        def par11 = LibListe.getAttivitaParagrafiDonna()
+//        def par12 = LibListe.getAttivitaParagrafiUomoDonna()
+//        def par2 = LibListe.getAttivitaParagrafiIndifferenziati()
+//        def par4 = LibListe.getAttivitaParagrafiIndifferenziatiUsati()
+
+        def uomini = LibListe.getAttivitaParagrafiUomo()
+//        def donne = LibListe.getAttivitaParagrafiDonna()
+        def comuni = LibListe.getAttivitaParagrafiComuniUomoDonna()
         def stop
         redirect(action: 'list')
     } // fine del metodo

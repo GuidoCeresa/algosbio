@@ -125,11 +125,11 @@ class ListaNazionalita extends ListaBio {
      * Sovrascritto
      */
     @Override
-    protected creazioneSottopagina(String chiaveParagrafo, String titoloParagrafo, ArrayList<BioGrails> listaVociOrdinate) {
+    protected creazioneSottopagina(String chiaveParagrafo, String titoloParagrafo, ArrayList<BioGrails> listaVociOrdinate, String tagSesso) {
         ListaBio sottoVoce
 
         //creazione della sottopagina
-        sottoVoce = new ListaNazionalitaAttivita(elaboraSoggettoSpecifico(chiaveParagrafo), false)
+        sottoVoce = new ListaNazionalitaAttivita(elaboraSoggettoSpecifico(chiaveParagrafo, tagSesso), false)
         sottoVoce.listaBiografie = listaVociOrdinate
         sottoVoce.numPersone = listaVociOrdinate.size()
         sottoVoce.titoloPaginaMadre = titoloPagina
@@ -138,12 +138,51 @@ class ListaNazionalita extends ListaBio {
     }// fine del metodo
 
     /**
+     * Elabora soggetto specifico
+     */
+    protected String elaboraSoggettoSpecifico(String chiaveParagrafo, String tagSesso) {
+        LinkedHashMap<String, ?> mappa = LibListe.getAttivitaMappaMultiplaUomoDonna(chiaveParagrafo)
+        String titoloParagrafo=''
+
+        if (tagSesso.equals(UOMINI)) {
+            if (mappa[LibListe.MAPPA_SOTTOPAGINA_UOMINI]) {
+                titoloParagrafo = mappa[LibListe.MAPPA_SOTTOPAGINA_UOMINI]
+            }// fine del blocco if
+        }// fine del blocco if
+
+        if (tagSesso.equals(DONNE)) {
+            if (mappa[LibListe.MAPPA_SOTTOPAGINA_DONNE]) {
+                titoloParagrafo = mappa[LibListe.MAPPA_SOTTOPAGINA_DONNE]
+            }// fine del blocco if
+        }// fine del blocco if
+
+        if (chiaveParagrafo.equals('Cantanti')) {
+            def stop
+        }// fine del blocco if
+
+        return super.elaboraSoggettoSpecifico(titoloParagrafo, '')
+    }// fine del metodo
+
+    /**
+     * Creazione del rimando
+     */
+    protected String elaborazioneRimando(String chiaveParagrafo, String titoloParagrafo, String tagSesso) {
+        String testo = ''
+        String titoloSottovoce = getTitoloSottovoce(chiaveParagrafo, tagSesso)
+
+        testo += elaboraTitoloParagrafo(titoloParagrafo)
+        testo += "*{{Vedi anche|${titoloSottovoce}}}"
+
+        return testo + aCapo + aCapo
+    }// fine del metodo
+
+    /**
      * Titolo della sottopagina
      * Sovrascritto
      */
     @Override
-    protected String getTitoloSottovoce(String chiaveParagrafo) {
-        return NazionalitaService.TAG_PROGETTO + elaboraSoggettoSpecifico(chiaveParagrafo)
+    protected String getTitoloSottovoce(String chiaveParagrafo, String tagSesso) {
+        return NazionalitaService.TAG_PROGETTO + elaboraSoggettoSpecifico(chiaveParagrafo, tagSesso)
     }// fine del metodo
 
     /**
@@ -224,14 +263,13 @@ class ListaNazionalita extends ListaBio {
         String titoloParagrafo
 
         if (Pref.getBool(LibBio.USA_TITOLO_PARAGRAFO_NAZ_ATT_LINK_PROGETTO, true)) {
-            titoloParagrafo = NazionalitaService.elaboraTitoloParagrafoNazionalita(chiaveParagrafo,tagParagrafoNullo)
+            titoloParagrafo = NazionalitaService.elaboraTitoloParagrafoNazionalita(chiaveParagrafo, tagParagrafoNullo)
         } else {
             titoloParagrafo = super.elaboraTitoloParagrafo(chiaveParagrafo, listaVoci)
         }// fine del blocco if-else
 
         return titoloParagrafo
     }// fine del metodo
-
 
     /**
      * Recupera la Nazionalita
@@ -268,7 +306,6 @@ class ListaNazionalita extends ListaBio {
 
         super.elaboraListaBiografie()
     }// fine del metodo
-
 
     /**
      * Elabora e crea la lista della nazionalità indicata e la uploada sul server wiki
