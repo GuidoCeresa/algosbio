@@ -24,7 +24,7 @@ class AttivitaService {
     // il service NON viene iniettato automaticamente (perché è nel plugin)
     WikiService wikiService = new WikiService()
 
-    public static String TITOLO = 'Modulo:Bio/Plurale nazionalità'
+    public static String TITOLO = 'Modulo:Bio/Plurale attività'
     public static String TAG_PROGETTO = 'Progetto:Biografie/Attività/'
     public static String TAG_PARAGRAFO = 'Progetto:Biografie/Nazionalità/'
 

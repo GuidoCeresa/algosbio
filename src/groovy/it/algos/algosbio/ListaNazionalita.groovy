@@ -94,9 +94,19 @@ class ListaNazionalita extends ListaBio {
     @Override
     protected String getChiaveParagrafo(BioGrails bio) {
         String chiave = attivitaPluralePerGenere(bio)
+        boolean isDonna = bio.sesso.equals(LibListe.DONNA)
+        boolean isUomo = bio.sesso.equals(LibListe.UOMO)
 
         if (!chiave) {
-            chiave = tagParagrafoNullo
+            if (usaSuddivisioneUomoDonna) {
+                if (isDonna) {
+                    chiave = tagAltre
+                } else {
+                    chiave = tagAltri
+                }// fine del blocco if-else
+            } else {
+                chiave = tagParagrafoNullo
+            }// fine del blocco if-else
         }// fine del blocco if
 
         return chiave
@@ -142,7 +152,7 @@ class ListaNazionalita extends ListaBio {
      */
     protected String elaboraSoggettoSpecifico(String chiaveParagrafo, String tagSesso) {
         LinkedHashMap<String, ?> mappa = LibListe.getAttivitaMappaMultiplaUomoDonna(chiaveParagrafo)
-        String titoloParagrafo=''
+        String titoloParagrafo = chiaveParagrafo
 
         if (tagSesso.equals(UOMINI)) {
             if (mappa[LibListe.MAPPA_SOTTOPAGINA_UOMINI]) {
@@ -263,7 +273,11 @@ class ListaNazionalita extends ListaBio {
         String titoloParagrafo
 
         if (Pref.getBool(LibBio.USA_TITOLO_PARAGRAFO_NAZ_ATT_LINK_PROGETTO, true)) {
-            titoloParagrafo = NazionalitaService.elaboraTitoloParagrafoNazionalita(chiaveParagrafo, tagParagrafoNullo)
+            if (chiaveParagrafo.equals(tagParagrafoNullo) || chiaveParagrafo.equals(tagAltri) || chiaveParagrafo.equals(tagAltre)) {
+                titoloParagrafo = chiaveParagrafo
+            } else {
+                titoloParagrafo = NazionalitaService.elaboraTitoloParagrafoNazionalita(chiaveParagrafo, tagParagrafoNullo)
+            }// fine del blocco if-else
         } else {
             titoloParagrafo = super.elaboraTitoloParagrafo(chiaveParagrafo, listaVoci)
         }// fine del blocco if-else

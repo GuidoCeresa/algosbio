@@ -196,7 +196,7 @@ class AttivitaController {
 //        def lista5 = LibListe.getAttivitaPluraleNonUsate()
 //        def mappa = LibListe.getAttivitaMappaAll()
 //
-        def alfa1 = LibListe.getAttivitaMappaMultiplaUomoDonna('Cantanti')
+        def alfa1 = LibListe.getAttivitaMappaMultiplaUomoDonna('Compositrici')
         def alfa2 = LibListe.getAttivitaMappaMultiplaUomoDonna('Cantante')
         def alfa3 = LibListe.getAttivitaMappaMultiplaUomoDonna('cantanti')
         def alfa4 = LibListe.getAttivitaMappaMultiplaUomoDonna('cantante')

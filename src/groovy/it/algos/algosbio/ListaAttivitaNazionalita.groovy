@@ -33,11 +33,11 @@ class ListaAttivitaNazionalita extends ListaAttivita {
      * Sovrascritto
      */
     @Override
-    protected creazioneSottopagina(String chiaveParagrafo, String titoloParagrafo, ArrayList<BioGrails> listaVociOrdinate) {
+    protected creazioneSottopagina(String chiaveParagrafo, String titoloParagrafo, ArrayList<BioGrails> listaVociOrdinate,String tagSesso) {
         ListaBio sottoVoce
 
         //creazione della sottopagina
-        sottoVoce = new ListaAttivitaNazionalita(elaboraSoggettoSpecifico(chiaveParagrafo), false)
+        sottoVoce = new ListaAttivitaNazionalita(elaboraSoggettoSpecifico(chiaveParagrafo, tagSesso), false)
         sottoVoce.listaBiografie = listaVociOrdinate
         sottoVoce.numPersone = listaVociOrdinate.size()
         sottoVoce.titoloPaginaMadre = titoloPagina

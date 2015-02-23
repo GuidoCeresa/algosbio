@@ -970,6 +970,18 @@ class VersioneBootStrap {
             versioneService.newVersione('Preferenze', 'MAX_VOCI_PAGINA_ATTIVITA di default 10.000')
         }// fine del blocco if
 
+        //--creata una nuova preferenza
+        if (versioneService && versioneService.installaVersione(104)) {
+            Pref pref = new Pref()
+            pref.ordine = Pref.list().size() + 1
+            pref.code = LibBio.USA_SOTTOPAGINA_ALTRI
+            pref.descrizione = 'Sottopagina per il paragrafo ... altri...'
+            pref.type = Type.booleano
+            pref.bool = false
+            pref.save(flush: true)
+            versioneService.newVersione('Preferenze', 'USA_SOTTOPAGINA_ALTRI di default false')
+        }// fine del blocco if
+
     }// fine della closure
 
 

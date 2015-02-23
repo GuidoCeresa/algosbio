@@ -47,4 +47,13 @@ class ListaNazionalitaAttivita extends ListaNazionalita {
         sottoVoce.elaboraPagina()
     }// fine del metodo
 
+    /**
+     * Titolo della sottopagina
+     * Sovrascritto
+     */
+    @Override
+    protected String getTitoloSottovoce(String chiaveParagrafo, String tagSesso) {
+        return NazionalitaService.TAG_PROGETTO + elaboraSoggettoSpecifico(chiaveParagrafo, tagSesso)
+    }// fine del metodo
+
 }// fine della classe

@@ -16,6 +16,7 @@ package it.algos.algosbio
 import it.algos.algos.DialogoController
 import it.algos.algos.TipoDialogo
 import it.algos.algoslib.Lib
+import it.algos.algoslib.LibTesto
 import it.algos.algospref.Pref
 import it.algos.algoswiki.Login
 import org.codehaus.groovy.grails.commons.DefaultGrailsDomainClass
@@ -93,19 +94,33 @@ class NazionalitaController {
     //--passa al metodo effettivo senza nessun dialogo di conferma
     def uploadSingolaNazionalita(Long id) {
         Nazionalita nazionalita = Nazionalita.get(id)
-        String plurale
+        String plurale=''
+        boolean debug = Pref.getBool(LibBio.DEBUG, false)
+        long inizio = System.currentTimeMillis()
+        long fine
+        long durata
+        String tempo
 
         if (grailsApplication && grailsApplication.config.login) {
+            plurale = nazionalita?.plurale
             if (bioService && Pref.getBool(LibBio.USA_LISTE_BIO_NAZIONALITA)) {
                 nazionalitaService?.uploadNazionalita(nazionalita, bioService)
             } else {
-                plurale = nazionalita?.plurale
                 new BioNazionalita(plurale).registraPagina()
             }// fine del blocco if-else
             flash.info = "Eseguito upload delle liste della nazionalita sul server wiki"
         } else {
             flash.error = 'Devi essere loggato per effettuare un upload di pagine sul server wiki'
         }// fine del blocco if-else
+
+        if (debug) {
+            fine = System.currentTimeMillis()
+            durata = fine - inizio
+            durata = durata / 1000
+            tempo = LibTesto.formatNum(durata)
+            println("uploadSingolaNazionalita $plurale: in $tempo secondi")
+        }// fine del blocco if
+
         redirect(action: 'list')
     } // fine del metodo
 

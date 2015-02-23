@@ -139,11 +139,11 @@ class ListaNome extends ListaBio {
      * Sovrascritto
      */
     @Override
-    protected creazioneSottopagina(String chiaveParagrafo, String titoloParagrafo, ArrayList<BioGrails> listaVociOrdinate) {
+    protected creazioneSottopagina(String chiaveParagrafo, String titoloParagrafo, ArrayList<BioGrails> listaVociOrdinate, String tagSesso) {
         ListaBio sottoVoce
 
         //creazione della sottopagina
-        sottoVoce = new ListaNomeAttivita(elaboraSoggettoSpecifico(chiaveParagrafo), false)
+        sottoVoce = new ListaNomeAttivita(elaboraSoggettoSpecifico(chiaveParagrafo, tagSesso), false)
         sottoVoce.listaBiografie = listaVociOrdinate
         sottoVoce.titoloPaginaMadre = titoloPagina
         sottoVoce.soggettoMadre = soggetto
@@ -155,10 +155,9 @@ class ListaNome extends ListaBio {
      * Sovrascritto
      */
     @Override
-    protected String getTitoloSottovoce(String chiaveParagrafo) {
-        return 'Persone di nome ' + elaboraSoggettoSpecifico(chiaveParagrafo)
+    protected String getTitoloSottovoce(String chiaveParagrafo, String tagSesso) {
+        return 'Persone di nome ' + elaboraSoggettoSpecifico(chiaveParagrafo, tagSesso)
     }// fine del metodo
-
 
     /**
      * Piede della pagina

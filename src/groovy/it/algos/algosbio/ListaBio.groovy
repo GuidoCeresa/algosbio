@@ -59,10 +59,12 @@ abstract class ListaBio {
     protected int maxVociParagrafo = 100
     protected String tagLivelloParagrafo = '=='
     protected String tagParagrafoNullo = 'Altre...'
+    protected static String tagAltri = 'Altri...'
+    protected static String tagAltre = 'Altre...'
     protected String tagParagrafoAlfabetico = '...'
     public boolean registrata = false
     public boolean esistonoUominiDonne = false
-
+    public boolean usaSottopaginaAltri
 
     public ListaBio(Object oggetto) {
         this(oggetto, null)
@@ -136,6 +138,8 @@ abstract class ListaBio {
         maxVociParagrafo = 100
         tagLivelloParagrafo = '=='
         tagParagrafoNullo = 'Altre...'
+        usaSottopaginaAltri == Pref.getBool(LibBio.USA_SOTTOPAGINA_ALTRI, false)
+
     }// fine del metodo
 
     /**
@@ -715,7 +719,7 @@ abstract class ListaBio {
         BioGrails bio
         Attivita attivita
 
-        if (usaTitoloParagrafoConLink && !chiaveParagrafo.equals(tagParagrafoNullo) && listaVoci && listaVoci.size() > 0) {
+        if (usaTitoloParagrafoConLink && !chiaveParagrafo.equals(tagParagrafoNullo) && !chiaveParagrafo.equals(tagAltri) && !chiaveParagrafo.equals(tagAltre) && listaVoci && listaVoci.size() > 0) {
             bio = listaVoci.get(0)
             if (bio) {
                 attivita = bio.attivitaLink
@@ -819,8 +823,11 @@ abstract class ListaBio {
         int num = listaDidascalie.size()
         boolean troppeVoci = (num >= maxVociParagrafo)
         boolean chiaveNonAlfabetica = (!chiaveParagrafo.equals(tagParagrafoAlfabetico))
+        boolean paragrafoNullo = (chiaveParagrafo.equals(tagParagrafoNullo) || chiaveParagrafo.equals(tagAltri) || chiaveParagrafo.equals(tagAltre))
+        boolean usaSottopaginaNormale = (!paragrafoNullo && usaSottopagine && troppeVoci && chiaveNonAlfabetica)
+        boolean usaSottopaginaNulla = (paragrafoNullo && usaSottopaginaAltri)
 
-        if (usaSottopagine && troppeVoci && chiaveNonAlfabetica) {
+        if (usaSottopaginaNormale || usaSottopaginaNulla) {
             testo += elaboraParagrafoSottoPagina(chiaveParagrafo, titoloParagrafo, listaVociOrdinate, tagSesso)
         } else {
             testo += elaboraParagrafoNormale(titoloParagrafo, listaDidascalie)
@@ -959,7 +966,9 @@ abstract class ListaBio {
 
         if (mappaIn && mappaIn.size() > 1) {
             listaChiavi = mappaIn.keySet()
-            listaChiavi.remove(tagParagrafoNullo) //elimino l'asterisco (per metterlo in fondo)
+            listaChiavi.remove(tagParagrafoNullo) //elimino (per metterlo in fondo)
+            listaChiavi.remove(tagAltri) //elimino (per metterlo in fondo)
+            listaChiavi.remove(tagAltre) //elimino (per metterlo in fondo)
             listaChiavi.remove(tagParagrafoAlfabetico) //elimino l'asterisco (per metterlo in fondo)
             listaChiavi = ordinaChiavi(listaChiavi)
             if (listaChiavi) {
@@ -974,6 +983,14 @@ abstract class ListaBio {
                 valore = mappaIn.get(tagParagrafoNullo)
                 if (valore) {
                     mappaOut.put(tagParagrafoNullo, valore)
+                }// fine del blocco if
+                valore = mappaIn.get(tagAltri)
+                if (valore) {
+                    mappaOut.put(tagAltri, valore)
+                }// fine del blocco if
+                valore = mappaIn.get(tagAltre)
+                if (valore) {
+                    mappaOut.put(tagAltre, valore)
                 }// fine del blocco if
                 valore = mappaIn.get(tagParagrafoAlfabetico)
                 if (valore) {

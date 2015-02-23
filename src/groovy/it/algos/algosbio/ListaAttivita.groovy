@@ -188,11 +188,11 @@ class ListaAttivita extends ListaBio {
      * Sovrascritto
      */
     @Override
-    protected creazioneSottopagina(String chiaveParagrafo, String titoloParagrafo, ArrayList<BioGrails> listaVociOrdinate) {
+    protected creazioneSottopagina(String chiaveParagrafo, String titoloParagrafo, ArrayList<BioGrails> listaVociOrdinate, String tagSesso) {
         ListaBio sottoVoce
 
         //creazione della sottopagina
-        sottoVoce = new ListaAttivitaNazionalita(elaboraSoggettoSpecifico(chiaveParagrafo), false)
+        sottoVoce = new ListaAttivitaNazionalita(elaboraSoggettoSpecifico(chiaveParagrafo, tagSesso), false)
         sottoVoce.listaBiografie = listaVociOrdinate
         sottoVoce.numPersone = listaVociOrdinate.size()
         sottoVoce.titoloPaginaMadre = titoloPagina
@@ -200,14 +200,13 @@ class ListaAttivita extends ListaBio {
         sottoVoce.elaboraPagina()
     }// fine del metodo
 
-
     /**
      * Titolo della sottopagina
      * Sovrascritto
      */
     @Override
-    protected String getTitoloSottovoce(String chiaveParagrafo) {
-        return AttivitaService.TAG_PROGETTO + elaboraSoggettoSpecifico(chiaveParagrafo)
+    protected String getTitoloSottovoce(String chiaveParagrafo, String tagSesso) {
+        return AttivitaService.TAG_PROGETTO + elaboraSoggettoSpecifico(chiaveParagrafo, tagSesso)
     }// fine del metodo
 
     /**

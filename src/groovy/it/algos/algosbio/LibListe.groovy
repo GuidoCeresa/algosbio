@@ -704,10 +704,14 @@ abstract class LibListe {
         boolean usaPlurale
         def generi
         Genere genere
+        Genere genereTmp
         String singolare = ''
+        String singolareTmp = ''
         boolean usataUomini = false
         boolean usataDonne = false
         int totaleErrato = 0
+        String titoloSottopaginaUomini
+        String titoloSottopaginaDonne
 
         listaAttivita = Attivita.findAllByPlurale(nomeMinuscolo)
         if (listaAttivita && listaAttivita.size() > 0) {
@@ -736,6 +740,14 @@ abstract class LibListe {
         } else {
             usaPlurale = false
             attivitaSingola = Attivita.findBySingolare(nomeMinuscolo)
+            if (!attivitaSingola) {
+                genereTmp = Genere.findByPlurale(nomeMinuscolo)
+                if (genereTmp) {
+                    singolareTmp = genereTmp.singolare
+                    attivitaSingola = Attivita.findBySingolare(singolareTmp)
+                }// fine del blocco if
+            }// fine del blocco if
+
             if (attivitaSingola) {
                 bioPrima += BioGrails.countByAttivitaLink(attivitaSingola)
                 bioSeconda += BioGrails.countByAttivita2Link(attivitaSingola)
@@ -842,13 +854,18 @@ abstract class LibListe {
                 mappa.put(MAPPA_PARAGRAFO_DONNE, titoloParagrafoDonne)
             }// fine del blocco if
 
+            titoloSottopaginaUomini = titoloParagrafoUomini
+            titoloSottopaginaDonne = titoloParagrafoDonne
             if (titoloParagrafoUomini.equals(titoloParagrafoDonne)) {
-                mappa.put(MAPPA_SOTTOPAGINA_UOMINI, titoloParagrafoUomini + ' ' + UOMINI)
-                mappa.put(MAPPA_SOTTOPAGINA_DONNE, titoloParagrafoDonne + ' ' + DONNE)
-            } else {
-                mappa.put(MAPPA_SOTTOPAGINA_UOMINI, titoloParagrafoUomini)
-                mappa.put(MAPPA_SOTTOPAGINA_DONNE, titoloParagrafoDonne)
-            }// fine del blocco if-else
+                titoloSottopaginaUomini += ' ' + UOMINI
+                titoloSottopaginaDonne += ' ' + DONNE
+            }// fine del blocco if
+            if (titoloSottopaginaUomini) {
+                mappa.put(MAPPA_SOTTOPAGINA_UOMINI, titoloSottopaginaUomini)
+            }// fine del blocco if
+            if (titoloSottopaginaDonne) {
+                mappa.put(MAPPA_SOTTOPAGINA_DONNE, titoloSottopaginaDonne)
+            }// fine del blocco if
 
             mappa.put(MAPPA_BIO_PRIMA, bioPrima)
             mappa.put(MAPPA_BIO_SECONDA, bioSeconda)
@@ -1147,9 +1164,9 @@ abstract class LibListe {
         if (debug) {
             fine = System.currentTimeMillis()
             durata = fine - inizio
-            durata = durata / div
+            durata = durata / 1000
             tempo = LibTesto.formatNum(durata)
-            println("LibListe.getAttivitaMappa: in $tempo $sec")
+            println("LibListe.getAttivitaMappa: in $tempo secondi")
         }// fine del blocco if
 
         return listaMappe

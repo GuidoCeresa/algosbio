@@ -172,14 +172,6 @@ class ListaNazionalitaGrandi extends ListaBio {
         return super.elaboraSoggettoSpecifico(titoloParagrafo, '')
     }// fine del metodo
 
-    /**
-     * Titolo della sottopagina
-     * Sovrascritto
-     */
-    @Override
-    protected String getTitoloSottovoce(String chiaveParagrafo, String tagSesso) {
-        return TAG_PROGETTO + elaboraSoggettoSpecifico(chiaveParagrafo, tagSesso)
-    }// fine del metodo
 
     /**
      * Recupera il plurale
@@ -216,21 +208,20 @@ class ListaNazionalitaGrandi extends ListaBio {
         if (usaSuddivisioneUomoDonna) {
             testo += '=Uomini='
             testo += aCapo
-            def para = LibListe.getAttivitaParagrafiUomo()
             paragrafiAttMaschili = paragrafiAttivitaMaschili()
             paragrafiAttMaschili?.each {
-                testo += elaboraParagrafo(nazionalitaPlurale, it, UOMINI)
+                testo += elaboraParagrafo(nazionalitaPlurale, it, LibListe.UOMO)
             } // fine del ciclo each
-            testo += elaboraParagrafo(nazionalitaPlurale, '', UOMINI)
+            testo += elaboraParagrafo(nazionalitaPlurale, '', LibListe.UOMO)
 
             testo += aCapo
             testo += '=Donne='
             testo += aCapo
             paragrafiAttFemminili = paragrafiAttivitaFemminili()
             paragrafiAttFemminili?.each {
-                testo += elaboraParagrafo(nazionalitaPlurale, it, DONNE)
+                testo += elaboraParagrafo(nazionalitaPlurale, it, LibListe.DONNA)
             } // fine del ciclo each
-            testo += elaboraParagrafo(nazionalitaPlurale, '', DONNE)
+            testo += elaboraParagrafo(nazionalitaPlurale, '', LibListe.DONNA)
 
             esistonoUominiDonne = true
         } else {
@@ -355,6 +346,10 @@ class ListaNazionalitaGrandi extends ListaBio {
         ArrayList<BioGrails> lista
         String titoloParagrafo
 
+        if (chiaveParagrafo.startsWith('cest')) {
+            def stop
+        }// fine del blocco if
+
         if (nazionalita) {
             where = whereParagrafo(nazionalita, chiaveParagrafo, sesso)
             try { // prova ad eseguire il codice
@@ -369,7 +364,7 @@ class ListaNazionalitaGrandi extends ListaBio {
             if (chiaveParagrafo) {
                 chiaveParagrafo = LibTesto.primaMaiuscola(chiaveParagrafo)
             } else {
-                if (sesso && sesso.equals(DONNE)) {
+                if (sesso && sesso.equals(LibListe.DONNA)) {
                     chiaveParagrafo = tagAltre
                 } else {
                     chiaveParagrafo = tagAltri
@@ -385,6 +380,28 @@ class ListaNazionalitaGrandi extends ListaBio {
 
         return testo
     } // fine del metodo
+
+    /**
+     * Creazione del rimando
+     */
+    protected String elaborazioneRimando(String chiaveParagrafo, String titoloParagrafo, String tagSesso) {
+        String testo = ''
+        String titoloSottovoce = getTitoloSottovoce(chiaveParagrafo, tagSesso)
+
+        testo += elaboraTitoloParagrafo(titoloParagrafo)
+        testo += "*{{Vedi anche|${titoloSottovoce}}}"
+
+        return testo + aCapo + aCapo
+    }// fine del metodo
+
+    /**
+     * Titolo della sottopagina
+     * Sovrascritto
+     */
+    @Override
+    protected String getTitoloSottovoce(String chiaveParagrafo, String tagSesso) {
+        return TAG_PROGETTO + elaboraSoggettoSpecifico(chiaveParagrafo, tagSesso)
+    }// fine del metodo
 
     /**
      * Elabora la query per il singolo paragrafo
