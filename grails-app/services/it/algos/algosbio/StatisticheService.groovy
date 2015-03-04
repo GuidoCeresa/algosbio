@@ -76,13 +76,6 @@ class StatisticheService {
         return testo
     }// fine del metodo
 
-
-
-
-
-
-
-
     /**
      * Restituisce l'array delle riga del titolo della tabella delle attività
      */
@@ -169,12 +162,17 @@ class StatisticheService {
         lista.add(getRigaNazionalita())
         lista.add(getRigaAttesa())
 
-        mappa.put('width', '50')
-        mappa.put('sortable', false)
-        mappa.put('titoli', getTitoliSintesi())
-        mappa.put('align', TipoAllineamento.right)
-        mappa.put('lista', lista)
-        return WikiLib.creaTabellaSortable(mappa)
+//        mappa.put('width', '50')
+//        mappa.put('titoli', getTitoliSintesi())
+//        mappa.put('align', TipoAllineamento.randomBaseSin)
+//        mappa.put('lista', lista)
+//        return WikiLib.creaTabellaSortable(mappa)
+
+        mappa.put(WikiLib.MAPPA_NUMERI_FORMATTATI, true)
+        mappa.put(WikiLib.MAPPA_TITOLI, getTitoliSintesi())
+        mappa.put(WikiLib.MAPPA_LISTA, lista)
+        return WikiLib.creaTable(mappa)
+
     } // fine della closure
 
     /**
@@ -207,44 +205,26 @@ class StatisticheService {
      * Riga col numero di voci
      */
     private static getRigaVoci() {
-        ArrayList riga = new ArrayList()
         String descrizione = ':Categoria:BioBot|Template bio'
-        def oldValue = Pref.getInt(LibBio.VOCI)
-        def newValue = BioGrails.count()
-        def differenze
+        int oldValue = Pref.getInt(LibBio.VOCI)
+        int newValue = BioGrails.count()
 
         //valore per le preferenze
         mappaSintesi.put(LibBio.VOCI, newValue)
 
         descrizione = LibWiki.setQuadre(descrizione)
         descrizione = LibWiki.setBold(descrizione)
-        differenze = newValue - oldValue
-        oldValue = (String) LibTesto.formatNum(oldValue)
-        newValue = (String) LibTesto.formatNum(newValue)
-        newValue = LibWiki.setBold(newValue)
-        if (differenze != 0) {
-            differenze = (String) LibTesto.formatNum(differenze)
-        } else {
-            differenze = ''
-        }// fine del blocco if-else
-        riga.add(regolaSpazi(descrizione))
-        riga.add(regolaSpazi(oldValue))
-        riga.add(regolaSpazi(newValue))
-        riga.add(regolaSpazi(differenze))
 
-        // valore di ritorno
-        return riga
+        return getRigaBase(descrizione, oldValue, newValue)
     }// fine del metodo
 
     /**
      * Riga col numero di giorni
      */
     private static getRigaGiorni() {
-        ArrayList riga = new ArrayList()
         String descrizione = 'Giorni interessati'
-        def oldValue = Pref.getInt(LibBio.GIORNI)
-        def newValue = Giorno.count()
-        def differenze
+        int oldValue = Pref.getInt(LibBio.GIORNI)
+        int newValue = Giorno.count()
         String nota = 'Previsto il [[29 febbraio]] per gli [[Anno bisestile|anni bisestili]]'
 
         //valore per le preferenze
@@ -253,22 +233,8 @@ class StatisticheService {
         descrizione = LibWiki.setBold(descrizione)
         nota = SPAZIO + LibWiki.setRef(nota)
         descrizione += nota
-        differenze = newValue - oldValue
-        oldValue = (String) LibTesto.formatNum(oldValue)
-        newValue = (String) LibTesto.formatNum(newValue)
-        if (differenze != 0) {
-            differenze = (String) LibTesto.formatNum(differenze)
-        } else {
-            differenze = ''
-        }// fine del blocco if-else
 
-        riga.add(regolaSpazi(descrizione))
-        riga.add(regolaSpazi(oldValue))
-        riga.add(regolaSpazi(newValue))
-        riga.add(regolaSpazi(differenze))
-
-        // valore di ritorno
-        return riga
+        return getRigaBase(descrizione, oldValue, newValue)
     }// fine del metodo
 
     /**
@@ -276,11 +242,9 @@ class StatisticheService {
      */
     private static getRigaAnni() {
         int anniPreCristo = 1000
-        ArrayList riga = new ArrayList()
         String descrizione = 'Anni interessati'
-        def oldValue = Pref.getInt(LibBio.ANNI)
-        def newValue = getAnnoCorrenteNum() + anniPreCristo
-        def differenze
+        int oldValue = Pref.getInt(LibBio.ANNI)
+        int newValue = getAnnoCorrenteNum() + anniPreCristo
         String nota = 'Potenzialmente dal [[1000 a.C.]] al [[{{CURRENTYEAR}}]]'
 
         //valore per le preferenze
@@ -289,101 +253,51 @@ class StatisticheService {
         descrizione = LibWiki.setBold(descrizione)
         nota = SPAZIO + LibWiki.setRef(nota)
         descrizione += nota
-        differenze = newValue - oldValue
-        oldValue = (String) LibTesto.formatNum(oldValue)
-        newValue = (String) LibTesto.formatNum(newValue)
-        if (differenze != 0) {
-            differenze = (String) LibTesto.formatNum(differenze)
-        } else {
-            differenze = ''
-        }// fine del blocco if-else
 
-        riga.add(regolaSpazi(descrizione))
-        riga.add(regolaSpazi(oldValue))
-        riga.add(regolaSpazi(newValue))
-        riga.add(regolaSpazi(differenze))
-
-        // valore di ritorno
-        return riga
+        return getRigaBase(descrizione, oldValue, newValue)
     }// fine del metodo
 
     /**
      * Riga col numero di attività
      */
     private static getRigaAttivita() {
-        ArrayList riga = new ArrayList()
         String descrizione = PATH + 'Attività|Attività utilizzate'
-        def oldValue = Pref.getInt(LibBio.ATTIVITA)
-        def newValue = Attivita.executeQuery('select distinct plurale from Attivita').size()
-        def differenze
+        int oldValue = Pref.getInt(LibBio.ATTIVITA)
+        int newValue = Attivita.executeQuery('select distinct plurale from Attivita').size()
 
         //valore per le preferenze
         mappaSintesi.put(LibBio.ATTIVITA, newValue)
 
         descrizione = LibWiki.setQuadre(descrizione)
         descrizione = LibWiki.setBold(descrizione)
-        differenze = newValue - oldValue
-        oldValue = (String) LibTesto.formatNum(oldValue)
-        newValue = (String) LibTesto.formatNum(newValue)
-        newValue = LibWiki.setBold(newValue)
-        if (differenze != 0) {
-            differenze = (String) LibTesto.formatNum(differenze)
-        } else {
-            differenze = ''
-        }// fine del blocco if-else
 
-        riga.add(regolaSpazi(descrizione))
-        riga.add(regolaSpazi(oldValue))
-        riga.add(regolaSpazi(newValue))
-        riga.add(regolaSpazi(differenze))
-
-        // valore di ritorno
-        return riga
+        return getRigaBase(descrizione, oldValue, newValue)
     }// fine del metodo
 
     /**
      * Riga col numero di nazionalità
      */
     private static getRigaNazionalita() {
-        ArrayList riga = new ArrayList()
         String descrizione = PATH + 'Nazionalità|Nazionalità utilizzate'
-        def oldValue = Pref.getInt(LibBio.NAZIONALITA)
-        def newValue = Nazionalita.executeQuery('select distinct plurale from Nazionalita').size()
-        def differenze
+        int oldValue = Pref.getInt(LibBio.NAZIONALITA)
+        int newValue = Nazionalita.executeQuery('select distinct plurale from Nazionalita').size()
 
         //valore per le preferenze
         mappaSintesi.put(LibBio.NAZIONALITA, newValue)
 
         descrizione = LibWiki.setQuadre(descrizione)
         descrizione = LibWiki.setBold(descrizione)
-        differenze = newValue - oldValue
-        oldValue = (String) LibTesto.formatNum(oldValue)
-        newValue = (String) LibTesto.formatNum(newValue)
-        newValue = LibWiki.setBold(newValue)
-        if (differenze != 0) {
-            differenze = (String) LibTesto.formatNum(differenze)
-        } else {
-            differenze = ''
-        }// fine del blocco if-else
 
-        riga.add(regolaSpazi(descrizione))
-        riga.add(regolaSpazi(oldValue))
-        riga.add(regolaSpazi(newValue))
-        riga.add(regolaSpazi(differenze))
-
-        // valore di ritorno
-        return riga
+        return getRigaBase(descrizione, oldValue, newValue)
     }// fine del metodo
 
     /**
      * Riga coi giorni di attesa
      */
     private static getRigaAttesa() {
-        ArrayList riga = new ArrayList()
         String descrizione = 'Giorni di attesa'
-        def oldValue = Pref.getInt(LibBio.ATTESA)
-        def newValue = NUOVA_ATTESA
-        def differenze
+        int oldValue = Pref.getInt(LibBio.ATTESA)
+        int newValue = NUOVA_ATTESA
         String nota = 'Giorni di attesa indicativi prima che ogni singola voce venga ricontrollata per registrare eventuali modifiche intervenute nei parametri significativi.'
 
         //valore per le preferenze
@@ -392,19 +306,25 @@ class StatisticheService {
         descrizione = LibWiki.setBold(descrizione)
         nota = SPAZIO + LibWiki.setRef(nota)
         descrizione += nota
-        differenze = newValue - oldValue
-        oldValue = (String) LibTesto.formatNum(oldValue)
-        newValue = (String) LibTesto.formatNum(newValue)
-        if (differenze != 0) {
-            differenze = (String) LibTesto.formatNum(differenze)
-        } else {
-            differenze = ''
-        }// fine del blocco if-else
 
-        riga.add(regolaSpazi(descrizione))
-        riga.add(regolaSpazi(oldValue))
-        riga.add(regolaSpazi(newValue))
-        riga.add(regolaSpazi(differenze))
+        return getRigaBase(descrizione, oldValue, newValue)
+    }// fine del metodo
+
+    /**
+     * Riga base
+     */
+    private static getRigaBase(String descrizione, int oldValue, int newValue) {
+        ArrayList riga = new ArrayList()
+        def differenze = newValue - oldValue
+
+        if (differenze == 0) {
+            differenze = ''
+        }// fine del blocco if
+
+        riga.add(descrizione)
+        riga.add(oldValue)
+        riga.add(newValue)
+        riga.add(differenze)
 
         // valore di ritorno
         return riga

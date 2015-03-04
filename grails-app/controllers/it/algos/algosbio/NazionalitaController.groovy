@@ -74,7 +74,37 @@ class NazionalitaController {
     } // fine del metodo
 
     //--creazione delle liste partendo da BioGrails
-    //--elabora e crea tutti le pagine di nazionalità
+    //--elabora e crea le pagine di nazionalità
+    //--passa al metodo effettivo senza nessun dialogo di conferma
+    def uploadNazionalitaPrima() {
+        if (grailsApplication && grailsApplication.config.login) {
+            if (bioService && Pref.getBool(LibBio.USA_LISTE_BIO_NAZIONALITA)) {
+                nazionalitaService?.uploadNazionalitaPrimaMeta(bioService)
+            }// fine del blocco if
+            statisticheService?.nazionalitaUsate()
+        } else {
+            flash.error = 'Devi essere loggato per effettuare un upload di pagine sul server wiki'
+        }// fine del blocco if-else
+        redirect(action: 'list')
+    } // fine del metodo
+
+    //--creazione delle liste partendo da BioGrails
+    //--elabora e crea le pagine di nazionalità
+    //--passa al metodo effettivo senza nessun dialogo di conferma
+    def uploadNazionalitaSeconda() {
+        if (grailsApplication && grailsApplication.config.login) {
+            if (bioService && Pref.getBool(LibBio.USA_LISTE_BIO_NAZIONALITA)) {
+                nazionalitaService?.uploadNazionalitaSecondaMeta(bioService)
+            }// fine del blocco if
+            statisticheService?.nazionalitaUsate()
+        } else {
+            flash.error = 'Devi essere loggato per effettuare un upload di pagine sul server wiki'
+        }// fine del blocco if-else
+        redirect(action: 'list')
+    } // fine del metodo
+
+    //--creazione delle liste partendo da BioGrails
+    //--elabora e crea tutte le pagine di nazionalità
     //--passa al metodo effettivo senza nessun dialogo di conferma
     def uploadNazionalita() {
         if (grailsApplication && grailsApplication.config.login) {
@@ -202,6 +232,8 @@ class NazionalitaController {
         //--mappa con [cont:'controller', action:'metodo', icon:'iconaImmagine', title:'titoloVisibile']
         menuExtra = [
                 [cont: 'nazionalita', action: 'download', icon: 'frecciagiu', title: 'Download'],
+                [cont: 'nazionalita', action: 'uploadNazionalitaPrima', icon: 'frecciasu', title: 'Upload prima metà'],
+                [cont: 'nazionalita', action: 'uploadNazionalitaSeconda', icon: 'frecciasu', title: 'Upload seconda metà'],
                 [cont: 'nazionalita', action: 'uploadNazionalita', icon: 'frecciasu', title: 'Upload'],
                 [cont: 'nazionalita', action: 'statistiche', icon: 'frecciasu', title: 'Statistiche'],
                 [cont: 'nazionalita', action: 'test', icon: 'frecciasu', title: 'Test']

@@ -62,7 +62,6 @@ class StatisticheNazionalita extends Statistiche {
         String ref2 = "Le categorie possono avere sottocategorie e suddivisioni diversamente articolate e possono avere anche voci che hanno implementato la categoria stessa al di fuori del [[template:Bio|template Bio]]."
         ref2 = LibWiki.setRef(ref2)
 
-        lista.add(LibWiki.setBold(SPAZIO + SPAZIO + SPAZIO + SPAZIO + '#'))
         if (usaDueColonne) {
             lista.add(SPAZIO + LibWiki.setBold('lista') + " $ref1")
             lista.add(SPAZIO + LibWiki.setBold('categoria') + " $ref2")
@@ -83,15 +82,13 @@ class StatisticheNazionalita extends Statistiche {
     protected ArrayList listaRigheUsate() {
         ArrayList listaRighe = new ArrayList()
         ArrayList<Nazionalita> listaNazionalita
-        int pos = 0
         int numVoci
 
         listaNazionalita = NazionalitaService.getListaAllNazionalita()
         for (Nazionalita nazionalita : listaNazionalita) {
             numVoci = NazionalitaService.bioGrailsCount(nazionalita)
             if (numVoci > 0) {
-                pos++
-                listaRighe.add(getRigaNazionalita(pos, nazionalita, numVoci))
+                listaRighe.add(getRigaNazionalita(nazionalita, numVoci))
             }// fine del blocco if
         } // fine del ciclo for-each
 
@@ -104,7 +101,7 @@ class StatisticheNazionalita extends Statistiche {
      *  -plurale dell'attività
      *  -numero di voci che nel campo nazionalita usano tutti records di nazionalita che hanno quel plurale
      */
-    public static ArrayList getRigaNazionalita(int pos, Nazionalita nazionalita, int numVoci) {
+    public static ArrayList getRigaNazionalita(Nazionalita nazionalita, int numVoci) {
         // variabili e costanti locali di lavoro
         ArrayList riga = new ArrayList()
         String tagCat = ':Categoria:'
@@ -131,7 +128,6 @@ class StatisticheNazionalita extends Statistiche {
         }// fine del blocco if-else
 
         //riga.add(getColore(mappa))
-        riga.add(pos)
         riga.add(lista)
         if (usaDueColonne) {
             riga.add(categoria)
@@ -150,12 +146,10 @@ class StatisticheNazionalita extends Statistiche {
     protected ArrayList listaRigheNonUsate() {
         ArrayList listaRighe = new ArrayList()
         ArrayList listaNazionalita
-        int pos = 0
 
         listaNazionalita = NazionalitaService.getListaNonUsate()
         for (String nazionalita : listaNazionalita) {
-            pos++
-            listaRighe.add(NazionalitaService.getRigaNazionalitaNonUsate(pos, nazionalita))
+            listaRighe.add(NazionalitaService.getRigaNazionalitaNonUsate(nazionalita))
         } // fine del ciclo for-each
 
         // valore di ritorno

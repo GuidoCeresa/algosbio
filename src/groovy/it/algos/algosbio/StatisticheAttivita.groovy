@@ -59,7 +59,6 @@ class StatisticheAttivita extends Statistiche {
         String ref2 = "Le categorie possono avere sottocategorie e suddivisioni diversamente articolate e possono avere anche voci che hanno implementato la categoria stessa al di fuori del [[template:Bio|template Bio]]."
         ref2 = LibWiki.setRef(ref2)
 
-        lista.add(LibWiki.setBold(SPAZIO + SPAZIO + SPAZIO + SPAZIO + '#'))
         if (usaDueColonne) {
             lista.add(SPAZIO + LibWiki.setBold('lista') + " $ref1")
             lista.add(SPAZIO + LibWiki.setBold('categoria') + " $ref2")
@@ -83,7 +82,6 @@ class StatisticheAttivita extends Statistiche {
     protected ArrayList listaRigheUsate() {
         ArrayList listaRighe = new ArrayList()
         ArrayList<Attivita> listaAttivita
-        int pos = 0
         int numVoci
 
         listaAttivita = AttivitaService.getLista()
@@ -91,8 +89,7 @@ class StatisticheAttivita extends Statistiche {
             if (mappa instanceof Map) {
                 numVoci = (int) mappa['totale']
                 if (numVoci > 0) {
-                    pos++
-                    listaRighe.add(getRigaAttivita(pos, mappa))
+                    listaRighe.add(getRigaAttivita( mappa))
                 }// fine del blocco if
             }// fine del blocco if
         } // fine del ciclo for-each
@@ -106,7 +103,7 @@ class StatisticheAttivita extends Statistiche {
      *  -plurale dell'attività
      *  -numero di voci che nel campo nazionalita usano tutti records di nazionalita che hanno quel plurale
      */
-    public ArrayList getRigaAttivita(int pos, Map mappa) {
+    public ArrayList getRigaAttivita( Map mappa) {
         // variabili e costanti locali di lavoro
         ArrayList riga = new ArrayList()
         String tagCat = ':Categoria:'
@@ -140,7 +137,6 @@ class StatisticheAttivita extends Statistiche {
         }// fine del blocco if-else
 
         //riga.add(getColore(mappa))
-        riga.add(pos)
         riga.add(lista)
         if (usaDueColonne) {
             riga.add(categoria)
@@ -162,12 +158,10 @@ class StatisticheAttivita extends Statistiche {
     protected ArrayList listaRigheNonUsate() {
         ArrayList listaRighe = new ArrayList()
         ArrayList listaAttivita
-        int pos = 0
 
         listaAttivita = AttivitaService.getListaNonUsate()
         for (String attivita : listaAttivita) {
-            pos++
-            listaRighe.add(AttivitaService.getRigaAttivitaNonUsate(pos, attivita))
+            listaRighe.add(AttivitaService.getRigaAttivitaNonUsate( attivita))
         } // fine del ciclo for-each
 
         // valore di ritorno

@@ -13,6 +13,7 @@
 
 package it.algos.algosbio
 
+import it.algos.algoslib.LibMat
 import it.algos.algoslib.LibTesto
 import it.algos.algoslib.LibWiki
 import it.algos.algospref.Pref
@@ -125,12 +126,92 @@ class NazionalitaService {
     } // fine del metodo
 
     /**
+     * Ritorna una lista delle nazionalità plurali distinte (prima metà)
+     *
+     * @return lista ordinata (stringhe) dei plurali delle nazionalità
+     */
+    public static ArrayList<String> getListaPluraliPrimaMeta() {
+        ArrayList<String> lista = null
+        int numero = getNumPlurali()
+        int fine
+
+        if (numero) {
+            fine = numero / 2
+            lista = getListaPlurali(0, fine)
+        }// fine del blocco if
+
+        return lista
+    } // fine del metodo
+
+    /**
+     * Ritorna una lista delle nazionalità plurali distinte (seconda metà)
+     *
+     * @return lista ordinata (stringhe) dei plurali delle nazionalità
+     */
+    public static ArrayList<String> getListaPluraliSecondaMeta() {
+        ArrayList<String> lista = null
+        int numero = getNumPlurali()
+        int inizio
+
+        if (numero) {
+            inizio = numero / 2
+            lista = getListaPlurali(inizio)
+        }// fine del blocco if
+
+        return lista
+    } // fine del metodo
+
+    /**
+     * Ritorna il numero delle nazionalità plurali distinte
+     */
+    public static int getNumPlurali() {
+        int numero = 0
+        ArrayList<String> lista = getListaPlurali()
+
+        if (lista) {
+            numero = lista.size()
+        }// fine del blocco if
+
+        return numero
+    } // fine del metodo
+
+    /**
      * Ritorna una lista di tutte le nazionalità plurali distinte
      *
      * @return lista ordinata (stringhe) di tutti i plurali delle nazionalità
      */
     public static ArrayList<String> getListaPlurali() {
-        return (ArrayList<String>) Nazionalita.executeQuery('select distinct plurale from Nazionalita order by plurale')
+        return getListaPlurali(0, 0)
+    } // fine del metodo
+
+    /**
+     * Ritorna una lista di tutte le nazionalità plurali distinte
+     *
+     * @return lista ordinata (stringhe) di tutti i plurali delle nazionalità
+     */
+    public static ArrayList<String> getListaPlurali(int offset) {
+        return getListaPlurali(offset, LibBio.MAX)
+    } // fine del metodo
+
+    /**
+     * Ritorna una lista di tutte le nazionalità plurali distinte
+     *
+     * @return lista ordinata (stringhe) di tutti i plurali delle nazionalità
+     */
+    public static ArrayList<String> getListaPlurali(int offset, int num) {
+        ArrayList<String> lista
+
+        if (num) {
+            lista = (ArrayList<String>) Nazionalita.executeQuery('select distinct plurale from Nazionalita order by plurale', [max: num, offset: offset])
+        } else {
+            if (offset) {
+                lista = (ArrayList<String>) Nazionalita.executeQuery('select distinct plurale from Nazionalita order by plurale', [max: LibBio.MAX, offset: offset])
+            } else {
+                lista = (ArrayList<String>) Nazionalita.executeQuery('select distinct plurale from Nazionalita order by plurale')
+            }// fine del blocco if-else
+        }// fine del blocco if-else
+
+        return lista
     } // fine del metodo
 
     /**
@@ -253,12 +334,11 @@ class NazionalitaService {
      *
      *  -plurale dell'attività
      */
-    public static getRigaNazionalitaNonUsate(num, plurale) {
+    public static getRigaNazionalitaNonUsate(plurale) {
         // variabili e costanti locali di lavoro
         def riga = new ArrayList()
 
         if (plurale) {
-            riga.add(LibTesto.formatNum(num))
             riga.add(plurale)
         }// fine del blocco if
 
@@ -278,6 +358,44 @@ class NazionalitaService {
      */
     public static int numNazionalitaNonUsate() {
         return getListaNonUsate()?.size()
+    } // fine del metodo
+
+    /**
+     * Ritorna una lista di tutte le nazionalità distinta
+     */
+    public static ArrayList<Nazionalita> getListaNazionalitaPrimaMeta() {
+        ArrayList<Nazionalita> lista = new ArrayList<Nazionalita>()
+        ArrayList<String> listaPlurali = getListaPluraliPrimaMeta()
+        Nazionalita nazionalita
+
+        listaPlurali?.each {
+            nazionalita = Nazionalita.findByPlurale(it)
+            if (nazionalita) {
+                lista.add(nazionalita)
+            }// fine del blocco if
+        }// fine di each
+
+        // valore di ritorno
+        return lista
+    } // fine del metodo
+
+    /**
+     * Ritorna una lista di tutte le nazionalità distinta
+     */
+    public static ArrayList<Nazionalita> getListaNazionalitaSecondaMeta() {
+        ArrayList<Nazionalita> lista = new ArrayList<Nazionalita>()
+        ArrayList<String> listaPlurali = getListaPluraliSecondaMeta()
+        Nazionalita nazionalita
+
+        listaPlurali?.each {
+            nazionalita = Nazionalita.findByPlurale(it)
+            if (nazionalita) {
+                lista.add(nazionalita)
+            }// fine del blocco if
+        }// fine di each
+
+        // valore di ritorno
+        return lista
     } // fine del metodo
 
     /**
@@ -532,6 +650,40 @@ class NazionalitaService {
         }// fine del blocco if
 
         return registrata
+    } // fine del metodo
+
+    /**
+     * creazione delle liste partendo da BioGrails
+     * elabora e crea le nazionalità
+     */
+    public int uploadNazionalitaPrimaMeta(BioService bioService) {
+        int nazionalitaModificate = 0
+        ArrayList<Nazionalita> listaNazionalita = getListaNazionalitaPrimaMeta()
+
+        listaNazionalita?.each {
+            if (uploadNazionalita(it, bioService)) {
+                nazionalitaModificate++
+            }// fine del blocco if
+        } // fine del ciclo each
+
+        return nazionalitaModificate
+    } // fine del metodo
+
+    /**
+     * creazione delle liste partendo da BioGrails
+     * elabora e crea le nazionalità
+     */
+    public int uploadNazionalitaSecondaMeta(BioService bioService) {
+        int nazionalitaModificate = 0
+        ArrayList<Nazionalita> listaNazionalita = getListaNazionalitaSecondaMeta()
+
+        listaNazionalita?.each {
+            if (uploadNazionalita(it, bioService)) {
+                nazionalitaModificate++
+            }// fine del blocco if
+        } // fine del ciclo each
+
+        return nazionalitaModificate
     } // fine del metodo
 
     /**

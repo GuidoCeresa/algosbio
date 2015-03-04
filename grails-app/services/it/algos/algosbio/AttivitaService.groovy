@@ -321,12 +321,11 @@ class AttivitaService {
      *
      *  -plurale dell'attività
      */
-    public static getRigaAttivitaNonUsate(num, plurale) {
+    public static getRigaAttivitaNonUsate(plurale) {
         // variabili e costanti locali di lavoro
         def riga = new ArrayList()
 
         if (plurale) {
-            riga.add(LibTesto.formatNum(num))
             riga.add(plurale)
         }// fine del blocco if
 

@@ -137,14 +137,21 @@ abstract class Statistiche {
      * Tabella AttNaz utilizzate
      */
     private String creaTabellaUsate() {
-        String testoTabella
+        String testoTabella = ''
         HashMap mappa = new HashMap()
 
-        mappa.put('titoli', arrayTitolo())
-        mappa.put('lista', listaRigheUsate())
-        mappa.put('width', '70')
-        mappa.put('align', TipoAllineamento.randomBaseSin)
-        testoTabella = WikiLib.creaTabellaSortable(mappa)
+//        mappa.put('titoli', arrayTitolo())
+//        mappa.put('lista', listaRigheUsate())
+//        mappa.put('width', '70')
+//        mappa.put('align', TipoAllineamento.randomBaseSin)
+//        testoTabella = WikiLib.creaTabellaSortable(mappa)
+
+        mappa.put(WikiLib.MAPPA_SORTABLE, true)
+        mappa.put(WikiLib.MAPPA_NUMERAZIONE_PROGRESSIVA, true)
+        mappa.put(WikiLib.MAPPA_NUMERI_FORMATTATI, false)
+        mappa.put(WikiLib.MAPPA_TITOLI, arrayTitolo())
+        mappa.put(WikiLib.MAPPA_LISTA, listaRigheUsate())
+        testoTabella = WikiLib.creaTable(mappa)
 
         // valore di ritorno
         return testoTabella
@@ -176,10 +183,14 @@ abstract class Statistiche {
         def mappa = new HashMap()
 
         //costruisce il testo della tabella
-        mappa.put('titoli', arrayTitoloNonUsate())
-        mappa.put('lista', listaRigheNonUsate())
-        mappa.put('width', '60')
-        testoTabella = WikiLib.creaTabellaSortable(mappa)
+//        mappa.put('titoli', arrayTitoloNonUsate())
+//        mappa.put('lista', listaRigheNonUsate())
+//        mappa.put('width', '60')
+//        testoTabella = WikiLib.creaTabellaSortable(mappa)
+
+        mappa.put(WikiLib.MAPPA_TITOLI, arrayTitoloNonUsate())
+        mappa.put(WikiLib.MAPPA_LISTA, listaRigheNonUsate())
+        testoTabella = WikiLib.creaTable(mappa)
 
         return testoTabella
     }// fine del metodo
@@ -190,10 +201,8 @@ abstract class Statistiche {
      */
     private ArrayList arrayTitoloNonUsate() {
         ArrayList listaTitoli = new ArrayList()
-        String pos = '#'
         String testo = "$nomeAttNaz non utilizzate"
 
-        listaTitoli.add(LibWiki.setBold(pos))
         listaTitoli.add(LibWiki.setBold(testo))
 
         return listaTitoli

@@ -145,13 +145,12 @@ class ListaNazionalitaGrandi extends ListaBio {
         sottoVoce.elaboraPagina()
     }// fine del metodo
 
-
     /**
      * Elabora soggetto specifico
      */
     protected String elaboraSoggettoSpecifico(String chiaveParagrafo, String tagSesso) {
         LinkedHashMap<String, ?> mappa = LibListe.getAttivitaMappaMultiplaUomoDonna(chiaveParagrafo)
-        String titoloParagrafo=''
+        String titoloParagrafo = chiaveParagrafo
 
         if (tagSesso.equals(UOMINI)) {
             if (mappa[LibListe.MAPPA_PARAGRAFO_UOMINI]) {
@@ -169,9 +168,8 @@ class ListaNazionalitaGrandi extends ListaBio {
             def stop
         }// fine del blocco if
 
-        return super.elaboraSoggettoSpecifico(titoloParagrafo, '')
+       return super.elaboraSoggettoSpecifico(titoloParagrafo, '')
     }// fine del metodo
-
 
     /**
      * Recupera il plurale

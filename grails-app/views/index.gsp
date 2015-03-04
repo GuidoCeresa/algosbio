@@ -96,13 +96,39 @@
 
 
     <h2>Moduli disponibili:</h2>
-    <ul>
-        <g:each var="c" in="${grailsApplication.controllerClasses.findAll {
-            it.getName() != 'Dbdoc' && it.getName() != 'Assets'
-        }}">
-            <li class="controller"><g:link controller="${c.logicalPropertyName}">${c.getName()}</g:link></li>
-        </g:each>
-    </ul>
+    <g:if test="${application.mostraTuttiControlli}">
+        <ul>
+            <g:each var="c" in="${grailsApplication.controllerClasses.findAll { it.fullName != 'Dbdoc' }}">
+                <li class="controller"><g:link
+                        controller="${c.logicalPropertyName}">${c.getName()}</g:link></li>
+            </g:each>
+        </ul>
+    </g:if>
+    <g:else>
+        <li class="controller"><g:link controller="Evento">Eventi</g:link></li>
+        <li class="controller"><g:link controller="Logo">Logs</g:link></li>
+        <li class="controller"><g:link controller="Versione">Versioni</g:link></li>
+        <li class="controller"><g:link controller="Setup">Setup</g:link></li>
+        <br>
+        <li class="controller"><g:link controller="Pref">Pref</g:link></li>
+        <li class="controller"><g:link controller="LoginWiki">Login</g:link></li>
+        <li class="controller"><g:link controller="Esclusi">Esclusioni</g:link></li>
+        <br>
+        <li class="controller"><g:link controller="Localita">Localita</g:link></li>
+        <li class="controller"><g:link controller="Professione">Professioni</g:link></li>
+        <li class="controller"><g:link controller="Genere">Genere</g:link></li>
+        <li class="controller"><g:link controller="Cognome">Cognomi</g:link></li>
+        <br>
+        <li class="controller"><g:link controller="Giorno">Giorni</g:link></li>
+        <li class="controller"><g:link controller="Anno">Anni</g:link></li>
+        <li class="controller"><g:link controller="Attivita">Attività</g:link></li>
+        <li class="controller"><g:link controller="Nazionalita">Nazionalità</g:link></li>
+        <li class="controller"><g:link controller="Antroponimo">Nomi</g:link></li>
+        <br>
+        <li class="controller"><g:link controller="Bio">Bio</g:link></li>
+        <li class="controller"><g:link controller="BioWiki">BioWiki</g:link></li>
+        <li class="controller"><g:link controller="BioGrails">BioGrails</g:link></li>
+    </g:else>
 </div>
 </body>
 </html>

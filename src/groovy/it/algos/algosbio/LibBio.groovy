@@ -24,6 +24,8 @@ import java.util.regex.Pattern
 @Log4j
 class LibBio {
 
+    public static final int MAX = 2000000
+
     public static final String DEBUG = 'debug'
     public static final String ANNO_DEBUG = 'annoDebug'
     public static final String CAT_DEBUG = 'catDebug'

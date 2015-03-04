@@ -40,9 +40,11 @@ class BioListaTest extends GroovyTestCase {
         Attivita attivita = Attivita.findByPlurale('anatomisti')
         ArrayList<BioGrails> listaVoci = BioGrails.findAllByAttivitaLink(attivita)
 
-        mappa = BioLista.getMappaNazionalita(listaVoci)
+
         def lista = Attivita.list()
         def stop
+
+        mappa = BioLista.getMappaNazionalita(listaVoci)
 
 
     } // fine del test

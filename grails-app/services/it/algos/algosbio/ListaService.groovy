@@ -99,7 +99,7 @@ class ListaService {
      * Crea la pagina e la registra su wiki
      */
     public int uploadAttivitaSecondaMeta() {
-        int posInizio = Pref.getInt(LibBio.TAGLIO_META_ATTIVITA, 300)
+        int posInizio = Pref.getInt(LibBio.TAGLIO_META_ATTIVITA, 250)
         int posFine = attivitaService.getNumPlurali()
         return this.uploadAttivita(posInizio, posFine)
     } // fine del metodo
