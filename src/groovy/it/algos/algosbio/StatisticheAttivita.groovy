@@ -60,15 +60,15 @@ class StatisticheAttivita extends Statistiche {
         ref2 = LibWiki.setRef(ref2)
 
         if (usaDueColonne) {
-            lista.add(SPAZIO + LibWiki.setBold('lista') + " $ref1")
-            lista.add(SPAZIO + LibWiki.setBold('categoria') + " $ref2")
+            lista.add(LibWiki.setBold('lista') + " $ref1")
+            lista.add(LibWiki.setBold('categoria') + " $ref2")
         } else {
             lista.add(LibWiki.setBold('attività utilizzate'))
         }// fine del blocco if-else
-        lista.add(SPAZIO + SPAZIO + LibWiki.setBold('1° att'))
-        lista.add(SPAZIO + SPAZIO + LibWiki.setBold('2° att'))
-        lista.add(SPAZIO + SPAZIO + LibWiki.setBold('3° att'))
-        lista.add(SPAZIO + SPAZIO + LibWiki.setBold('totale'))
+        lista.add(LibWiki.setBold('1° att'))
+        lista.add(LibWiki.setBold('2° att'))
+        lista.add(LibWiki.setBold('3° att'))
+        lista.add(LibWiki.setBold('totale'))
 
         // valore di ritorno
         return lista
@@ -89,7 +89,7 @@ class StatisticheAttivita extends Statistiche {
             if (mappa instanceof Map) {
                 numVoci = (int) mappa['totale']
                 if (numVoci > 0) {
-                    listaRighe.add(getRigaAttivita( mappa))
+                    listaRighe.add(getRigaAttivita(mappa))
                 }// fine del blocco if
             }// fine del blocco if
         } // fine del ciclo for-each
@@ -103,7 +103,7 @@ class StatisticheAttivita extends Statistiche {
      *  -plurale dell'attività
      *  -numero di voci che nel campo nazionalita usano tutti records di nazionalita che hanno quel plurale
      */
-    public ArrayList getRigaAttivita( Map mappa) {
+    public ArrayList getRigaAttivita(Map mappa) {
         // variabili e costanti locali di lavoro
         ArrayList riga = new ArrayList()
         String tagCat = ':Categoria:'
@@ -122,11 +122,9 @@ class StatisticheAttivita extends Statistiche {
             plurale = mappa.plurale
             lista = tagListe + '/' + LibTesto.primaMaiuscola(plurale) + pipe + LibTesto.primaMinuscola(plurale)
             lista = LibWiki.setQuadre(lista)
-            lista = SPAZIO + lista
             if (usaDueColonne) {
                 categoria = tagCat + LibTesto.primaMinuscola(plurale) + pipe + plurale
                 categoria = LibWiki.setQuadre(categoria)
-                categoria = SPAZIO + categoria
             }// fine del blocco if
             numAtt1 = mappa.attivita
             numAtt2 = mappa.attivita2
@@ -141,10 +139,10 @@ class StatisticheAttivita extends Statistiche {
         if (usaDueColonne) {
             riga.add(categoria)
         }// fine del blocco if
-        riga.add(numAtt1)
-        riga.add(numAtt2)
-        riga.add(numAtt3)
-        riga.add(numTot)
+        riga.add('{{formatnum' + ':' + numAtt1 + '}}')
+        riga.add('{{formatnum' + ':' + numAtt2 + '}}')
+        riga.add('{{formatnum' + ':' + numAtt3 + '}}')
+        riga.add('{{formatnum' + ':' + numTot + '}}')
 
         // valore di ritorno
         return riga
@@ -161,7 +159,7 @@ class StatisticheAttivita extends Statistiche {
 
         listaAttivita = AttivitaService.getListaNonUsate()
         for (String attivita : listaAttivita) {
-            listaRighe.add(AttivitaService.getRigaAttivitaNonUsate( attivita))
+            listaRighe.add(AttivitaService.getRigaAttivitaNonUsate(attivita))
         } // fine del ciclo for-each
 
         // valore di ritorno

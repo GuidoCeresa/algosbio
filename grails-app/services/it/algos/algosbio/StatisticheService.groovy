@@ -162,13 +162,8 @@ class StatisticheService {
         lista.add(getRigaNazionalita())
         lista.add(getRigaAttesa())
 
-//        mappa.put('width', '50')
-//        mappa.put('titoli', getTitoliSintesi())
-//        mappa.put('align', TipoAllineamento.randomBaseSin)
-//        mappa.put('lista', lista)
-//        return WikiLib.creaTabellaSortable(mappa)
-
         mappa.put(WikiLib.MAPPA_NUMERI_FORMATTATI, true)
+        mappa.put(WikiLib.MAPPA_SORTABLE, false)
         mappa.put(WikiLib.MAPPA_TITOLI, getTitoliSintesi())
         mappa.put(WikiLib.MAPPA_LISTA, lista)
         return WikiLib.creaTable(mappa)
@@ -180,7 +175,7 @@ class StatisticheService {
      */
     private static getTitoliSintesi() {
         def titoli
-        String statistiche = 'statistiche'
+        String statistiche = 'Statistiche'
         String vecchiaData = Pref.getStr(LibBio.ULTIMA_SINTESI)
         String nuovaData = LibTime.getGioMeseAnnoLungo(new Date())
         String differenze = 'diff.'

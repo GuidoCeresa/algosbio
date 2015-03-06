@@ -706,10 +706,10 @@ abstract class LibListe {
         Genere genere
         Genere genereTmp
         String singolare = ''
-        String singolareTmp = ''
+        String singolareTmp
         boolean usataUomini = false
         boolean usataDonne = false
-        int totaleErrato = 0
+        int totaleErrato
         String titoloSottopaginaUomini
         String titoloSottopaginaDonne
 

@@ -63,12 +63,12 @@ class StatisticheNazionalita extends Statistiche {
         ref2 = LibWiki.setRef(ref2)
 
         if (usaDueColonne) {
-            lista.add(SPAZIO + LibWiki.setBold('lista') + " $ref1")
-            lista.add(SPAZIO + LibWiki.setBold('categoria') + " $ref2")
+            lista.add(LibWiki.setBold('lista') + " $ref1")
+            lista.add(LibWiki.setBold('categoria') + " $ref2")
         } else {
             lista.add(LibWiki.setBold('nazionalità utilizzate'))
         }// fine del blocco if-else
-        lista.add(LibWiki.setBold(SPAZIO + SPAZIO + SPAZIO + SPAZIO + 'voci'))
+        lista.add(LibWiki.setBold('voci'))
 
         // valore di ritorno
         return lista
@@ -117,11 +117,9 @@ class StatisticheNazionalita extends Statistiche {
             numVoci = NazionalitaService.bioGrailsCount(plurale)
             lista = tagListe + LibTesto.primaMaiuscola(plurale) + pipe + LibTesto.primaMinuscola(plurale)
             lista = LibWiki.setQuadre(lista)
-            lista = SPAZIO + lista
             if (usaDueColonne) {
                 categoria = tagCat + LibTesto.primaMinuscola(plurale) + pipe + plurale
                 categoria = LibWiki.setQuadre(categoria)
-                categoria = SPAZIO + categoria
             }// fine del blocco if
         } else {
             lista = plurale
@@ -132,7 +130,7 @@ class StatisticheNazionalita extends Statistiche {
         if (usaDueColonne) {
             riga.add(categoria)
         }// fine del blocco if
-        riga.add(numVoci)
+        riga.add('{{formatnum' + ':' + numVoci + '}}')
 
         // valore di ritorno
         return riga

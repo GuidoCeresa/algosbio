@@ -95,7 +95,6 @@ class ListaNazionalita extends ListaBio {
     protected String getChiaveParagrafo(BioGrails bio) {
         String chiave = attivitaPluralePerGenere(bio)
         boolean isDonna = bio.sesso.equals(LibListe.DONNA)
-        boolean isUomo = bio.sesso.equals(LibListe.UOMO)
 
         if (!chiave) {
             if (usaSuddivisioneUomoDonna) {

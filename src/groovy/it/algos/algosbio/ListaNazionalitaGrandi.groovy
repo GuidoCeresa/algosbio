@@ -153,14 +153,14 @@ class ListaNazionalitaGrandi extends ListaBio {
         String titoloParagrafo = chiaveParagrafo
 
         if (tagSesso.equals(UOMINI)) {
-            if (mappa[LibListe.MAPPA_PARAGRAFO_UOMINI]) {
-                titoloParagrafo = mappa[LibListe.MAPPA_PARAGRAFO_UOMINI]
+            if (mappa[LibListe.MAPPA_SOTTOPAGINA_UOMINI]) {
+                titoloParagrafo = mappa[LibListe.MAPPA_SOTTOPAGINA_UOMINI]
             }// fine del blocco if
         }// fine del blocco if
 
         if (tagSesso.equals(DONNE)) {
-            if (mappa[LibListe.MAPPA_PARAGRAFO_DONNE]) {
-                titoloParagrafo = mappa[LibListe.MAPPA_PARAGRAFO_DONNE]
+            if (mappa[LibListe.MAPPA_SOTTOPAGINA_DONNE]) {
+                titoloParagrafo = mappa[LibListe.MAPPA_SOTTOPAGINA_DONNE]
             }// fine del blocco if
         }// fine del blocco if
 
@@ -168,7 +168,7 @@ class ListaNazionalitaGrandi extends ListaBio {
             def stop
         }// fine del blocco if
 
-       return super.elaboraSoggettoSpecifico(titoloParagrafo, '')
+        return super.elaboraSoggettoSpecifico(titoloParagrafo, '')
     }// fine del metodo
 
     /**
@@ -208,18 +208,18 @@ class ListaNazionalitaGrandi extends ListaBio {
             testo += aCapo
             paragrafiAttMaschili = paragrafiAttivitaMaschili()
             paragrafiAttMaschili?.each {
-                testo += elaboraParagrafo(nazionalitaPlurale, it, LibListe.UOMO)
+                testo += elaboraParagrafo(nazionalitaPlurale, it, LibListe.UOMO, UOMINI)
             } // fine del ciclo each
-            testo += elaboraParagrafo(nazionalitaPlurale, '', LibListe.UOMO)
+            testo += elaboraParagrafo(nazionalitaPlurale, '', LibListe.UOMO, UOMINI)
 
             testo += aCapo
             testo += '=Donne='
             testo += aCapo
             paragrafiAttFemminili = paragrafiAttivitaFemminili()
             paragrafiAttFemminili?.each {
-                testo += elaboraParagrafo(nazionalitaPlurale, it, LibListe.DONNA)
+                testo += elaboraParagrafo(nazionalitaPlurale, it, LibListe.DONNA, DONNE)
             } // fine del ciclo each
-            testo += elaboraParagrafo(nazionalitaPlurale, '', LibListe.DONNA)
+            testo += elaboraParagrafo(nazionalitaPlurale, '', LibListe.DONNA, DONNE)
 
             esistonoUominiDonne = true
         } else {
@@ -329,7 +329,7 @@ class ListaNazionalitaGrandi extends ListaBio {
      * Decide se il testo rimane nella pagina principale o se occorre creare una sottopagina
      */
     private String elaboraParagrafo(String nazionalita, String paragrafo) {
-        return elaboraParagrafo(nazionalita, paragrafo, '')
+        return elaboraParagrafo(nazionalita, paragrafo, '', '')
     }// fine del metodo
 
     /**
@@ -337,7 +337,7 @@ class ListaNazionalitaGrandi extends ListaBio {
      * <p>
      * Decide se il testo rimane nella pagina principale o se occorre creare una sottopagina
      */
-    private String elaboraParagrafo(String nazionalita, String chiaveParagrafo, String sesso) {
+    private String elaboraParagrafo(String nazionalita, String chiaveParagrafo, String sesso, String tagSesso) {
         String testo = ''
         String where
         int numRecords = 0
@@ -369,10 +369,10 @@ class ListaNazionalitaGrandi extends ListaBio {
                 }// fine del blocco if-else
             }// fine del blocco if-else
             if (numRecords < maxVociParagrafo) {
-                testo += super.elaboraBodyParagrafo(chiaveParagrafo, lista, sesso)
+                testo += super.elaboraBodyParagrafo(chiaveParagrafo, lista, tagSesso)
             } else {
                 titoloParagrafo = elaboraTitoloParagrafo(chiaveParagrafo, lista)
-                testo += super.elaboraParagrafoSottoPagina(chiaveParagrafo, titoloParagrafo, lista, sesso)
+                testo += super.elaboraParagrafoSottoPagina(chiaveParagrafo, titoloParagrafo, lista, tagSesso)
             }// fine del blocco if-else
         }// fine del blocco if
 

@@ -140,12 +140,6 @@ abstract class Statistiche {
         String testoTabella = ''
         HashMap mappa = new HashMap()
 
-//        mappa.put('titoli', arrayTitolo())
-//        mappa.put('lista', listaRigheUsate())
-//        mappa.put('width', '70')
-//        mappa.put('align', TipoAllineamento.randomBaseSin)
-//        testoTabella = WikiLib.creaTabellaSortable(mappa)
-
         mappa.put(WikiLib.MAPPA_SORTABLE, true)
         mappa.put(WikiLib.MAPPA_NUMERAZIONE_PROGRESSIVA, true)
         mappa.put(WikiLib.MAPPA_NUMERI_FORMATTATI, false)
@@ -181,12 +175,6 @@ abstract class Statistiche {
     protected String creaTabellaNonUsate() {
         String testoTabella
         def mappa = new HashMap()
-
-        //costruisce il testo della tabella
-//        mappa.put('titoli', arrayTitoloNonUsate())
-//        mappa.put('lista', listaRigheNonUsate())
-//        mappa.put('width', '60')
-//        testoTabella = WikiLib.creaTabellaSortable(mappa)
 
         mappa.put(WikiLib.MAPPA_TITOLI, arrayTitoloNonUsate())
         mappa.put(WikiLib.MAPPA_LISTA, listaRigheNonUsate())
@@ -235,11 +223,11 @@ abstract class Statistiche {
         testo += A_CAPO
         testo += "*[[$PATH$inversoNomeAttNaz]]"
         testo += A_CAPO
-        testo += '*[[:Categoria:Bio parametri]]'
-        testo += A_CAPO
         testo += '*[[:Categoria:Bio nazionalità]]'
         testo += A_CAPO
         testo += '*[[:Categoria:Bio attività]]'
+        testo += A_CAPO
+        testo += '*[[Progetto:Biografie/Statistiche]]'
         testo += A_CAPO
         testo += '*[https://it.wikipedia.org/w/index.php?title=Modulo:Bio/Plurale_nazionalità&action=edit Lista delle nazionalità nel modulo (protetto)]'
         testo += A_CAPO

@@ -454,6 +454,14 @@ abstract class ListaBio {
         chiaveParagrafo = mappa.key
         listaVoci = mappa.value
 
+        if (chiaveParagrafo.startsWith('Cantanti')) {
+            def stop
+        }// fine del blocco if
+
+        if (chiaveParagrafo.startsWith('cantanti')) {
+            def stop2
+        }// fine del blocco if
+
         return elaboraBodyParagrafo(chiaveParagrafo, listaVoci, tagSesso)
     }// fine del metodo
 
@@ -822,6 +830,10 @@ abstract class ListaBio {
         String testo = ''
         int num = listaDidascalie.size()
         boolean troppeVoci = (num >= maxVociParagrafo)
+        if (chiaveParagrafo.equals('Cantanti')) {
+            troppeVoci=true
+        }// fine del blocco if
+
         boolean chiaveNonAlfabetica = (!chiaveParagrafo.equals(tagParagrafoAlfabetico))
         boolean paragrafoNullo = (chiaveParagrafo.equals(tagParagrafoNullo) || chiaveParagrafo.equals(tagAltri) || chiaveParagrafo.equals(tagAltre))
         boolean usaSottopaginaNormale = (!paragrafoNullo && usaSottopagine && troppeVoci && chiaveNonAlfabetica)
