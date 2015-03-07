@@ -830,9 +830,6 @@ abstract class ListaBio {
         String testo = ''
         int num = listaDidascalie.size()
         boolean troppeVoci = (num >= maxVociParagrafo)
-        if (chiaveParagrafo.equals('Cantanti')) {
-            troppeVoci=true
-        }// fine del blocco if
 
         boolean chiaveNonAlfabetica = (!chiaveParagrafo.equals(tagParagrafoAlfabetico))
         boolean paragrafoNullo = (chiaveParagrafo.equals(tagParagrafoNullo) || chiaveParagrafo.equals(tagAltri) || chiaveParagrafo.equals(tagAltre))
