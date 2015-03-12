@@ -13,7 +13,7 @@ class Esclusi {
      * la possibilità di avere valori nulli, di default è false
      */
     static constraints = {
-        pageid(blank: true, nullable: true)
+        pageid()
         title(blank: true, nullable: true)
     } // end of static constraints
 

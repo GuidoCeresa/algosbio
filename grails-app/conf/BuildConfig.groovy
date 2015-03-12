@@ -76,7 +76,7 @@ grails.project.dependency.resolution = {
 
         //--plugin della algos
         compile ":algos:1.45"
-        compile ":algoswiki:1.00"
+        compile ":algoswiki:1.01"
 
 
     }// fine della closure plugins
