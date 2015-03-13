@@ -17,8 +17,10 @@ import it.algos.algos.DialogoController
 import it.algos.algos.TipoDialogo
 import it.algos.algoslib.Lib
 import it.algos.algoslib.LibTesto
+import it.algos.algoslib.LibWiki
 import it.algos.algospref.Pref
 import it.algos.algospref.Preferenze
+import it.algos.algoswiki.QueryPag
 import org.codehaus.groovy.grails.commons.DefaultGrailsDomainClass
 import org.hibernate.SessionFactory
 import org.springframework.dao.DataIntegrityViolationException
@@ -45,6 +47,10 @@ class BioWikiController {
 
     def index() {
         redirect(action: 'list', params: params)
+    } // fine del metodo
+
+    def create() {
+        respond new BioWiki(params)
     } // fine del metodo
 
     //--mostra un avviso di spiegazione per l'operazione da compiere
@@ -352,6 +358,7 @@ class BioWikiController {
         //--mappa con [cont:'controller', action:'metodo', icon:'iconaImmagine', title:'titoloVisibile']
         menuExtra = [
                 [cont: 'bioWiki', action: 'importa', icon: 'database', title: 'Importa'],
+                [cont: 'bioWiki', action: 'create', icon: 'database', title: 'Nuovo'],
                 [cont: 'bioWiki', action: 'aggiungeWiki', icon: 'frecciagiu', title: 'AggiungeWiki'],
                 [cont: 'bioWiki', action: 'aggiornaWiki', icon: 'frecciagiu', title: 'AggiornaWiki'],
                 [cont: 'bioWiki', action: 'cicloWiki', icon: 'frecciagiu', title: 'CicloWiki'],
@@ -481,13 +488,20 @@ class BioWikiController {
         int pageid = 0
         def bioWikiInstance = null
         flash.messages = []
+        String title
+        QueryBio pagina = null
 
         if (params.id) {
-            pageid = Integer.decode(params.id)
+            try { // prova ad eseguire il codice
+                pageid = Integer.decode(params.id)
+                bioWikiInstance = BioWiki.findByPageid(pageid)
+            } catch (Exception unErrore) { // intercetta l'errore
+                title = params.id
+            }// fine del blocco try-catch
         }// fine del blocco if
 
-        if (pageid) {
-            bioWikiInstance = BioWiki.findByPageid(pageid)
+        if (!pageid && title) {
+            pageid = QueryBio.leggePageId(title)
         }// fine del blocco if
 
         if (pageid && bioWikiService) {
@@ -638,6 +652,12 @@ class BioWikiController {
         def bioWikiInstance = BioWiki.get(id)
         ArrayList menuExtra
         def noMenuCreate = true
+        int pageid = 0
+        String query = ''
+        ArrayList ref = null
+        long idGrails = 0
+        String title = ''
+        String tagDownload = ''
 
         if (!bioWikiInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'bioWiki.label', default: 'BioWiki'), id])
@@ -648,12 +668,27 @@ class BioWikiController {
         //--selezione dei menu extra
         //--solo azione e di default controller=questo; classe e titolo vengono uguali
         //--mappa con [cont:'controller', action:'metodo', icon:'iconaImmagine', title:'titoloVisibile']
-        int pageid = bioWikiInstance.pageid
-        String query = "select id from BioGrails where pageid=" + pageid
-        ArrayList ref = BioGrails.executeQuery(query)
-        long idGrails = (long) ref.get(0)
+        pageid = bioWikiInstance.pageid
+        if (pageid) {
+            query = "select id from BioGrails where pageid=" + pageid
+            ref = BioGrails.executeQuery(query)
+            if (ref) {
+                idGrails = (long) ref.get(0)
+            }// fine del blocco if
+        }// fine del blocco if
+
+        if (!pageid && bioWikiInstance.title) {
+            title = bioWikiInstance.title
+        }// fine del blocco if
+
+        if (pageid) {
+            tagDownload = pageid
+        } else {
+            tagDownload = title
+        }// fine del blocco if-else
+
         menuExtra = [
-                [cont: 'bioWiki', action: "download/${pageid}", icon: 'frecciagiu', title: 'Download'],
+                [cont: 'bioWiki', action: "download/${tagDownload}", icon: 'frecciagiu', title: 'Download'],
                 [cont: 'bioWiki', action: "elaboraSingola/${pageid}", icon: 'database', title: 'Elabora'],
                 [cont: 'bioWiki', action: "fix/${pageid}", icon: 'frecciagiu', title: 'Fix (download + elabora)'],
                 [cont: 'bioWiki', action: "upload/${pageid}", icon: 'frecciasu', title: 'Upload'],

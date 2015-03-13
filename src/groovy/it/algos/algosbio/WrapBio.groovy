@@ -688,6 +688,7 @@ public class WrapBio {
         // variabili e costanti locali di lavoro
         boolean continua = false
         int pageid = 0
+        String title = ''
         BioWiki bioWiki = null
         String chiaveNoAccento
         String chiaveSiAccento
@@ -706,9 +707,19 @@ public class WrapBio {
             } else {
                 log.error 'creaBioWikiOriginale - Manca il pageid dalla mappa' + mappaPar
             }// fine del blocco if-else
+            if (mappaPar.title) {
+                title = mappaPar.title
+            } else {
+                log.error 'creaBioWikiOriginale - Manca il title dalla mappa' + mappaPar
+            }// fine del blocco if-else
 
             try { // prova ad eseguire il codice
-                bioWiki = BioWiki.findOrCreateByPageid(pageid)
+                bioWiki = BioWiki.findByPageid(pageid)
+
+                if (!bioWiki) {
+                    bioWiki = BioWiki.findByTitle(title)
+                }// fine del blocco if
+
 //                bioWiki = new BioWiki(pageid: pageid)
             } catch (Exception unErrore) { // intercetta l'errore
                 try { // prova ad eseguire il codice

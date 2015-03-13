@@ -6,7 +6,7 @@ import it.algos.algospref.Pref
 /**
  * Elabora la prima metà delle nazionalità
  */
-class Nazionalita1Job extends NazMail{
+class Nazionalita1Job extends AttNazUpload{
 
     //--codifica dell'orario di attivazione
     //--MON, TUE, WED, THU, FRI, SAT, SUN

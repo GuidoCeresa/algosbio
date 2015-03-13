@@ -2,6 +2,7 @@ package it.algos.algosbio
 
 import it.algos.algoswiki.QueryRev
 import it.algos.algoswiki.WikiLib
+
 /**
  * Created with IntelliJ IDEA.
  * User: Gac
@@ -12,6 +13,10 @@ class QueryBio extends QueryRev {
 
     private String testoBio
 
+
+    public QueryBio(String title) {
+        super(title)
+    }// fine del metodo costruttore
 
     public QueryBio(int pageid) {
         super(pageid)
@@ -60,6 +65,29 @@ class QueryBio extends QueryRev {
 
         // valore di ritorno
         return testoBio
+    } // fine del metodo
+
+    /**
+     * Crea un'istanza
+     * Restituisce il pageId
+     */
+    public static int leggePageId(String title) {
+        int pageId = 0
+        QueryBio istanza = new QueryBio(title)
+        HashMap mappa = null
+
+        if (istanza) {
+            mappa = istanza.getMappa()
+        }// fine del blocco if
+
+        if (mappa) {
+            if (mappa['pageid']) {
+                pageId = (int) mappa['pageid']
+            }// fine del blocco if
+        }// fine del blocco if
+
+        // valore di ritorno
+        return pageId
     } // fine del metodo
 
     /**

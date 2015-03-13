@@ -4,37 +4,70 @@ import it.algos.algoslib.LibTesto
 import it.algos.algospref.Pref
 
 /**
- * Elabora la prima metà delle nazionalità
+ * Elabora metà voci di nazionalità ed attività
+ * Spedisce mail di conferma
  */
-class NazMail {
+class AttNazUpload {
 
     // utilizzo di un service con la businessLogic per l'elaborazione dei dati
     // il service viene iniettato automaticamente
-    def statisticheService
-    def bioService
+    def attivitaService
     def nazionalitaService
+    def bioService
+    def statisticheService
     def mailService
 
+    protected uploadAttivitaPrimaMeta() {
+        uploadaMetaAttivita(true)
+    }// fine del metodo execute
+
+    protected uploadAttivitaSecondaMeta() {
+        uploadaMetaAttivita(false)
+    }// fine del metodo execute
+
     protected uploadNazionalitaPrimaMeta() {
-        uploadaMeta(true)
+        uploadaMetaNazionalita(true)
     }// fine del metodo execute
 
     protected uploadNazionalitaSecondaMeta() {
-        uploadaMeta(false)
+        uploadaMetaNazionalita(false)
     }// fine del metodo execute
 
-    private uploadaMeta(boolean primaMeta) {
+    private uploadaMetaAttivita(boolean primaMeta) {
         //--flag di attivazione
         if (Pref.getBool(LibBio.USA_CRONO_NAZIONALITA)) {
 
-            if (Pref.getBool(LibBio.USA_LISTE_BIO_NAZIONALITA)) {
+            if (Pref.getBool(LibBio.USA_LISTE_BIO_ATTIVITA) && attivitaService) {
+                if (bioService) {
+                    if (primaMeta) {
+                        spedisceMail('Elabora la prima metà delle attività')
+                        attivitaService.uploadNazionalitaPrimaMeta(bioService)
+                    } else {
+                        spedisceMail('Elabora la seconda metà delle attività')
+                        attivitaService.uploadNazionalitaSecondaMeta(bioService)
+                    }// fine del blocco if-else
+                }// fine del blocco if
+            }// fine del blocco if
+
+            if (statisticheService) {
+                statisticheService.nazionalitaUsate()
+            }// fine del blocco if
+
+        }// fine del blocco if
+    }// fine del metodo execute
+
+    private uploadaMetaNazionalita(boolean primaMeta) {
+        //--flag di attivazione
+        if (Pref.getBool(LibBio.USA_CRONO_NAZIONALITA)) {
+
+            if (Pref.getBool(LibBio.USA_LISTE_BIO_NAZIONALITA) && nazionalitaService) {
                 if (bioService) {
                     if (primaMeta) {
                         spedisceMail('Elabora la prima metà delle nazionalità')
-                        nazionalitaService?.uploadNazionalitaPrimaMeta(bioService)
+                        nazionalitaService.uploadNazionalitaPrimaMeta(bioService)
                     } else {
                         spedisceMail('Elabora la seconda metà delle nazionalità')
-                        nazionalitaService?.uploadNazionalitaSecondaMeta(bioService)
+                        nazionalitaService.uploadNazionalitaSecondaMeta(bioService)
                     }// fine del blocco if-else
                 }// fine del blocco if
             }// fine del blocco if
