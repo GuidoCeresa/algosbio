@@ -361,7 +361,7 @@ class NazionalitaService {
     } // fine del metodo
 
     /**
-     * Ritorna una lista di tutte le nazionalità distinta
+     * Ritorna una lista delle prime le nazionalità distinte
      */
     public static ArrayList<Nazionalita> getListaNazionalitaPrimaMeta() {
         ArrayList<Nazionalita> lista = new ArrayList<Nazionalita>()
@@ -380,7 +380,7 @@ class NazionalitaService {
     } // fine del metodo
 
     /**
-     * Ritorna una lista di tutte le nazionalità distinta
+     * Ritorna una lista delle seconde nazionalità distinte
      */
     public static ArrayList<Nazionalita> getListaNazionalitaSecondaMeta() {
         ArrayList<Nazionalita> lista = new ArrayList<Nazionalita>()
@@ -399,7 +399,7 @@ class NazionalitaService {
     } // fine del metodo
 
     /**
-     * Ritorna una lista di tutte le nazionalità distinta
+     * Ritorna una lista di tutte le nazionalità distinte
      */
     public static ArrayList<Nazionalita> getListaAllNazionalita() {
         ArrayList<Nazionalita> lista = new ArrayList<Nazionalita>()

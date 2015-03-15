@@ -162,10 +162,9 @@ class StatisticheService {
         lista.add(getRigaNazionalita())
         lista.add(getRigaAttesa())
 
-        mappa.put(WikiLib.MAPPA_NUMERI_FORMATTATI, true)
-        mappa.put(WikiLib.MAPPA_SORTABLE, false)
         mappa.put(WikiLib.MAPPA_TITOLI, getTitoliSintesi())
         mappa.put(WikiLib.MAPPA_LISTA, lista)
+        mappa.put(WikiLib.MAPPA_SORTABLE, false)
         return WikiLib.creaTable(mappa)
 
     } // fine della closure
@@ -182,8 +181,6 @@ class StatisticheService {
 
         //valore per le preferenze
         mappaSintesi.put(LibBio.ULTIMA_SINTESI, nuovaData)
-
-        nuovaData = LibWiki.setBold(nuovaData)
 
         statistiche = regolaSpazi(statistiche)
         vecchiaData = regolaSpazi(vecchiaData)

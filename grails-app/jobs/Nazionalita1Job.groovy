@@ -10,7 +10,7 @@ class Nazionalita1Job extends AttNazUpload{
 
     //--codifica dell'orario di attivazione
     //--MON, TUE, WED, THU, FRI, SAT, SUN
-    private static String cronExpressionNazionalita1 = '0 0 7 ? * 7#1' //--primo sabato del mese
+    private static String cronExpressionNazionalita1 = '0 0 7 ? * 7#1' //--primo sabato del mese alle 7
 
     static triggers = {
         cron name: 'nazionalita1', cronExpression: cronExpressionNazionalita1

@@ -124,7 +124,7 @@ class NazionalitaController {
     //--passa al metodo effettivo senza nessun dialogo di conferma
     def uploadSingolaNazionalita(Long id) {
         Nazionalita nazionalita = Nazionalita.get(id)
-        String plurale=''
+        String plurale = ''
         boolean debug = Pref.getBool(LibBio.DEBUG, false)
         long inizio = System.currentTimeMillis()
         long fine
@@ -184,9 +184,7 @@ class NazionalitaController {
         }// fine del blocco if
 
         if (continua) {
-            if (statisticheService) {
-                statisticheService?.nazionalitaUsate()
-            }// fine del blocco if
+            def nonServe = new StatisticheNazionalita()
         } else {
             flash.error = "Annullata l'operazione di creazione delle statistiche"
         }// fine del blocco if-else
@@ -207,10 +205,10 @@ class NazionalitaController {
         def listaPluraliNonUsati = LibListe.getNazioniPluraleNonUsate()
         def listaMappe = LibListe.getNazioniMappaAll()
 
-        def alfa= LibListe.getNazioneMappa('Afghani')
-        def beta= LibListe.getNazioneMappa('afghani')
-        def delta= LibListe.getNazioneMappa('afghano')
-        def gamma= LibListe.getNazioneMappa('afghana')
+        def alfa = LibListe.getNazioneMappa('Afghani')
+        def beta = LibListe.getNazioneMappa('afghani')
+        def delta = LibListe.getNazioneMappa('afghano')
+        def gamma = LibListe.getNazioneMappa('afghana')
 
         def stop
         redirect(action: 'list')

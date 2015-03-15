@@ -78,10 +78,12 @@ class AttivitaController {
     //--elabora e crea le pagine della prima meta delle attività
     //--il taglio è la preferenza TAGLIO_META_ATTIVITA
     //--passa al metodo effettivo senza nessun dialogo di conferma
-    def uploadAttivitaPrimaMeta() {
+    def uploadAttivitaPrima() {
         if (grailsApplication && grailsApplication.config.login) {
-            listaService.uploadAttivitaPrimaMeta()
-            statisticheService.attivitaUsate()
+            if (bioService && Pref.getBool(LibBio.USA_LISTE_BIO_ATTIVITA)) {
+                attivitaService?.uploadAttivitaPrimaMeta(bioService)
+            }// fine del blocco if
+            statisticheService?.attivitaUsate()
         } else {
             flash.error = 'Devi essere loggato per effettuare un upload di pagine sul server wiki'
         }// fine del blocco if-else
@@ -92,12 +94,12 @@ class AttivitaController {
     //--elabora e crea le pagine della seconda meta delle attività
     //--il taglio è la preferenza TAGLIO_META_ATTIVITA
     //--passa al metodo effettivo senza nessun dialogo di conferma
-    def uploadAttivitaSecondaMeta() {
-        listaService.uploadAttivitaSecondaMeta()
-
+    def uploadAttivitaSeconda() {
         if (grailsApplication && grailsApplication.config.login) {
-            listaService.uploadAttivitaSecondaMeta()
-            statisticheService.attivitaUsate()
+            if (bioService && Pref.getBool(LibBio.USA_LISTE_BIO_ATTIVITA)) {
+                attivitaService?.uploadAttivitaSecondaMeta(bioService)
+            }// fine del blocco if
+            statisticheService?.attivitaUsate()
         } else {
             flash.error = 'Devi essere loggato per effettuare un upload di pagine sul server wiki'
         }// fine del blocco if-else
@@ -171,9 +173,7 @@ class AttivitaController {
         }// fine del blocco if
 
         if (continua) {
-            if (statisticheService) {
-                statisticheService?.attivitaUsate()
-            }// fine del blocco if
+            def nonServe = new StatisticheAttivita()
         } else {
             flash.error = "Annullata l'operazione di creazione delle statistiche"
         }// fine del blocco if-else
@@ -183,6 +183,9 @@ class AttivitaController {
 
 
     def test() {
+        def primaMeta = attivitaService.getListaPluraliPrimaMeta()
+        def secondaMeta = attivitaService.getListaPluraliSecondaMeta()
+        def all = attivitaService.getListaPlurali()
 //    def paragrafi = LibListe.getAttivitaParagrafi()
 
 //        def lista = LibListe.getAttivitaPlurale()
@@ -242,6 +245,8 @@ class AttivitaController {
         //--mappa con [cont:'controller', action:'metodo', icon:'iconaImmagine', title:'titoloVisibile']
         menuExtra = [
                 [cont: 'attivita', action: 'download', icon: 'frecciagiu', title: 'Download'],
+                [cont: 'attivita', action: 'uploadAttivitaPrima', icon: 'frecciasu', title: 'Upload prima metà'],
+                [cont: 'attivita', action: 'uploadAttivitaSeconda', icon: 'frecciasu', title: 'Upload seconda metà'],
                 [cont: 'attivita', action: 'uploadAttivita', icon: 'frecciasu', title: 'Upload All'],
                 [cont: 'attivita', action: 'statistiche', icon: 'frecciasu', title: 'Statistiche'],
                 [cont: 'attivita', action: 'test', icon: 'frecciasu', title: 'Test']

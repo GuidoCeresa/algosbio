@@ -1,4 +1,6 @@
 import it.algos.algosbio.LibBio
+import it.algos.algosbio.StatisticheAttivita
+import it.algos.algosbio.StatisticheNazionalita
 import it.algos.algoslib.LibGrails
 import it.algos.algoslib.LibTesto
 import it.algos.algospref.Pref
@@ -14,7 +16,6 @@ class AttNazUpload {
     def attivitaService
     def nazionalitaService
     def bioService
-    def statisticheService
     def mailService
 
     protected uploadAttivitaPrimaMeta() {
@@ -41,17 +42,15 @@ class AttNazUpload {
                 if (bioService) {
                     if (primaMeta) {
                         spedisceMail('Elabora la prima metà delle attività')
-                        attivitaService.uploadNazionalitaPrimaMeta(bioService)
+                        attivitaService.uploadAttivitaPrimaMeta(bioService)
                     } else {
                         spedisceMail('Elabora la seconda metà delle attività')
-                        attivitaService.uploadNazionalitaSecondaMeta(bioService)
+                        attivitaService.uploadAttivitaSecondaMeta(bioService)
                     }// fine del blocco if-else
                 }// fine del blocco if
             }// fine del blocco if
 
-            if (statisticheService) {
-                statisticheService.nazionalitaUsate()
-            }// fine del blocco if
+            def nonServe = new StatisticheAttivita()
 
         }// fine del blocco if
     }// fine del metodo execute
@@ -72,9 +71,7 @@ class AttNazUpload {
                 }// fine del blocco if
             }// fine del blocco if
 
-            if (statisticheService) {
-                statisticheService.nazionalitaUsate()
-            }// fine del blocco if
+            def nonServe = new StatisticheNazionalita()
 
         }// fine del blocco if
     }// fine del metodo execute

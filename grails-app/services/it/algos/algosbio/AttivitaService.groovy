@@ -124,12 +124,39 @@ class AttivitaService {
     } // fine del metodo
 
     /**
-     * Ritorna una lista di tutte le attività plurali distinte
+     * Ritorna una lista delle attività plurali distinte (prima metà)
      *
-     * @return lista ordinata (stringhe) di tutti i plurali delle attività
+     * @return lista ordinata (stringhe) dei plurali delle attività
      */
-    public static ArrayList<String> getListaPlurali() {
-        return (ArrayList<String>) Attivita.executeQuery('select distinct plurale from Attivita order by plurale')
+    public static ArrayList<String> getListaPluraliPrimaMeta() {
+        ArrayList<String> lista = null
+        int numero = getNumPlurali()
+        int fine
+
+        if (numero) {
+            fine = numero / 2
+            lista = getListaPlurali(0, fine)
+        }// fine del blocco if
+
+        return lista
+    } // fine del metodo
+
+    /**
+     * Ritorna una lista delle attività plurali distinte (seconda metà)
+     *
+     * @return lista ordinata (stringhe) dei plurali delle attività
+     */
+    public static ArrayList<String> getListaPluraliSecondaMeta() {
+        ArrayList<String> lista = null
+        int numero = getNumPlurali()
+        int inizio
+
+        if (numero) {
+            inizio = numero / 2
+            lista = getListaPlurali(inizio)
+        }// fine del blocco if
+
+        return lista
     } // fine del metodo
 
     /**
@@ -138,7 +165,53 @@ class AttivitaService {
      * @return numero totale di tutti i plurali distinti delle attività
      */
     public static int getNumPlurali() {
-        return getListaPlurali()?.size()
+        int numero = 0
+        ArrayList<String> lista = getListaPlurali()
+
+        if (lista) {
+            numero = lista.size()
+        }// fine del blocco if
+
+        return numero
+    } // fine del metodo
+
+    /**
+     * Ritorna una lista di tutte le attività plurali distinte
+     *
+     * @return lista ordinata (stringhe) di tutti i plurali delle attività
+     */
+    public static ArrayList<String> getListaPlurali() {
+        return getListaPlurali(0, 0)
+    } // fine del metodo
+
+    /**
+     * Ritorna una lista di tutte le attività plurali distinte
+     *
+     * @return lista ordinata (stringhe) di tutti i plurali delle attività
+     */
+    public static ArrayList<String> getListaPlurali(int offset) {
+        return getListaPlurali(offset, LibBio.MAX)
+    } // fine del metodo
+
+    /**
+     * Ritorna una lista di tutte le attività plurali distinte
+     *
+     * @return lista ordinata (stringhe) di tutti i plurali delle attività
+     */
+    public static ArrayList<String> getListaPlurali(int offset, int num) {
+        ArrayList<String> lista
+
+        if (num) {
+            lista = (ArrayList<String>) Attivita.executeQuery('select distinct plurale from Attivita order by plurale', [max: num, offset: offset])
+        } else {
+            if (offset) {
+                lista = (ArrayList<String>) Attivita.executeQuery('select distinct plurale from Attivita order by plurale', [max: LibBio.MAX, offset: offset])
+            } else {
+                lista = (ArrayList<String>) Attivita.executeQuery('select distinct plurale from Attivita order by plurale')
+            }// fine del blocco if-else
+        }// fine del blocco if-else
+
+        return lista
     } // fine del metodo
 
     /**
@@ -385,7 +458,45 @@ class AttivitaService {
     }// fine del metodo
 
     /**
-     * Ritorna una lista di tutte le nazionalità distinta
+     * Ritorna una lista delle prime nazionalità distinte
+     */
+    public static ArrayList<Attivita> getListaAttivitaPrimaMeta() {
+        ArrayList<Attivita> lista = new ArrayList<Attivita>()
+        ArrayList<String> listaPlurali = getListaPluraliPrimaMeta()
+        Attivita attivita
+
+        listaPlurali?.each {
+            attivita = Attivita.findByPlurale(it)
+            if (attivita) {
+                lista.add(attivita)
+            }// fine del blocco if
+        }// fine di each
+
+        // valore di ritorno
+        return lista
+    } // fine del metodo
+
+    /**
+     * Ritorna una lista delle seconde nazionalità distinte
+     */
+    public static ArrayList<Attivita> getListaAttivitaSecondaMeta() {
+        ArrayList<Attivita> lista = new ArrayList<Attivita>()
+        ArrayList<String> listaPlurali = getListaPluraliSecondaMeta()
+        Attivita attivita
+
+        listaPlurali?.each {
+            attivita = Attivita.findByPlurale(it)
+            if (attivita) {
+                lista.add(attivita)
+            }// fine del blocco if
+        }// fine di each
+
+        // valore di ritorno
+        return lista
+    } // fine del metodo
+
+    /**
+     * Ritorna una lista di tutte le attività distinte
      */
     public static ArrayList<Attivita> getListaAllAttivita() {
         ArrayList<Attivita> lista = new ArrayList<Attivita>()
@@ -456,6 +567,40 @@ class AttivitaService {
         }// fine del blocco if
 
         return registrata
+    } // fine del metodo
+
+    /**
+     * creazione delle liste partendo da BioGrails
+     * elabora e crea le attività
+     */
+    public int uploadAttivitaPrimaMeta(BioService bioService) {
+        int attivitaModificate = 0
+        ArrayList<Attivita> listaAttivita = getListaAttivitaPrimaMeta()
+
+        listaAttivita?.each {
+            if (uploadAttivita(it, bioService)) {
+                attivitaModificate++
+            }// fine del blocco if
+        } // fine del ciclo each
+
+        return attivitaModificate
+    } // fine del metodo
+
+    /**
+     * creazione delle liste partendo da BioGrails
+     * elabora e crea le attività
+     */
+    public int uploadAttivitaSecondaMeta(BioService bioService) {
+        int attivitaModificate = 0
+        ArrayList<Attivita> listaAttivita = getListaAttivitaSecondaMeta()
+
+        listaAttivita?.each {
+            if (uploadAttivita(it, bioService)) {
+                attivitaModificate++
+            }// fine del blocco if
+        } // fine del ciclo each
+
+        return attivitaModificate
     } // fine del metodo
 
     /**
