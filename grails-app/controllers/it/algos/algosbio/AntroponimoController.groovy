@@ -218,9 +218,11 @@ class AntroponimoController {
             genereService.download()
         }// fine del blocco if
 
-        if (!debug && antroponimoService) {
+        if (antroponimoService) {
             //--aggiorna il numero di voci per ogni antroponimo della lista (semi-statica)
-            antroponimoService.ricalcola()
+            if (!debug) {
+                antroponimoService.ricalcola()
+            }// fine del blocco if
 
             //--costruisce una lista di nomi (circa 1.200)
             if (Pref.getBool(LibBio.USA_LISTE_BIO_NOMI)) {

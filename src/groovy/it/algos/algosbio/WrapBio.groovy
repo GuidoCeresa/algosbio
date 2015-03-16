@@ -683,6 +683,7 @@ public class WrapBio {
      * Crea un'istanza di BioWiki con esattamente i dati del server wiki
      * L'istanza viene mantenuta pronta per la registrazione sul DB
      * Di norma dovrebbe essere nuovo. Per errore potrebbe esistere già; in questo caso lo modifica.
+     * Di norma dovrebbe avere sia pageId sia title
      */
     public creaBioWikiOriginale() {
         // variabili e costanti locali di lavoro
@@ -713,14 +714,34 @@ public class WrapBio {
                 log.error 'creaBioWikiOriginale - Manca il title dalla mappa' + mappaPar
             }// fine del blocco if-else
 
-            try { // prova ad eseguire il codice
-                bioWiki = BioWiki.findByPageid(pageid)
+            if (!pageid && !title) {
+                continua = false
+            }// fine del blocco if
+        }// fine del blocco if
 
-                if (!bioWiki) {
+        if (continua) {
+            try { // prova ad eseguire il codice
+                if (pageid) {
+                    bioWiki = BioWiki.findByPageid(pageid)
+                }// fine del blocco if
+
+                if (!bioWiki && title) {
                     bioWiki = BioWiki.findByTitle(title)
                 }// fine del blocco if
 
-//                bioWiki = new BioWiki(pageid: pageid)
+                if (!bioWiki) {
+                    bioWiki = new BioWiki()
+                    if (pageid && bioWiki) {
+                        bioWiki.pageid = pageid
+                    }// fine del blocco if
+                    if (title && bioWiki) {
+                        bioWiki.title = title
+                    }// fine del blocco if
+                }// fine del blocco if
+
+                if (!bioWiki) {
+                    continua = false
+                }// fine del blocco if
             } catch (Exception unErrore) { // intercetta l'errore
                 try { // prova ad eseguire il codice
                     log.error 'creaBioWikiOriginale - Non funziona il findByPageid di ' + pageid
@@ -742,19 +763,25 @@ public class WrapBio {
         }// fine del blocco if
 
         if (continua) {
-            bioWiki.properties.each {
-                chiaveNoAccento = it.key
-                if (chiaveNoAccento) {
-                    chiaveSiAccento = ParBio.getStaticTag(chiaveNoAccento)
-                    try { // prova ad eseguire il codice
-                        valore = mappaBio."${chiaveSiAccento}"
+            try { // prova ad eseguire il codice
+                bioWiki.properties.each {
+                    chiaveNoAccento = it.key
+                    if (chiaveNoAccento) {
+                        chiaveSiAccento = ParBio.getStaticTag(chiaveNoAccento)
+                        try { // prova ad eseguire il codice
+                            valore = mappaBio."${chiaveSiAccento}"
 //                        if (valore) {
-                        bioWiki."${chiaveNoAccento}" = valore
+                            bioWiki."${chiaveNoAccento}" = valore
 //                        }// fine del blocco if
-                    } catch (Exception unErrore) { // intercetta l'errore
-                    }// fine del blocco try-catch
-                }// fine del blocco if
-            }// fine di each
+                        } catch (Exception unErrore) { // intercetta l'errore
+                        }// fine del blocco try-catch
+                    }// fine del blocco if
+                }// fine di each
+
+            } catch (Exception unErrore) { // intercetta l'errore
+                log.error unErrore
+                continua = false
+            }// fine del blocco try-catch
         }// fine del blocco if
 
         // parametri di wikipedia fuori dalla mappa del template

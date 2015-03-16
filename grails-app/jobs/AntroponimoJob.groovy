@@ -21,7 +21,7 @@ class AntroponimoJob {
 
     //--codifica dell'orario di attivazione
     //--MON, TUE, WED, THU, FRI, SAT, SUN
-    private static String cronExpressionAntroponimo = "0 0 8 ? * TUE" //--tutti i martedi alle 8
+    private static String cronExpressionAntroponimo = "0 0 7 ? * TUE" //--tutti i martedi alle 7
 
     static triggers = {
         cron name: 'antroponimo', cronExpression: cronExpressionAntroponimo
