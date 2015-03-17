@@ -45,6 +45,9 @@
     </g:if>
     <h1><g:message code="localita.list.label" args="[entityName]" default="Elenco"/></h1>
 
+    <div class="pagination">
+        <g:paginate total="${localitaInstanceCount ?: 0}"/>
+    </div>
     <table>
         <thead>
         <g:if test="${campiLista}">

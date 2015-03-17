@@ -54,6 +54,7 @@
     <div class="pagination">
         <g:paginate total="${annoInstanceTotal}"/>
     </div>
+
     <table>
         <thead>
         <g:if test="${campiLista}">

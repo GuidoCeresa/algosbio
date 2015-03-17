@@ -64,6 +64,9 @@
         <h1><g:message code="bioGrails.list.label" args="[entityName]" default="Elenco"/></h1>
     </g:else>
 
+    <div class="pagination">
+        <g:paginate total="${bioGrailsInstanceTotal}"/>
+    </div>
     <table>
         <thead>
         <g:if test="${campiLista}">

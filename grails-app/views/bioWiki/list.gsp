@@ -64,6 +64,9 @@
         <h1><g:message code="bioWiki.list.label" args="[entityName]" default="Elenco"/></h1>
     </g:else>
 
+    <div class="pagination">
+        <g:paginate total="${bioWikiInstanceTotal}"/>
+    </div>
     <table>
         <thead>
         <g:if test="${campiLista}">

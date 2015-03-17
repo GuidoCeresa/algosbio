@@ -30,6 +30,8 @@ class BioWikiController {
 
     static allowedMethods = [save: 'POST', update: 'POST', delete: 'POST']
 
+    private static int MAX = 1000
+
     // utilizzo di un service con la businessLogic per l'elaborazione dei dati
     // il service viene iniettato automaticamente
     def exportService
@@ -344,7 +346,7 @@ class BioWikiController {
     } // fine del metodo
 
     def list(Integer max) {
-        params.max = Math.min(max ?: 100, 100)
+        if (!params.max) params.max = MAX
         ArrayList menuExtra
         ArrayList campiLista
         def lista
@@ -420,8 +422,9 @@ class BioWikiController {
             }// fine del blocco if-else
         }// fine del blocco if-else
 
-        //--calcola il numero di record
         recordsTotali = lista.size()
+        //--selezione dei records da mostrare
+        recordsTotali = BioWiki.count()
 
         //--titolo visibile sopra la table dei dati
         titoloLista = 'Elenco di ' + Lib.Txt.formatNum(recordsTotali) + ' biografie (fotocopia originali wiki)'

@@ -97,4 +97,23 @@ class AntroponimoJob {
         }// fine del blocco if
     }// fine del metodo execute
 
+    private spedisceMail(String testo) {
+        boolean status = Pref.getBool(LibBio.USA_MAIL_INFO)
+        String oggetto
+        String adesso = new Date().toString()
+        String mailTo = 'gac@algos.it'
+        String time = 'Report eseguito alle ' + adesso + '\n'
+        testo = time + testo
+        oggetto = 'Nazionalità'
+
+        if (mailService && status) {
+            mailService.sendMail {
+                to mailTo
+                subject oggetto
+                body testo
+            }// fine della closure
+        }// fine del blocco if
+
+    }// fine del metodo
+
 } // end of Job Class

@@ -59,6 +59,7 @@ class ListaNome extends ListaBio {
     protected elaboraParametri() {
         usaTavolaContenuti = true
         tagTemplateBio = Pref.getStr(LibBio.NOME_TEMPLATE_AVVISO_LISTE_NOMI_COGNOMI, 'StatBio')
+        usaHeadIncipit = true
         usaSuddivisioneUomoDonna = Pref.getBool(LibBio.USA_SUDDIVISIONE_UOMO_DONNA, false)
         usaSuddivisioneParagrafi = true
         usaTitoloParagrafoConLink = true

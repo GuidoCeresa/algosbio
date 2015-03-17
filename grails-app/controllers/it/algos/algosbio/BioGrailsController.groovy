@@ -25,6 +25,8 @@ class BioGrailsController {
 
     static allowedMethods = [save: 'POST', update: 'POST', delete: 'POST']
 
+    private static int MAX = 1000
+
     // utilizzo di un service con la businessLogic per l'elaborazione dei dati
     // il service viene iniettato automaticamente
     def exportService
@@ -246,7 +248,7 @@ class BioGrailsController {
     } // fine del metodo
 
     def list(Integer max) {
-        params.max = Math.min(max ?: 100, 100)
+        if (!params.max) params.max = MAX
         ArrayList menuExtra
         ArrayList campiLista
         def lista
@@ -309,7 +311,7 @@ class BioGrailsController {
         //--oppure modificare il findAllByInteroGreaterThan()...
         lista = BioGrails.list(params)
 
-        //--calcola il numero di record
+        //--selezione dei records da mostrare
         recordsTotali = BioGrails.count()
 
         //--titolo visibile sopra la table dei dati

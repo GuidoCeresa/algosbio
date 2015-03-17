@@ -1756,14 +1756,18 @@ class AntroponimoService {
      */
     def int uploadAllNomi(BioService bioService) {
         int nomiModificati = 0
-        ArrayList<Antroponimo> listaNomi
+        ArrayList<Antroponimo> listaVoci = getListaAntroponimi()
+        Antroponimo antroponimo
 
-        listaNomi = Antroponimo.list()
+        listaVoci?.each {
+            antroponimo = (Antroponimo) it
 
-        listaNomi?.each {
-            if (ListaNome.uploadNome(it, bioService)) {
-                nomiModificati++
+            if (antroponimo.isVocePrincipale) {
+                if (ListaNome.uploadNome(it, bioService)) {
+                    nomiModificati++
+                }// fine del blocco if
             }// fine del blocco if
+
         } // fine del ciclo each
 
         return nomiModificati

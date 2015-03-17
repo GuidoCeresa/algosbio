@@ -62,6 +62,9 @@
         <h1><g:message code="antroponimo.list.label" args="[entityName]" default="Elenco"/></h1>
     </g:else>
 
+    <div class="pagination">
+        <g:paginate total="${antroponimoInstanceTotal}"/>
+    </div>
     <table>
         <thead>
         <g:if test="${campiLista}">

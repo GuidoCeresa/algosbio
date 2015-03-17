@@ -51,6 +51,9 @@
     <g:if test="${flash.error}">
         <div class="errors" role="status">${flash.error}</div>
     </g:if>
+    <div class="pagination">
+        <g:paginate total="${giornoInstanceTotal}"/>
+    </div>
     <table>
         <thead>
         <g:if test="${campiLista}">
