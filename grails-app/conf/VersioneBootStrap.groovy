@@ -982,6 +982,18 @@ class VersioneBootStrap {
             versioneService.newVersione('Preferenze', 'USA_SOTTOPAGINA_ALTRI di default false')
         }// fine del blocco if
 
+        //--creata una nuova preferenza
+        if (versioneService && versioneService.installaVersione(105)) {
+            Pref pref = new Pref()
+            pref.ordine = Pref.list().size() + 1
+            pref.code = LibBio.USA_RICALCOLO_NOMI
+            pref.descrizione = 'Ricalcola la dimensione delle occorrenze singole di nomi (antroponimi)'
+            pref.type = Type.booleano
+            pref.bool = false
+            pref.save(flush: true)
+            versioneService.newVersione('Preferenze', 'USA_RICALCOLO_NOMI di default false')
+        }// fine del blocco if
+
     }// fine della closure
 
 

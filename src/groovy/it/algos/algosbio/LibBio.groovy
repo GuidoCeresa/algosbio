@@ -108,6 +108,7 @@ class LibBio {
     public static final String USA_DUE_COLONNE_STATISTICHE_ATTIVITA = 'usaDueColonneStatisticheAttivita'
     public static final String USA_GIORNI_ANNI_RAGGRUPPATI = 'usaGiorniAnniRaggruppati'
     public static final String USA_SOTTOPAGINA_ALTRI = 'usaSottopaginaAltri'
+    public static final String USA_RICALCOLO_NOMI = 'usaRicalcoloNomi'
 
     // campi di una mappa
     public static final String MAPPA_TITOLO_PARAGRAFO = 'titoloParagrafo'

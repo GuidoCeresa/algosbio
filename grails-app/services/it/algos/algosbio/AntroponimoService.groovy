@@ -654,6 +654,7 @@ class AntroponimoService {
     }// fine del metodo
 
     def paginaListe() {
+        boolean debug = Pref.getBool(LibBio.DEBUG, false)
         int taglio = Pref.getInt(LibBio.TAGLIO_ANTROPONIMI)
         int soglia = Pref.getInt(LibBio.SOGLIA_ANTROPONIMI)
         String testo = ''
@@ -666,9 +667,9 @@ class AntroponimoService {
         String nome
         int voci
         String vociTxt
+        def nonServe
 
         listaNomi = Antroponimo.findAllByVociGreaterThan(soglia, [sort: 'voci', order: 'desc'])
-        lista.add(['#', 'Nome', 'Voci'])
         listaNomi?.each {
             vociTxt = ''
             antro = (Antroponimo) it
@@ -679,14 +680,23 @@ class AntroponimoService {
             }// fine del blocco if-else
             k++
             vociTxt = LibTesto.formatNum((String) voci)
-            lista.add([k, nome, voci])
+            lista.add([nome, voci])
         } // fine del ciclo each
 
         testo += getListeHead(k)
         testo += getListeBody(lista)
         testo += getListeFooter()
 
-        new Edit(titolo, testo, summary)
+        //registra la pagina
+        if (testo) {
+            testo = testo.trim()
+            if (debug) {
+                nonServe = new Edit('Utente:Biobot/2', testo, summary)
+            } else {
+                nonServe = new Edit(titolo, testo, summary)
+            }// fine del blocco if-else
+        }// fine del blocco if
+        def stop
     }// fine del metodo
 
     private static String getListeHead(int numNomi) {
@@ -719,11 +729,18 @@ class AntroponimoService {
     private static String getListeBody(ArrayList listaVoci) {
         String testoTabella
         Map mappa = new HashMap()
+        ArrayList titoli = new ArrayList()
+        titoli.add(LibWiki.setBold('Nome') )
+        titoli.add(LibWiki.setBold('Voci') )
 
-        mappa.put('lista', listaVoci)
-        mappa.put('width', '160')
-        mappa.put('align', TipoAllineamento.secondaSinistra)
-        testoTabella = WikiLib.creaTabellaSortable(mappa)
+//        mappa.put('lista', listaVoci)
+//        mappa.put('width', '160')
+//        mappa.put('align', TipoAllineamento.secondaSinistra)
+//        testoTabella = WikiLib.creaTabellaSortable(mappa)
+
+        mappa.put(WikiLib.MAPPA_TITOLI, titoli)
+        mappa.put(WikiLib.MAPPA_LISTA, listaVoci)
+        testoTabella = WikiLib.creaTable(mappa)
 
         return testoTabella
     }// fine del metodo
@@ -1369,16 +1386,26 @@ class AntroponimoService {
 
     // pagina di controllo/servizio
     public paginaDidascalie() {
+        boolean debug = Pref.getBool(LibBio.DEBUG, false)
         String titolo = progetto + 'Didascalie'
         String testo = ''
         String summary = 'Biobot'
+        def nonServe
 
         testo += getDidascalieHeader()
         testo += getDidascalieBody()
         testo += getDidascalieFooter()
 
         //registra la pagina
-        new Edit(titolo, testo, summary)
+        if (testo) {
+            testo = testo.trim()
+            if (debug) {
+                nonServe = new Edit('Utente:Biobot/2', testo, summary)
+            } else {
+                nonServe = new Edit(titolo, testo, summary)
+            }// fine del blocco if-else
+        }// fine del blocco if
+        def stop
     }// fine della closure
 
 
@@ -1537,18 +1564,29 @@ class AntroponimoService {
      * Crea la pagina riepilogativa
      */
     public paginaNomi() {
+        boolean debug = Pref.getBool(LibBio.DEBUG, false)
         ArrayList<Antroponimo> listaVoci = getListaAntroponimi()
         String testo = ''
         String titolo = progetto + 'Nomi'
         String summary = 'Biobot'
+        def nonServe
 
         if (listaVoci) {
             testo += getNomiHead()
             testo += getNomiBody(listaVoci)
             testo += getNomiFooter()
-
-            new Edit(titolo, testo, summary)
         }// fine del blocco if
+
+        //registra la pagina
+        if (testo) {
+            testo = testo.trim()
+            if (debug) {
+                nonServe = new Edit('Utente:Biobot/2', testo, summary)
+            } else {
+                nonServe = new Edit(titolo, testo, summary)
+            }// fine del blocco if-else
+        }// fine del blocco if
+        def stop
     }// fine del metodo
 
 

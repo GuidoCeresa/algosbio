@@ -28,6 +28,7 @@ class AnnoController {
 
     static boolean transactional = false
     static allowedMethods = [save: 'POST', update: 'POST', delete: 'POST']
+    private static int MAX = 100
 
     // utilizzo di un service con la businessLogic per l'elaborazione dei dati
     // il service viene iniettato automaticamente
@@ -224,7 +225,7 @@ class AnnoController {
 
 
     def list(Integer max) {
-        params.max = Math.min(max ?: 100, 100)
+        if (!params.max) params.max = MAX
         ArrayList menuExtra
         ArrayList campiLista
         def lista

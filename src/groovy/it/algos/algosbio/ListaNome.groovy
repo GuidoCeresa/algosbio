@@ -60,7 +60,7 @@ class ListaNome extends ListaBio {
         usaTavolaContenuti = true
         tagTemplateBio = Pref.getStr(LibBio.NOME_TEMPLATE_AVVISO_LISTE_NOMI_COGNOMI, 'StatBio')
         usaHeadIncipit = true
-        usaSuddivisioneUomoDonna = Pref.getBool(LibBio.USA_SUDDIVISIONE_UOMO_DONNA, false)
+        usaSuddivisioneUomoDonna = Pref.getBool(LibBio.USA_SUDDIVISIONE_UOMO_DONNA, true)
         usaSuddivisioneParagrafi = true
         usaTitoloParagrafoConLink = true
         usaDoppiaColonna = false
@@ -146,6 +146,7 @@ class ListaNome extends ListaBio {
         //creazione della sottopagina
         sottoVoce = new ListaNomeAttivita(elaboraSoggettoSpecifico(chiaveParagrafo, tagSesso), false)
         sottoVoce.listaBiografie = listaVociOrdinate
+        sottoVoce.numPersone = listaVociOrdinate.size()
         sottoVoce.titoloPaginaMadre = titoloPagina
         sottoVoce.soggettoMadre = soggetto
         sottoVoce.elaboraPagina()

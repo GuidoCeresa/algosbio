@@ -40,15 +40,6 @@ class ListaNomeAttivita extends ListaNome {
     }// fine del metodo
 
     /**
-     * Pagina principale a cui tornare
-     * Sovrascritto
-     */
-    @Override
-    protected String elaboraIncipit() {
-        return ''
-    }// fine del metodo
-
-    /**
      * Chiave di selezione del paragrafo
      * Sovrascritto
      */
