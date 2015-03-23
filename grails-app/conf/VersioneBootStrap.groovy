@@ -994,6 +994,30 @@ class VersioneBootStrap {
             versioneService.newVersione('Preferenze', 'USA_RICALCOLO_NOMI di default false')
         }// fine del blocco if
 
+        //--creata una nuova preferenza
+        if (versioneService && versioneService.installaVersione(106)) {
+            Pref pref = new Pref()
+            pref.ordine = Pref.list().size() + 1
+            pref.code = LibBio.USA_LISTE_BIO_COGNOMI
+            pref.descrizione = "usa le nuove liste"
+            pref.type = Type.booleano
+            pref.bool = true
+            pref.save(flush: true)
+            versioneService.newVersione('Preferenze', 'USA_LISTE_BIO_COGNOMI di default true')
+        }// fine del blocco if
+
+        //--creata una nuova preferenza
+        if (versioneService && versioneService.installaVersione(107)) {
+            Pref pref = new Pref()
+            pref.ordine = Pref.list().size() + 1
+            pref.code = LibBio.MAX_VOCI_PARAGRAFO_COGNOMI
+            pref.descrizione = 'Numero di voci del paragrafo di cognomi per creare una sotto-pagina'
+            pref.type = Type.intero
+            pref.intero = 50
+            pref.save(flush: true)
+            versioneService.newVersione('Preferenze', 'MAX_VOCI_PARAGRAFO_COGNOMI di default 50')
+        }// fine del blocco if
+
     }// fine della closure
 
 

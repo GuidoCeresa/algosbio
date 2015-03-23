@@ -194,7 +194,7 @@ class ListaNome extends ListaBio {
      * Recupera il singolo nome
      */
     protected String getNome() {
-        String nome = ''
+        String nome
         Antroponimo antroponimo = getAntroponimo()
 
         if (antroponimo) {

@@ -23,6 +23,7 @@ abstract class ListaBio {
     // il service NON viene iniettato automaticamente (perché è nel plugin)
     BioService bioService
 
+    private static String PAGINA_PROVA = 'Utente:Biobot/2'
     protected static String TAG_INDICE = '__FORCETOC__'
     protected static String TAG_NO_INDICE = '__NOTOC__'
 
@@ -139,7 +140,6 @@ abstract class ListaBio {
         tagLivelloParagrafo = '=='
         tagParagrafoNullo = 'Altre...'
         usaSottopaginaAltri == Pref.getBool(LibBio.USA_SOTTOPAGINA_ALTRI, false)
-
     }// fine del metodo
 
     /**
@@ -192,7 +192,8 @@ abstract class ListaBio {
         if (testo) {
             testo = testo.trim()
             if (debug) {
-                paginaModificata = new EditBio('Utente:Biobot/2', testo, summary)
+                testo = LibWiki.setBold(titoloPagina) + aCapo + testo
+                paginaModificata = new EditBio(PAGINA_PROVA, testo, summary)
                 registrata = paginaModificata.registrata
             } else {
                 paginaModificata = new EditBio(titoloPagina, testo, summary)

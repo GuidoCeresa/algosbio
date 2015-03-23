@@ -4,7 +4,10 @@ import grails.transaction.Transactional
 import it.algos.algoslib.LibMat
 import it.algos.algoslib.LibTesto
 import it.algos.algoslib.LibTime
+import it.algos.algoslib.LibWiki
 import it.algos.algospref.Pref
+import it.algos.algoswiki.Edit
+import it.algos.algoswiki.WikiLib
 
 import java.text.Normalizer
 
@@ -15,6 +18,7 @@ class CognomeService {
     public static String PATH = 'Progetto:Biografie/Cognomi/Persone di cognome '
     private static String aCapo = '\n'
 
+    private static String PAGINA_PROVA = 'Utente:Biobot/2'
     private tagTitolo = 'Persone di cognome '
     private tagPunti = 'Altre...'
     private boolean titoloParagrafoConLink = true
@@ -619,5 +623,312 @@ class CognomeService {
             cognome.save(flush: true)
         }// fine del blocco if-else
     }// fine del metodo
+
+    //--costruisce una lista di cognomi
+    public static ArrayList<String> getListaTxtCognomi() {
+        ArrayList<String> listaCognomi
+        int taglio = Pref.getInt(LibBio.TAGLIO_COGNOMI, 100)
+        String query = "select testo from Cognome where voci>'${taglio}' order by testo asc"
+
+        //esegue la query
+        listaCognomi = (ArrayList<String>) Cognome.executeQuery(query)
+
+        return listaCognomi
+    }// fine del metodo
+
+    //--costruisce una lista di cognomi
+    public static ArrayList<Cognome> getListaCognomi() {
+        int taglio = Pref.getInt(LibBio.TAGLIO_COGNOMI, 100)
+
+        return Cognome.findAllByVociGreaterThan(taglio, [sort: 'testo', order: 'asc'])
+    }// fine del metodo
+
+    public creaPagineControllo() {
+        //crea la pagina riepilogativa
+        paginaCognomi()
+
+        //crea le pagine di riepilogo di tutti i cognomi
+        paginaListe()
+
+        //crea la pagina di controllo didascalie
+//        paginaDidascalie()
+        def stop
+    }// fine del metodo
+
+    /**
+     * Crea la pagina riepilogativa
+     */
+    public paginaCognomi() {
+        boolean debug = Pref.getBool(LibBio.DEBUG, false)
+        ArrayList<Cognome> listaVoci = getListaCognomi()
+        String testo = ''
+        String titolo = progetto + 'Cognomi'
+        String summary = 'Biobot'
+        def nonServe
+
+        if (listaVoci) {
+            testo += getNomiHead()
+            testo += getNomiBody(listaVoci)
+            testo += getNomiFooter()
+        }// fine del blocco if
+
+        //registra la pagina
+        if (testo) {
+            testo = testo.trim()
+            if (debug) {
+                testo = LibWiki.setBold(titolo) + aCapo + testo
+                nonServe = new Edit(PAGINA_PROVA, testo, summary)
+            } else {
+                nonServe = new Edit(titolo, testo, summary)
+            }// fine del blocco if-else
+        }// fine del blocco if
+        def stop
+    }// fine del metodo
+
+
+    public String getNomiHead() {
+        String testo = ''
+        String dataCorrente = LibTime.getGioMeseAnnoLungo(new Date())
+
+        testo += '__NOTOC__'
+        testo += '<noinclude>'
+        testo += "{{StatBio|data=$dataCorrente}}"
+        testo += '</noinclude>'
+        testo += aCapo
+
+        return testo
+    }// fine del metodo
+
+
+    public String getNomiBody(ArrayList<Cognome> listaVoci) {
+        String testo = ''
+        int taglio = Pref.getInt(LibBio.TAGLIO_COGNOMI)
+        Cognome cognome
+        def ricorrenze = LibTesto.formatNum(taglio)
+
+        testo += '==Cognomi=='
+        testo += aCapo
+        testo += 'Elenco dei '
+        testo += "''' "
+        testo += LibTesto.formatNum(listaVoci.size())
+        testo += "'''"
+        testo += ' cognomi che hanno più di '
+        testo += "'''"
+        testo += ricorrenze
+        testo += "'''"
+        testo += ' ricorrenze nelle voci biografiche'
+        testo += aCapo
+
+        testo += aCapo
+        testo += '{{Div col|cols=4}}'
+        if (listaVoci) {
+            listaVoci.each {
+                cognome = it
+                testo += aCapo
+                testo += this.getRiga(cognome)
+            }// fine del ciclo each
+        }// fine del blocco if
+        testo += aCapo
+        testo += '{{Div col end}}'
+        testo += aCapo
+
+        return testo
+    }// fine del metodo
+
+
+    public String getRiga(Cognome cognome) {
+        String testo = ''
+        String nome = cognome.testo
+        String tag = tagTitolo + nome
+
+        if (nome) {
+            testo += '*'
+            testo += '[['
+            testo += tag
+            testo += '|'
+            testo += nome
+            testo += ']]'
+            if (Pref.getBool(LibBio.USA_OCCORRENZE_ANTROPONIMI)) {
+                testo += ' ('
+                testo += "'''"
+                testo += LibTesto.formatNum(cognome.voci)
+                testo += "'''"
+                testo += ' )'
+            }// fine del blocco if
+            testo += aCapo
+        }// fine del blocco if
+
+        return testo.trim()
+    }// fine del metodo
+
+
+    public String getNomiFooter() {
+        String testo = ''
+
+//        testo += getCriteri() @todo da fare
+
+        testo += aCapo
+        testo += '==Voci correlate=='
+        testo += aCapo
+        testo += '*[[Progetto:Antroponimi]]'
+        testo += aCapo
+        testo += '*[[Progetto:Antroponimi/Liste cognomi]]'
+        testo += aCapo
+        testo += '*[[Progetto:Antroponimi/Didascalie]]'
+        testo += aCapo
+        testo += aCapo
+        testo += '<noinclude>'
+        testo += '[[Categoria:Liste di persone per cognome| ]]'
+        testo += aCapo
+        testo += '[[Categoria:Progetto Antroponimi|Cognomi]]'
+        testo += '</noinclude>'
+
+        return testo
+    }// fine del metodo
+
+
+    def paginaListe() {
+        boolean debug = Pref.getBool(LibBio.DEBUG, false)
+        int taglio = Pref.getInt(LibBio.TAGLIO_COGNOMI)
+        int soglia = Pref.getInt(LibBio.SOGLIA_COGNOMI)
+        String testo = ''
+        String titolo = progetto + 'Liste cognomi'
+        String summary = LibBio.getSummary()
+        int k = 0
+        def listaCognomi
+        Cognome cognome
+        ArrayList lista = new ArrayList()
+        String nome
+        int voci
+        String vociTxt
+        def nonServe
+
+        listaCognomi = Cognome.findAllByVociGreaterThan(soglia, [sort: 'voci', order: 'desc'])
+        listaCognomi?.each {
+            vociTxt = ''
+            cognome = (Cognome) it
+            nome = cognome.testo
+            voci = cognome.voci
+            if (voci > taglio) {
+                nome = "'''[[Persone di cognome " + nome + "|" + nome + "]]'''"
+            }// fine del blocco if-else
+            k++
+            vociTxt = LibTesto.formatNum((String) voci)
+            lista.add([nome, voci])
+        } // fine del ciclo each
+
+        testo += getListeHead(k)
+        testo += getListeBody(lista)
+        testo += getListeFooter()
+
+        //registra la pagina
+        if (testo) {
+            testo = testo.trim()
+            if (debug) {
+                testo = LibWiki.setBold(titolo) + aCapo + testo
+                nonServe = new Edit(PAGINA_PROVA, testo, summary)
+            } else {
+                nonServe = new Edit(titolo, testo, summary)
+            }// fine del blocco if-else
+        }// fine del blocco if
+        def stop
+    }// fine del metodo
+
+
+    private static String getListeHead(int numCognomi) {
+        String testoTitolo = ''
+        String dataCorrente = LibTime.getGioMeseAnnoLungo(new Date())
+        int soglia = Pref.getInt(LibBio.SOGLIA_COGNOMI)
+        int numBio = BioGrails.count()
+
+        testoTitolo += '<noinclude>'
+        testoTitolo += "{{StatBio|data=$dataCorrente}}"
+        testoTitolo += '</noinclude>'
+        testoTitolo += aCapo
+        testoTitolo += '==Cognomi=='
+        testoTitolo += aCapo
+        testoTitolo += "Elenco dei '''"
+        testoTitolo += LibTesto.formatNum(numCognomi)
+        testoTitolo += "''' cognomi '''differenti''' "
+        testoTitolo += " utilizzati nelle '''"
+        testoTitolo += LibTesto.formatNum(numBio)
+        testoTitolo += "''' voci biografiche con occorrenze maggiori di '''"
+        testoTitolo += soglia
+        testoTitolo += "'''"
+        testoTitolo += aCapo
+        testoTitolo += aCapo
+
+        return testoTitolo
+    }// fine del metodo
+
+
+    //costruisce il testo della tabella
+    private static String getListeBody(ArrayList listaVoci) {
+        String testoTabella
+        Map mappa = new HashMap()
+        ArrayList titoli = new ArrayList()
+        titoli.add(LibWiki.setBold('Cognome') )
+        titoli.add(LibWiki.setBold('Voci') )
+
+        mappa.put(WikiLib.MAPPA_TITOLI, titoli)
+        mappa.put(WikiLib.MAPPA_LISTA, listaVoci)
+        testoTabella = WikiLib.creaTable(mappa)
+
+        return testoTabella
+    }// fine del metodo
+
+
+    private static String getListeFooter() {
+        String testoFooter = ''
+
+//        testoFooter += getCriteri() @todo
+
+        testoFooter += aCapo
+        testoFooter += aCapo
+        testoFooter += '==Voci correlate=='
+        testoFooter += aCapo
+        testoFooter += '*[[Progetto:Antroponimi]]'
+        testoFooter += aCapo
+        testoFooter += '*[[Progetto:Antroponimi/Cognomi]]'
+        testoFooter += aCapo
+        testoFooter += '*[[Progetto:Antroponimi/Didascalie]]'
+        testoFooter += aCapo
+        testoFooter += aCapo
+        testoFooter += '<noinclude>'
+        testoFooter += '[[Categoria:Liste di persone per cognome| ]]'
+        testoFooter += aCapo
+        testoFooter += '[[Categoria:Progetto Antroponimi|Liste cognomi]]'
+        testoFooter += '</noinclude>'
+
+        return testoFooter
+    }// fine del metodo
+
+
+    /**
+     * creazione delle liste partendo da BioGrails
+     * elabora e crea tutti i cognomi
+     */
+    def int uploadAllCognomi(BioService bioService) {
+        int cognomiModificati = 0
+        ArrayList<Cognome> listaCognomi = getListaCognomi()
+        Cognome cognome
+        String testo
+
+        listaCognomi?.each {
+            cognome = (Cognome) it
+            testo = cognome.testo
+            if (LibBio.checkNome(testo)) {
+                if (cognome.isVocePrincipale) {
+                    if (ListaCognome.uploadCognome(it, bioService)) {
+                        cognomiModificati++
+                    }// fine del blocco if
+                }// fine del blocco if
+            }// fine del blocco if
+        }// fine del ciclo each
+
+        def stop
+
+        return cognomiModificati
+    } // fine del metodo
 
 } // fine della service classe

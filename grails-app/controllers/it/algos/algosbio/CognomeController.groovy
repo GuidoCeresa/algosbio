@@ -12,6 +12,7 @@ import grails.transaction.Transactional
 class CognomeController {
 
     def cognomeService
+    def bioService
 
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
     private static int MAX = 1000
@@ -192,7 +193,7 @@ class CognomeController {
                 valore = (String) params.valore
                 if (valore.equals(DialogoController.DIALOGO_CONFERMA)) {
                     if (grailsApplication && grailsApplication.config.login) {
-                        cognomeService.upload()
+                        uploadBase()
                         flash.message = 'Operazione effettuata. Sono state aggiornate le pagine dei cognomi'
                     } else {
                         flash.error = 'Devi essere loggato per poter modificare le pagine sul server wiki'
@@ -204,8 +205,83 @@ class CognomeController {
         redirect(action: 'index', params: params)
     } // fine del metodo
 
+    private uploadBase() {
+        boolean debug = Pref.getBool(LibBio.DEBUG, false)
+
+        if (cognomeService) {
+            //--aggiorna il numero di voci per ogni cognome della lista (semi-statica)
+            if (!debug) {
+                cognomeService.ricalcola()
+            }// fine del blocco if
+
+            //--costruisce una lista di cognomi
+            if (Pref.getBool(LibBio.USA_LISTE_BIO_COGNOMI)) {
+                if (bioService) {
+                    cognomeService.uploadAllCognomi(bioService)
+                }// fine del blocco if
+            } else {
+                flash.error = 'Parte di programma non funzionante'
+            }// fine del blocco if-else
+
+            //--pagine di controllo
+            cognomeService.creaPagineControllo()
+        }// fine del blocco if
+    } // fine del metodo
+
+    //--elabora e crea sul server wiki le pagine di servizio
+    //--mostra un avviso di spiegazione per l'operazione da compiere
+    //--passa al metodo effettivo
+    def controllo() {
+        params.tipo = TipoDialogo.conferma
+        params.titolo = 'Creazione pagine di servizio'
+        params.avviso = []
+        params.avviso.add('Crea Progetto:Antroponimi/Cognomi, Progetto:Antroponimi/Liste cognomi, Progetto:Antroponimi/Didascalie')
+        params.returnController = 'cognome'
+        params.returnAction = 'controlloDopoConferma'
+        redirect(controller: 'dialogo', action: 'box', params: params)
+    } // fine del metodo
+
+    //--elabora e crea sul server wiki le pagine di servizio
+    //--passa al metodo effettivo
+    def controlloDopoConferma() {
+        String valore
+        flash.message = 'Operazione annullata. Pagine non create.'
+
+        if (params.valore) {
+            if (params.valore instanceof String) {
+                valore = (String) params.valore
+                if (valore.equals(DialogoController.DIALOGO_CONFERMA)) {
+                    if (cognomeService) {
+                        cognomeService.creaPagineControllo()
+                    }// fine del blocco if
+                    flash.message = 'Operazione effettuata. Sono state ricreate le pagine di servizio'
+                }// fine del blocco if
+            }// fine del blocco if
+        }// fine del blocco if
+
+        redirect(action: 'list')
+    } // fine del metodo
+
     def list() {
         redirect(action: 'index', params: params)
+    } // fine del metodo
+
+    //--elabora e crea le liste del cognome indicato e le uploada sul server wiki
+    //--passa al metodo effettivo senza nessun dialogo di conferma
+    def uploadSingoloCognome(Long id) {
+        Cognome cognome = Cognome.get(id)
+
+        if (grailsApplication && grailsApplication.config.login) {
+            if (cognome && bioService) {
+                ListaCognome.uploadCognome(cognome, bioService)
+                flash.message = "Eseguito upload sul server wiki delle pagine con le liste delle voci di nome ${cognome.testo}"
+            } else {
+                flash.error = "Non ho trovato le classi necessarie"
+            }// fine del blocco if-else
+        } else {
+            flash.error = 'Devi essere loggato per effettuare un upload di pagine sul server wiki'
+        }// fine del blocco if-else
+        redirect(action: 'list')
     } // fine del metodo
 
     def index(Integer max) {
@@ -291,7 +367,29 @@ class CognomeController {
     } // fine del metodo
 
     def show(Cognome cognomeInstance) {
-        respond cognomeInstance
+        ArrayList menuExtra
+        def noMenuCreate = true
+
+        //--selezione dei menu extra
+        //--solo azione e di default controller=questo; classe e titolo vengono uguali
+        //--mappa con [cont:'controller', action:'metodo', icon:'iconaImmagine', title:'titoloVisibile']
+        if (cognomeInstance.isVocePrincipale) {
+            menuExtra = [
+                    [cont: 'cognome', action: "uploadSingoloCognome/${cognomeInstance.id}", icon: 'database', title: 'UploadSingoloCognome'],
+            ]
+        } else {
+            menuExtra = []
+        }// fine del blocco if-else
+
+        // fine della definizione
+
+        //--presentazione della view (show), secondo il modello
+        //--menuExtra può essere nullo o vuoto
+        render(view: 'show', model: [
+                cognomeInstance: cognomeInstance,
+                menuExtra      : menuExtra,
+                noMenuCreate   : noMenuCreate],
+                params: params)
     } // fine del metodo
 
     def create() {

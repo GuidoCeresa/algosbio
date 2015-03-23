@@ -658,7 +658,7 @@ class AntroponimoService {
         int taglio = Pref.getInt(LibBio.TAGLIO_ANTROPONIMI)
         int soglia = Pref.getInt(LibBio.SOGLIA_ANTROPONIMI)
         String testo = ''
-        String titolo = progetto + 'Liste'
+        String titolo = progetto + 'Liste nomi'
         String summary = LibBio.getSummary()
         int k = 0
         def listaNomi
@@ -766,7 +766,7 @@ class AntroponimoService {
         testoFooter += '<noinclude>'
         testoFooter += '[[Categoria:Liste di persone per nome| ]]'
         testoFooter += aCapo
-        testoFooter += '[[Categoria:Progetto Antroponimi|Liste]]'
+        testoFooter += '[[Categoria:Progetto Antroponimi|Liste nomi]]'
         testoFooter += '</noinclude>'
 
         return testoFooter
@@ -1368,14 +1368,6 @@ class AntroponimoService {
         String testo = ''
         String aCapo = '\n'
 
-//        testo += '==Voci correlate=='
-//        testo += aCapo
-//        testo += aCapo
-//        testo += '*[[Progetto:Antroponimi/Nomi]]'
-//        testo += aCapo
-//        testo += '*[[Progetto:Antroponimi/Didascalie]]'
-//        testo += aCapo
-//        testo += aCapo
         testo += '<noinclude>'
         testo += "[[Categoria:Liste di persone per nome|${nome}]]"
         testo += '</noinclude>'
