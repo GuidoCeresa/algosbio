@@ -8,16 +8,38 @@ import grails.transaction.Transactional
 class LocalitaController {
 
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
+    private static int MAX = 1000
 
     // utilizzo di un service con la businessLogic per l'elaborazione dei dati
     // il service viene iniettato automaticamente
     def localitaService
-
-    private static int MAX = 100
+    def bioService
 
     def elabora() {
         localitaService.elabora()
         redirect(action: 'index')
+    } // fine del metodo
+
+    //--elabora e crea le liste della localita indicata e le uploada sul server wiki
+    //--passa al metodo effettivo senza nessun dialogo di conferma
+    def uploadSingolaLocalita(Long id) {
+        Localita localita = Localita.get(id)
+
+        if (grailsApplication && grailsApplication.config.login) {
+            if (localita && bioService) {
+                ListaLuogo.uploadLocalita(localita, bioService)
+                flash.message = "Eseguito upload sul server wiki delle pagine con le liste delle voci di località ${localita.nome}"
+            } else {
+                flash.error = "Non ho trovato le classi necessarie"
+            }// fine del blocco if-else
+        } else {
+            flash.error = 'Devi essere loggato per effettuare un upload di pagine sul server wiki'
+        }// fine del blocco if-else
+        redirect(action: 'list')
+    } // fine del metodo
+
+    def list() {
+        redirect(action: 'index', params: params)
     } // fine del metodo
 
     def index(Integer max) {
@@ -78,7 +100,29 @@ class LocalitaController {
     } // fine del metodo
 
     def show(Localita localitaInstance) {
-        respond localitaInstance
+        ArrayList menuExtra
+        def noMenuCreate = true
+
+        //--selezione dei menu extra
+        //--solo azione e di default controller=questo; classe e titolo vengono uguali
+        //--mappa con [cont:'controller', action:'metodo', icon:'iconaImmagine', title:'titoloVisibile']
+        if (localitaInstance) {
+            menuExtra = [
+                    [cont: 'localita', action: "uploadSingolaLocalita/${localitaInstance.id}", icon: 'database', title: 'UploadSingolaLocalita'],
+            ]
+        } else {
+            menuExtra = []
+        }// fine del blocco if-else
+
+        // fine della definizione
+
+        //--presentazione della view (show), secondo il modello
+        //--menuExtra può essere nullo o vuoto
+        render(view: 'show', model: [
+                localitaInstance: localitaInstance,
+                menuExtra      : menuExtra,
+                noMenuCreate   : noMenuCreate],
+                params: params)
     } // fine del metodo
 
     def create() {

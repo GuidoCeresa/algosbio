@@ -262,10 +262,6 @@ class CognomeController {
         redirect(action: 'list')
     } // fine del metodo
 
-    def list() {
-        redirect(action: 'index', params: params)
-    } // fine del metodo
-
     //--elabora e crea le liste del cognome indicato e le uploada sul server wiki
     //--passa al metodo effettivo senza nessun dialogo di conferma
     def uploadSingoloCognome(Long id) {
@@ -282,6 +278,10 @@ class CognomeController {
             flash.error = 'Devi essere loggato per effettuare un upload di pagine sul server wiki'
         }// fine del blocco if-else
         redirect(action: 'list')
+    } // fine del metodo
+
+    def list() {
+        redirect(action: 'index', params: params)
     } // fine del metodo
 
     def index(Integer max) {
