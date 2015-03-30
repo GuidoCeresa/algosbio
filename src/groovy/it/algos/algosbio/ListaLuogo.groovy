@@ -118,6 +118,20 @@ class ListaLuogo extends ListaBio {
     }// fine del metodo
 
     /**
+     * Costruisce una lista di biografie
+     */
+    @Override
+    protected elaboraListaBiografie() {
+        Localita localita = getLocalita()
+
+        if (localita) {
+            listaBiografie = BioGrails.findAllByLuogoNatoLink(localita, [sort: 'forzaOrdinamento'])
+        }// fine del blocco if
+
+        super.elaboraListaBiografie()
+    }// fine del metodo
+
+    /**
      * Elabora e crea la lista del luogo indicato e la uploada sul server wiki
      */
     public static boolean uploadLocalita(Localita localita, BioService bioService) {

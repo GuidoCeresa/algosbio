@@ -61,7 +61,7 @@ class BioService {
     def eventoService
     def bioWikiService
     def antroponimoService
-    def localitaService
+    def cognomeService
 
     private static boolean pagineMultiple = true // controllo e caricamente singolo piuttosto che a pacchetto
 
@@ -322,6 +322,7 @@ class BioService {
             bioGrails.luogoNatoLink = LocalitaService.getLuogoNascita(bioWiki)
             bioGrails.luogoMortoLink = LocalitaService.getLuogoMorte(bioWiki)
             bioGrails.nomeLink = antroponimoService.getAntroponimo(bioWiki.nome)
+            bioGrails.cognomeLink = cognomeService.getCognome(bioWiki.cognome)
 //            bioGrails.save(flush: false)
         }// fine del blocco if
 

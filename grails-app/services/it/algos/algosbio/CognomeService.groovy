@@ -861,14 +861,13 @@ class CognomeService {
         return testoTitolo
     }// fine del metodo
 
-
     //costruisce il testo della tabella
     private static String getListeBody(ArrayList listaVoci) {
         String testoTabella
         Map mappa = new HashMap()
         ArrayList titoli = new ArrayList()
-        titoli.add(LibWiki.setBold('Cognome') )
-        titoli.add(LibWiki.setBold('Voci') )
+        titoli.add(LibWiki.setBold('Cognome'))
+        titoli.add(LibWiki.setBold('Voci'))
 
         mappa.put(WikiLib.MAPPA_TITOLI, titoli)
         mappa.put(WikiLib.MAPPA_LISTA, listaVoci)
@@ -903,6 +902,50 @@ class CognomeService {
         return testoFooter
     }// fine del metodo
 
+    /**
+     * Elabora il singolo cognome
+     * Elimina caratteri 'anomali' dal cognome
+     */
+    private static String check(String cognomeIn) {
+        String cognomeOut = cognomeIn
+
+        return cognomeOut
+    }// fine del metodo
+
+    private static numeroVociCheUsanoNome(String nome) {
+        return BioGrails.countByCognome(nome)
+    }// fine del metodo
+
+    /**
+     * Ritorna il cognome dal link alla voce
+     * Se non esiste, lo crea
+     */
+    public Cognome getCognome(String nomeDaControllare) {
+        Cognome cognome = null
+        String nome = ''
+        int soglia = Pref.getInt(LibBio.SOGLIA_COGNOMI)
+        int voci = 0
+
+        if (nomeDaControllare) {
+            nome = check(nomeDaControllare)
+        }// fine del blocco if
+
+        if (nome) {
+            voci = numeroVociCheUsanoNome(nome)
+        }// fine del blocco if
+
+        if (nome) {
+            cognome = Cognome.findByTesto(nome)
+            if (!cognome) {
+                if (voci > soglia) {
+                    cognome = new Cognome(testo: nome, voci: voci)
+                    cognome.save(flush: true)
+                }// fine del blocco if
+            }// fine del blocco if
+        }// fine del blocco if
+
+        return cognome
+    } // fine del metodo
 
     /**
      * creazione delle liste partendo da BioGrails

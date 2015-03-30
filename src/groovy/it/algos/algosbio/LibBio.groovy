@@ -135,6 +135,7 @@ class LibBio {
     private static String[] TAG_ALL_ARABI = ['Abd', "'Abd", "ʿAbd", 'Abu', "'Abu", 'Abū', "'Abū", 'Ibn', "'Ibn", "ʿAbd"]
     private static String[] TAG_ALL_TITOLI = ['Lady', 'Sir', 'Maestro', 'De', 'Van']
     private static String[] TAG_ALL_NOMI = ['Gian']
+    private static String[] TAG_ALL_NOMI_CINESI = ['Zhang']
 
     /**
      * Recupera la mappa dalla pagina wiki
@@ -1318,7 +1319,7 @@ class LibBio {
     public static boolean checkNome(String nome) {
         boolean accettato = true
         String[] tagIniziale = TAG_INI_NUMERI + TAG_INI_CHAR + TAG_INI_APICI + TAG_INI_NOMI
-        String[] tagAll = TAG_ALL_ARABI + TAG_ALL_TITOLI + TAG_ALL_NOMI
+        String[] tagAll = TAG_ALL_ARABI + TAG_ALL_TITOLI + TAG_ALL_NOMI + TAG_ALL_NOMI_CINESI
         String[] tag = tagIniziale + tagAll
         String spazio = ' '
 

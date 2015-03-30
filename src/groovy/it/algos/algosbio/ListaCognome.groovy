@@ -208,7 +208,7 @@ class ListaCognome extends ListaBio {
         Cognome cognome = getCognome()
 
         if (cognome) {
-            listaBiografie = BioGrails.findAllByCognome(cognome.testo, [sort: 'forzaOrdinamento'])
+            listaBiografie = BioGrails.findAllByCognomeLink(cognome, [sort: 'forzaOrdinamento'])
         }// fine del blocco if
 
         super.elaboraListaBiografie()

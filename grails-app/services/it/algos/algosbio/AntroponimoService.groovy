@@ -312,11 +312,11 @@ class AntroponimoService {
     }// fine del metodo
 
 
-    private int numeroVociCheUsanoNome(String nome) {
+    private static int numeroVociCheUsanoNome(String nome) {
         return numeroVociCheUsanoNome(nome, null)
     }// fine del metodo
 
-    private numeroVociCheUsanoNome(String nome, Antroponimo antroponimo) {
+    private static numeroVociCheUsanoNome(String nome, Antroponimo antroponimo) {
         int numVoci = 0
         String query = ''
         String sep = "'"
@@ -335,17 +335,6 @@ class AntroponimoService {
             lista?.each {
                 numVoci += numeroVociCheUsanoAntroponimo(it.nome, antroponimo)
             } // fine del ciclo each
-//            query += "update BioGrails set nomeLink="
-//            query += antroponimo.id
-//            query += " where nome="
-//            query += sep + nome + sep
-//            query += " or nome like "
-//            query += sep + nomeWillCard + sep
-//            try { // prova ad eseguire il codice
-//                numVoci = BioGrails.executeUpdate(query)
-//            } catch (Exception unErrore) { // intercetta l'errore
-//                log.warn 'Errore numeroVociCheUsanoNome = ' + nome
-//            }// fine del blocco try-catch
         } else {
             numVoci = BioGrails.countByNomeLikeOrNomeLike(nome, nomeWillCard)
         }// fine del blocco if-else
@@ -353,7 +342,7 @@ class AntroponimoService {
         return numVoci
     }// fine del metodo
 
-    private numeroVociCheUsanoAntroponimo(String nome, Antroponimo antroponimo) {
+    private static numeroVociCheUsanoAntroponimo(String nome, Antroponimo antroponimo) {
         int numVoci = 0
         String query = ''
         String sep = "'"
@@ -374,7 +363,7 @@ class AntroponimoService {
         try { // prova ad eseguire il codice
             numVoci = BioGrails.executeUpdate(query)
         } catch (Exception unErrore) { // intercetta l'errore
-            log.warn 'Errore numeroVociCheUsanoNome = ' + nome
+//            log.warn 'Errore numeroVociCheUsanoNome = ' + nome
         }// fine del blocco try-catch
 
         return numVoci
@@ -568,7 +557,7 @@ class AntroponimoService {
                 antroponimo.voci = numVoci
                 antroponimo.save()
             } else {
-                //@todo non riesco a far funzionare la poulizia dei links e successiva cancellazione del record
+                //@todo non riesco a far funzionare la pulizia dei links e successiva cancellazione del record
                 numeroVociCheUsanoAntroponimo(nome, null)
                 antroponimo.voceRiferimento = null
                 antroponimo.save()
@@ -665,22 +654,23 @@ class AntroponimoService {
         Antroponimo antro
         ArrayList lista = new ArrayList()
         String nome
-        int voci
-        String vociTxt
+//        String vociTxt
         def nonServe
+        int numVoci
 
         listaNomi = Antroponimo.findAllByVociGreaterThan(soglia, [sort: 'voci', order: 'desc'])
         listaNomi?.each {
-            vociTxt = ''
+//            vociTxt = ''
+            numVoci = 0
             antro = (Antroponimo) it
             nome = antro.nome
-            voci = antro.voci
-            if (voci > taglio) {
+            numVoci = BioGrails.countByNomeLink(antro)
+            if (numVoci > taglio) {
                 nome = "'''[[Persone di nome " + nome + "|" + nome + "]]'''"
             }// fine del blocco if-else
             k++
-            vociTxt = LibTesto.formatNum((String) voci)
-            lista.add([nome, voci])
+//            vociTxt = LibTesto.formatNum(numVoci)
+            lista.add([nome, numVoci])
         } // fine del ciclo each
 
         testo += getListeHead(k)
@@ -730,13 +720,8 @@ class AntroponimoService {
         String testoTabella
         Map mappa = new HashMap()
         ArrayList titoli = new ArrayList()
-        titoli.add(LibWiki.setBold('Nome') )
-        titoli.add(LibWiki.setBold('Voci') )
-
-//        mappa.put('lista', listaVoci)
-//        mappa.put('width', '160')
-//        mappa.put('align', TipoAllineamento.secondaSinistra)
-//        testoTabella = WikiLib.creaTabellaSortable(mappa)
+        titoli.add(LibWiki.setBold('Nome'))
+        titoli.add(LibWiki.setBold('Voci'))
 
         mappa.put(WikiLib.MAPPA_TITOLI, titoli)
         mappa.put(WikiLib.MAPPA_LISTA, listaVoci)
@@ -1635,6 +1620,7 @@ class AntroponimoService {
         String testo = ''
         String nome = antro.nome
         String tag = tagTitolo + nome
+        int numVoci
 
         if (nome) {
             testo += '*'
@@ -1644,9 +1630,10 @@ class AntroponimoService {
             testo += nome
             testo += ']]'
             if (Pref.getBool(LibBio.USA_OCCORRENZE_ANTROPONIMI)) {
+                numVoci = BioGrails.countByNomeLink(antro)
                 testo += ' ('
                 testo += "'''"
-                testo += LibTesto.formatNum(antro.voci)
+                testo += LibTesto.formatNum(numVoci)
                 testo += "'''"
                 testo += ' )'
             }// fine del blocco if
@@ -1668,7 +1655,7 @@ class AntroponimoService {
         testo += aCapo
         testo += '*[[Progetto:Antroponimi/Nomi doppi]]'
         testo += aCapo
-        testo += '*[[Progetto:Antroponimi/Liste]]'
+        testo += '*[[Progetto:Antroponimi/Liste nomi]]'
         testo += aCapo
         testo += '*[[Progetto:Antroponimi/Didascalie]]'
         testo += aCapo
