@@ -354,7 +354,7 @@ class CognomeService {
         } // fine del ciclo each
         log.info 'Ricalcolati tutti i cognomi'
 
-        cancellaControllati()
+//        cancellaControllati()
     }// fine del metodo
 
     private static void cancellaControllati() {
@@ -740,6 +740,7 @@ class CognomeService {
         String testo = ''
         String nome = cognome.testo
         String tag = tagTitolo + nome
+int numVoci
 
         if (nome) {
             testo += '*'
@@ -749,9 +750,10 @@ class CognomeService {
             testo += nome
             testo += ']]'
             if (Pref.getBool(LibBio.USA_OCCORRENZE_ANTROPONIMI)) {
+                numVoci = ListaCognome.getNumVoci(cognome)
                 testo += ' ('
                 testo += "'''"
-                testo += LibTesto.formatNum(cognome.voci)
+                testo += LibTesto.formatNum(numVoci)
                 testo += "'''"
                 testo += ' )'
             }// fine del blocco if
@@ -799,7 +801,7 @@ class CognomeService {
         Cognome cognome
         ArrayList lista = new ArrayList()
         String nome
-        int voci
+        int numVoci
         String vociTxt
         def nonServe
 
@@ -808,13 +810,13 @@ class CognomeService {
             vociTxt = ''
             cognome = (Cognome) it
             nome = cognome.testo
-            voci = cognome.voci
-            if (voci > taglio) {
+            numVoci = ListaCognome.getNumVoci(cognome)
+            if (numVoci > taglio) {
                 nome = "'''[[Persone di cognome " + nome + "|" + nome + "]]'''"
             }// fine del blocco if-else
             k++
-            vociTxt = LibTesto.formatNum((String) voci)
-            lista.add([nome, voci])
+            vociTxt = LibTesto.formatNum(numVoci)
+            lista.add([nome, numVoci])
         } // fine del ciclo each
 
         testo += getListeHead(k)

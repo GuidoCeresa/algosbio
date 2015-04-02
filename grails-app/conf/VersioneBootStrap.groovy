@@ -1018,6 +1018,30 @@ class VersioneBootStrap {
             versioneService.newVersione('Preferenze', 'MAX_VOCI_PARAGRAFO_COGNOMI di default 50')
         }// fine del blocco if
 
+        //--creata una nuova preferenza
+        if (versioneService && versioneService.installaVersione(108)) {
+            Pref pref = new Pref()
+            pref.ordine = Pref.list().size() + 1
+            pref.code = LibBio.USA_NOME_LINK
+            pref.descrizione = "Cerca i record di BioGrails che usano il campo nomeLInk invece che il campo nome"
+            pref.type = Type.booleano
+            pref.bool = true
+            pref.save(flush: true)
+            versioneService.newVersione('Preferenze', 'USA_NOME_LINK di default true')
+        }// fine del blocco if
+
+        //--creata una nuova preferenza
+        if (versioneService && versioneService.installaVersione(109)) {
+            Pref pref = new Pref()
+            pref.ordine = Pref.list().size() + 1
+            pref.code = LibBio.USA_COGNOME_LINK
+            pref.descrizione = "Cerca i record di BioGrails che usano il campo cognomeLInk invece che il campo cognome"
+            pref.type = Type.booleano
+            pref.bool = false
+            pref.save(flush: true)
+            versioneService.newVersione('Preferenze', 'USA_COGNOME_LINK di default false')
+        }// fine del blocco if
+
     }// fine della closure
 
 

@@ -208,10 +208,28 @@ class ListaCognome extends ListaBio {
         Cognome cognome = getCognome()
 
         if (cognome) {
-            listaBiografie = BioGrails.findAllByCognomeLink(cognome, [sort: 'forzaOrdinamento'])
+            if (Pref.getBool(LibBio.USA_COGNOME_LINK)) {
+                listaBiografie = BioGrails.findAllByCognomeLink(cognome, [sort: 'forzaOrdinamento'])
+            } else {
+                listaBiografie = BioGrails.findAllByCognome(cognome.testo, [sort: 'forzaOrdinamento'])
+            }// fine del blocco if-else
         }// fine del blocco if
 
         super.elaboraListaBiografie()
+    }// fine del metodo
+
+    public static int getNumVoci(Cognome cognome) {
+        int numVoci = 0
+
+        if (cognome) {
+            if (Pref.getBool(LibBio.USA_COGNOME_LINK)) {
+                numVoci = BioGrails.countByCognomeLink(cognome)
+            } else {
+                numVoci = BioGrails.countByCognome(cognome.testo)
+            }// fine del blocco if-else
+        }// fine del blocco if
+
+        return numVoci
     }// fine del metodo
 
     /**

@@ -111,6 +111,8 @@ class LibBio {
     public static final String USA_GIORNI_ANNI_RAGGRUPPATI = 'usaGiorniAnniRaggruppati'
     public static final String USA_SOTTOPAGINA_ALTRI = 'usaSottopaginaAltri'
     public static final String USA_RICALCOLO_NOMI = 'usaRicalcoloNomi'
+    public static final String USA_NOME_LINK = 'usaNomeLink'
+    public static final String USA_COGNOME_LINK = 'usaCognomeLink'
 
     // campi di una mappa
     public static final String MAPPA_TITOLO_PARAGRAFO = 'titoloParagrafo'

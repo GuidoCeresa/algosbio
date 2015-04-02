@@ -231,10 +231,28 @@ class ListaNome extends ListaBio {
         Antroponimo antroponimo = getAntroponimo()
 
         if (antroponimo) {
-            listaBiografie = BioGrails.findAllByNomeLink(antroponimo, [sort: 'forzaOrdinamento'])
+            if (Pref.getBool(LibBio.USA_NOME_LINK)) {
+                listaBiografie = BioGrails.findAllByNomeLink(antroponimo, [sort: 'forzaOrdinamento'])
+            } else {
+                listaBiografie = BioGrails.findAllByNome(antroponimo.nome, [sort: 'forzaOrdinamento'])
+            }// fine del blocco if-else
         }// fine del blocco if
 
         super.elaboraListaBiografie()
+    }// fine del metodo
+
+    public static int getNumVoci(Antroponimo antroponimo) {
+        int numVoci = 0
+
+        if (antroponimo) {
+            if (Pref.getBool(LibBio.USA_NOME_LINK)) {
+                numVoci = BioGrails.countByNomeLink(antroponimo)
+            } else {
+                numVoci = BioGrails.countByNome(antroponimo.nome)
+            }// fine del blocco if-else
+        }// fine del blocco if
+
+        return numVoci
     }// fine del metodo
 
     /**

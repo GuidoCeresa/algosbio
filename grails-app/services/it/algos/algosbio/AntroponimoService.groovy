@@ -664,7 +664,7 @@ class AntroponimoService {
             numVoci = 0
             antro = (Antroponimo) it
             nome = antro.nome
-            numVoci = BioGrails.countByNomeLink(antro)
+            numVoci = ListaNome.getNumVoci(antro)
             if (numVoci > taglio) {
                 nome = "'''[[Persone di nome " + nome + "|" + nome + "]]'''"
             }// fine del blocco if-else
@@ -1630,7 +1630,7 @@ class AntroponimoService {
             testo += nome
             testo += ']]'
             if (Pref.getBool(LibBio.USA_OCCORRENZE_ANTROPONIMI)) {
-                numVoci = BioGrails.countByNomeLink(antro)
+                numVoci = ListaNome.getNumVoci(antro)
                 testo += ' ('
                 testo += "'''"
                 testo += LibTesto.formatNum(numVoci)
