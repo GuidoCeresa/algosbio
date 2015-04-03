@@ -1767,6 +1767,17 @@ class AntroponimoService {
         return nomeNormalizzato
     }// fine del metodo
 
+    public boolean isValido(Antroponimo antro) {
+        boolean valido = false
+
+        if (antro) {
+            valido = LibBio.checkNome(antro.nome)
+        }// fine del blocco if
+
+        return valido
+    }// fine del metodo
+
+
     /**
      * creazione delle liste partendo da BioGrails
      * elabora e crea tutti i nomi
@@ -1780,8 +1791,10 @@ class AntroponimoService {
             antroponimo = (Antroponimo) it
 
             if (antroponimo.isVocePrincipale) {
-                if (ListaNome.uploadNome(it, bioService)) {
-                    nomiModificati++
+                if (isValido(antroponimo)) {
+                    if (ListaNome.uploadNome(it, bioService)) {
+                        nomiModificati++
+                    }// fine del blocco if
                 }// fine del blocco if
             }// fine del blocco if
 
