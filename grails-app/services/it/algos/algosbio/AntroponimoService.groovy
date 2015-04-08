@@ -642,10 +642,142 @@ class AntroponimoService {
         paginaDidascalie()
     }// fine del metodo
 
+    /**
+     * Crea la pagina riepilogativa
+     */
+    public paginaNomi() {
+        boolean debug = Pref.getBool(LibBio.DEBUG, false)
+        String testo = ''
+        String titolo = progetto + 'Nomi'
+        String summary = 'Biobot'
+        ArrayList<Antroponimo> listaVoci = getListaAntroponimi()
+        def nonServe
+
+        if (listaVoci) {
+            testo += getNomiHead()
+            testo += getNomiBody(listaVoci)
+            testo += getNomiFooter()
+        }// fine del blocco if
+
+        //registra la pagina
+        if (testo) {
+            testo = testo.trim()
+            if (debug) {
+                nonServe = new Edit('Utente:Biobot/2', testo, summary)
+            } else {
+                nonServe = new Edit(titolo, testo, summary)
+            }// fine del blocco if-else
+        }// fine del blocco if
+        def stop
+    }// fine del metodo
+
+
+    public String getNomiHead() {
+        String testo = ''
+        String dataCorrente = LibTime.getGioMeseAnnoLungo(new Date())
+
+        testo += '__NOTOC__'
+        testo += '<noinclude>'
+        testo += "{{StatBio|data=$dataCorrente}}"
+        testo += '</noinclude>'
+        testo += aCapo
+
+        return testo
+    }// fine del metodo
+
+
+    public String getNomiBody(ArrayList<Antroponimo> listaVoci) {
+        String testo = ''
+        int taglio = Pref.getInt(LibBio.TAGLIO_ANTROPONIMI)
+        Antroponimo antro
+        def ricorrenze = LibTesto.formatNum(taglio)
+
+        testo += '==Nomi=='
+        testo += aCapo
+        testo += 'Elenco dei '
+        testo += "''' "
+        testo += LibTesto.formatNum(listaVoci.size())
+        testo += "'''"
+        testo += ' nomi che hanno più di '
+        testo += "'''"
+        testo += ricorrenze
+        testo += "'''"
+        testo += ' ricorrenze nelle voci biografiche'
+        testo += aCapo
+
+        testo += aCapo
+        testo += '{{Div col|cols=4}}'
+        if (listaVoci) {
+            listaVoci.each {
+                antro = it
+                testo += aCapo
+                testo += this.getRiga(antro)
+            }// fine del ciclo each
+        }// fine del blocco if
+        testo += aCapo
+        testo += '{{Div col end}}'
+        testo += aCapo
+
+        return testo
+    }// fine del metodo
+
+    public String getRiga(Antroponimo antro) {
+        String testo = ''
+        String nome = antro.nome
+        String tag = tagTitolo + nome
+        int numVoci
+
+        if (nome) {
+            testo += '*'
+            testo += '[['
+            testo += tag
+            testo += '|'
+            testo += nome
+            testo += ']]'
+            if (Pref.getBool(LibBio.USA_OCCORRENZE_ANTROPONIMI)) {
+                numVoci = ListaNome.getNumVoci(antro)
+                testo += ' ('
+                testo += "'''"
+                testo += LibTesto.formatNum(numVoci)
+                testo += "'''"
+                testo += ' )'
+            }// fine del blocco if
+            testo += aCapo
+        }// fine del blocco if
+
+        return testo.trim()
+    }// fine del metodo
+
+    public String getNomiFooter() {
+        String testo = ''
+
+        testo += getCriteri()
+
+        testo += aCapo
+        testo += '==Voci correlate=='
+        testo += aCapo
+        testo += '*[[Progetto:Antroponimi]]'
+        testo += aCapo
+        testo += '*[[Progetto:Antroponimi/Nomi doppi]]'
+        testo += aCapo
+        testo += '*[[Progetto:Antroponimi/Liste nomi]]'
+        testo += aCapo
+        testo += '*[[Progetto:Antroponimi/Didascalie]]'
+        testo += aCapo
+        testo += aCapo
+        testo += '<noinclude>'
+        testo += '[[Categoria:Liste di persone per nome| ]]'
+        testo += aCapo
+        testo += '[[Categoria:Progetto Antroponimi|Nomi]]'
+        testo += '</noinclude>'
+
+        return testo
+    }// fine del metodo
+
     def paginaListe() {
         boolean debug = Pref.getBool(LibBio.DEBUG, false)
         int taglio = Pref.getInt(LibBio.TAGLIO_ANTROPONIMI)
-        int soglia = Pref.getInt(LibBio.SOGLIA_ANTROPONIMI)
+        ArrayList<Antroponimo> listaVoci = getListaAntroponimi(Pref.getInt(LibBio.SOGLIA_ANTROPONIMI))
         String testo = ''
         String titolo = progetto + 'Liste nomi'
         String summary = LibBio.getSummary()
@@ -658,9 +790,7 @@ class AntroponimoService {
         def nonServe
         int numVoci
 
-        listaNomi = Antroponimo.findAllByVociGreaterThan(soglia, [sort: 'voci', order: 'desc'])
-        listaNomi?.each {
-//            vociTxt = ''
+        listaVoci?.each {
             numVoci = 0
             antro = (Antroponimo) it
             nome = antro.nome
@@ -812,21 +942,44 @@ class AntroponimoService {
 
     //--costruisce una lista di nomi
     public static ArrayList<String> getListaNomi() {
-        ArrayList<String> listaNomi
-        int taglio = Pref.getInt(LibBio.TAGLIO_ANTROPONIMI)
-        String query = "select nome from Antroponimo where voci>'${taglio}' order by nome asc"
+        ArrayList<String> listaNomi = null
+        ArrayList<Antroponimo> listaAntroponimi
 
         //esegue la query
-        listaNomi = (ArrayList<String>) Antroponimo.executeQuery(query)
+        listaAntroponimi = getListaAntroponimi()
+
+        if (listaAntroponimi) {
+            listaNomi = new ArrayList<String>()
+            listaAntroponimi.each {
+                listaNomi.add(it.nome)
+            } // fine del ciclo each
+        }// fine del blocco if
 
         return listaNomi
     }// fine del metodo
 
     //--costruisce una lista di nomi
     public static ArrayList<Antroponimo> getListaAntroponimi() {
-        int taglio = Pref.getInt(LibBio.TAGLIO_ANTROPONIMI)
+        return getListaAntroponimi(Pref.getInt(LibBio.TAGLIO_ANTROPONIMI))
+    }// fine del metodo
 
-        return Antroponimo.findAllByVociGreaterThan(taglio, [sort: 'nome', order: 'asc'])
+    //--costruisce una lista di nomi
+    public static ArrayList<Antroponimo> getListaAntroponimi(int sogliaTaglio) {
+        ArrayList<Antroponimo> lista = null
+        ArrayList<Antroponimo> listaTmp
+
+        listaTmp = Antroponimo.findAllByVociGreaterThan(sogliaTaglio, [sort: 'nome', order: 'asc'])
+
+        if (listaTmp) {
+            lista = new ArrayList<Antroponimo>()
+            listaTmp.each {
+                if (LibBio.checkNome(it.nome)) {
+                    lista.add(it)
+                }// fine del blocco if
+            } // fine del ciclo each
+        }// fine del blocco if
+
+        return lista
     }// fine del metodo
 
     //--costruisce una lista di biografie che 'usano' il nome
@@ -1537,138 +1690,6 @@ class AntroponimoService {
         return testo
     }// fine della closure
 
-    /**
-     * Crea la pagina riepilogativa
-     */
-    public paginaNomi() {
-        boolean debug = Pref.getBool(LibBio.DEBUG, false)
-        ArrayList<Antroponimo> listaVoci = getListaAntroponimi()
-        String testo = ''
-        String titolo = progetto + 'Nomi'
-        String summary = 'Biobot'
-        def nonServe
-
-        if (listaVoci) {
-            testo += getNomiHead()
-            testo += getNomiBody(listaVoci)
-            testo += getNomiFooter()
-        }// fine del blocco if
-
-        //registra la pagina
-        if (testo) {
-            testo = testo.trim()
-            if (debug) {
-                nonServe = new Edit('Utente:Biobot/2', testo, summary)
-            } else {
-                nonServe = new Edit(titolo, testo, summary)
-            }// fine del blocco if-else
-        }// fine del blocco if
-        def stop
-    }// fine del metodo
-
-
-    public String getNomiHead() {
-        String testo = ''
-        String dataCorrente = LibTime.getGioMeseAnnoLungo(new Date())
-
-        testo += '__NOTOC__'
-        testo += '<noinclude>'
-        testo += "{{StatBio|data=$dataCorrente}}"
-        testo += '</noinclude>'
-        testo += aCapo
-
-        return testo
-    }// fine del metodo
-
-
-    public String getNomiBody(ArrayList<Antroponimo> listaVoci) {
-        String testo = ''
-        int taglio = Pref.getInt(LibBio.TAGLIO_ANTROPONIMI)
-        Antroponimo antro
-        def ricorrenze = LibTesto.formatNum(taglio)
-
-        testo += '==Nomi=='
-        testo += aCapo
-        testo += 'Elenco dei '
-        testo += "''' "
-        testo += LibTesto.formatNum(listaVoci.size())
-        testo += "'''"
-        testo += ' nomi che hanno più di '
-        testo += "'''"
-        testo += ricorrenze
-        testo += "'''"
-        testo += ' ricorrenze nelle voci biografiche'
-        testo += aCapo
-
-        testo += aCapo
-        testo += '{{Div col|cols=4}}'
-        if (listaVoci) {
-            listaVoci.each {
-                antro = it
-                testo += aCapo
-                testo += this.getRiga(antro)
-            }// fine del ciclo each
-        }// fine del blocco if
-        testo += aCapo
-        testo += '{{Div col end}}'
-        testo += aCapo
-
-        return testo
-    }// fine del metodo
-
-    public String getRiga(Antroponimo antro) {
-        String testo = ''
-        String nome = antro.nome
-        String tag = tagTitolo + nome
-        int numVoci
-
-        if (nome) {
-            testo += '*'
-            testo += '[['
-            testo += tag
-            testo += '|'
-            testo += nome
-            testo += ']]'
-            if (Pref.getBool(LibBio.USA_OCCORRENZE_ANTROPONIMI)) {
-                numVoci = ListaNome.getNumVoci(antro)
-                testo += ' ('
-                testo += "'''"
-                testo += LibTesto.formatNum(numVoci)
-                testo += "'''"
-                testo += ' )'
-            }// fine del blocco if
-            testo += aCapo
-        }// fine del blocco if
-
-        return testo.trim()
-    }// fine del metodo
-
-    public String getNomiFooter() {
-        String testo = ''
-
-        testo += getCriteri()
-
-        testo += aCapo
-        testo += '==Voci correlate=='
-        testo += aCapo
-        testo += '*[[Progetto:Antroponimi]]'
-        testo += aCapo
-        testo += '*[[Progetto:Antroponimi/Nomi doppi]]'
-        testo += aCapo
-        testo += '*[[Progetto:Antroponimi/Liste nomi]]'
-        testo += aCapo
-        testo += '*[[Progetto:Antroponimi/Didascalie]]'
-        testo += aCapo
-        testo += aCapo
-        testo += '<noinclude>'
-        testo += '[[Categoria:Liste di persone per nome| ]]'
-        testo += aCapo
-        testo += '[[Categoria:Progetto Antroponimi|Nomi]]'
-        testo += '</noinclude>'
-
-        return testo
-    }// fine del metodo
-
 
     public String getCriteri() {
         String testo = ''
@@ -1767,7 +1788,7 @@ class AntroponimoService {
         return nomeNormalizzato
     }// fine del metodo
 
-    public boolean isValido(Antroponimo antro) {
+    public static boolean isValido(Antroponimo antro) {
         boolean valido = false
 
         if (antro) {
@@ -1776,7 +1797,6 @@ class AntroponimoService {
 
         return valido
     }// fine del metodo
-
 
     /**
      * creazione delle liste partendo da BioGrails
@@ -1791,10 +1811,8 @@ class AntroponimoService {
             antroponimo = (Antroponimo) it
 
             if (antroponimo.isVocePrincipale) {
-                if (isValido(antroponimo)) {
-                    if (ListaNome.uploadNome(it, bioService)) {
-                        nomiModificati++
-                    }// fine del blocco if
+                if (ListaNome.uploadNome(it, bioService)) {
+                    nomiModificati++
                 }// fine del blocco if
             }// fine del blocco if
 

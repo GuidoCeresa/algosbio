@@ -10,19 +10,19 @@ import it.algos.algosbio.LibBio
  * Date: 31-1-14
  * Time: 20:45
  */
-class AntroponimoJob extends BioCrono {
+class CognomeJob extends BioCrono {
 
     //--codifica dell'orario di attivazione
     //--  1,   2,   3,   4,   5,   6,   7
     //--SUN, MON, TUE, WED, THU, FRI, SAT
-    private static String antroponimiAllSettimane = "0 0 $ORA_INIZIO ? * $GIORNO_NOMI" //--tutti i sabati
+    private static String cognomiAllSettimane = "0 0 $ORA_INIZIO ? * $GIORNO_COGNOMI" //--tutte le domeniche
 
     static triggers = {
-        cron name: 'antroponimiAllSettimane', cronExpression: antroponimiAllSettimane
+        cron name: 'cognomiAllSettimane', cronExpression: cognomiAllSettimane
     }// fine del metodo statico
 
     def execute() {
-        super.uploadAntroponimi()
+        super.uploadCognomi()
     }// fine del metodo execute
 
 } // end of Job Class

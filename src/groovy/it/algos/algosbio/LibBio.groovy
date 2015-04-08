@@ -38,6 +38,7 @@ class LibBio {
     public static final String USA_CRONO_UPLOAD = 'usaCronoUpload'
     public static final String USA_CRONO_ELABORA = 'usaCronoElabora'
     public static final String USA_CRONO_ANTROPONIMI = 'usaCronoAntroponimi'
+    public static final String USA_CRONO_COGNOMI = 'usaCronoCognomi'
     public static final String USA_CRONO_ATTIVITA = 'usaCronoAttivita'
     public static final String CRONO_EXPRESSION_ATTIVITA = 'cronExpressionAttivita'
     public static final String USA_CRONO_NAZIONALITA = 'usaCronoNazionalita'

@@ -15,9 +15,10 @@ class BioCrono {
     //--codifica dell'orario di attivazione
     //--  1,   2,   3,   4,   5,   6,   7
     //--SUN, MON, TUE, WED, THU, FRI, SAT
-    protected static String GIORNO_NOMI = 'TUE' //martedì
-    protected static String GIORNO_ATT = 'THU' //giovedì
-    protected static String GIORNO_NAZ = 'SAT' //sabato
+    protected static String GIORNO_ATT = 'TUE' //martedi
+    protected static String GIORNO_NAZ = 'THU' //giovedi
+    protected static String GIORNO_NOMI = 'SAT' //sabato
+    protected static String GIORNO_COGNOMI = 'SUN' //domenica
 
     // orario di inizio delle elaborazioni mattutine
     protected static String ORA_INIZIO = '7'
@@ -31,6 +32,7 @@ class BioCrono {
     def professioneService
     def genereService
     def antroponimoService
+    def cognomeService
 
     protected uploadAttivitaPrimaMeta() {
         uploadaMetaAttivita(true)
@@ -95,6 +97,8 @@ class BioCrono {
 
         //--flag di attivazione
         if (Pref.getBool(LibBio.USA_CRONO_ANTROPONIMI)) {
+            spedisceMail('Inizio elaborazione dei nomi')
+
             //--ricontrolla la lista delle professioni
             if (professioneService) {
                 professioneService.download()
@@ -127,6 +131,32 @@ class BioCrono {
                 antroponimoService.creaPagineControllo()
             }// fine del blocco if
         }// fine del blocco if
+    }// fine del metodo execute
+
+    protected uploadCognomi() {
+        //--flag di attivazione
+        if (Pref.getBool(LibBio.USA_CRONO_COGNOMI)) {
+            spedisceMail('Inizio elaborazione dei cognomi')
+
+            //--aggiorna il numero di voci per ogni cognome della lista (semi-statica)
+            if (cognomeService) {
+                cognomeService.ricalcola()
+            }// fine del blocco if
+
+            //--costruisce una lista di cognomi
+            if (Pref.getBool(LibBio.USA_LISTE_BIO_COGNOMI)) {
+                if (cognomeService&&bioService) {
+                    cognomeService.uploadAllCognomi(bioService)
+                }// fine del blocco if
+            } else {
+            }// fine del blocco if-else
+
+            //--pagine di controllo
+            if (cognomeService) {
+                cognomeService.creaPagineControllo()
+            }// fine del blocco if
+        }// fine del blocco if
+
     }// fine del metodo execute
 
     private spedisceMail(String testo) {

@@ -1042,6 +1042,17 @@ class VersioneBootStrap {
             versioneService.newVersione('Preferenze', 'USA_COGNOME_LINK di default false')
         }// fine del blocco if
 
+        //--creata una nuova preferenza
+        if (versioneService && versioneService.installaVersione(110)) {
+            Pref pref = new Pref()
+            pref.ordine = Pref.list().size() + 1
+            pref.code = LibBio.USA_CRONO_COGNOMI
+            pref.descrizione = "Usa l'automatismo CRON per le liste di cognomi"
+            pref.type = Type.booleano
+            pref.bool = true
+            pref.save(flush: true)
+            versioneService.newVersione('Preferenze', 'USA_CRONO_COGNOMI di default true')
+        }// fine del blocco if
     }// fine della closure
 
 
