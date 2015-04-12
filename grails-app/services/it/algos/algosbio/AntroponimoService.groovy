@@ -650,7 +650,7 @@ class AntroponimoService {
         String testo = ''
         String titolo = progetto + 'Nomi'
         String summary = 'Biobot'
-        ArrayList<Antroponimo> listaVoci = getListaAntroponimi()
+        ArrayList<Antroponimo> listaVoci = getListaAntroponimiNomi()
         def nonServe
 
         if (listaVoci) {
@@ -777,16 +777,14 @@ class AntroponimoService {
     def paginaListe() {
         boolean debug = Pref.getBool(LibBio.DEBUG, false)
         int taglio = Pref.getInt(LibBio.TAGLIO_ANTROPONIMI)
-        ArrayList<Antroponimo> listaVoci = getListaAntroponimi(Pref.getInt(LibBio.SOGLIA_ANTROPONIMI))
+        ArrayList<Antroponimo> listaVoci = getListaAntroponimiVoci()
         String testo = ''
         String titolo = progetto + 'Liste nomi'
         String summary = LibBio.getSummary()
         int k = 0
-        def listaNomi
         Antroponimo antro
         ArrayList lista = new ArrayList()
         String nome
-//        String vociTxt
         def nonServe
         int numVoci
 
@@ -799,7 +797,6 @@ class AntroponimoService {
                 nome = "'''[[Persone di nome " + nome + "|" + nome + "]]'''"
             }// fine del blocco if-else
             k++
-//            vociTxt = LibTesto.formatNum(numVoci)
             lista.add([nome, numVoci])
         } // fine del ciclo each
 
@@ -938,48 +935,6 @@ class AntroponimoService {
         }// fine del blocco if
 
         def stop
-    }// fine del metodo
-
-    //--costruisce una lista di nomi
-    public static ArrayList<String> getListaNomi() {
-        ArrayList<String> listaNomi = null
-        ArrayList<Antroponimo> listaAntroponimi
-
-        //esegue la query
-        listaAntroponimi = getListaAntroponimi()
-
-        if (listaAntroponimi) {
-            listaNomi = new ArrayList<String>()
-            listaAntroponimi.each {
-                listaNomi.add(it.nome)
-            } // fine del ciclo each
-        }// fine del blocco if
-
-        return listaNomi
-    }// fine del metodo
-
-    //--costruisce una lista di nomi
-    public static ArrayList<Antroponimo> getListaAntroponimi() {
-        return getListaAntroponimi(Pref.getInt(LibBio.TAGLIO_ANTROPONIMI))
-    }// fine del metodo
-
-    //--costruisce una lista di nomi
-    public static ArrayList<Antroponimo> getListaAntroponimi(int sogliaTaglio) {
-        ArrayList<Antroponimo> lista = null
-        ArrayList<Antroponimo> listaTmp
-
-        listaTmp = Antroponimo.findAllByVociGreaterThan(sogliaTaglio, [sort: 'nome', order: 'asc'])
-
-        if (listaTmp) {
-            lista = new ArrayList<Antroponimo>()
-            listaTmp.each {
-                if (LibBio.checkNome(it.nome)) {
-                    lista.add(it)
-                }// fine del blocco if
-            } // fine del ciclo each
-        }// fine del blocco if
-
-        return lista
     }// fine del metodo
 
     //--costruisce una lista di biografie che 'usano' il nome
@@ -1796,6 +1751,58 @@ class AntroponimoService {
         }// fine del blocco if
 
         return valido
+    }// fine del metodo
+
+    //--costruisce una lista di nomi
+    public static ArrayList<String> getListaNomi() {
+        ArrayList<String> listaNomi = null
+        ArrayList<Antroponimo> listaAntroponimi
+
+        //esegue la query
+        listaAntroponimi = getListaAntroponimi()
+
+        if (listaAntroponimi) {
+            listaNomi = new ArrayList<String>()
+            listaAntroponimi.each {
+                listaNomi.add(it.nome)
+            } // fine del ciclo each
+        }// fine del blocco if
+
+        return listaNomi
+    }// fine del metodo
+
+    //--costruisce una lista di nomi
+    public static ArrayList<Antroponimo> getListaAntroponimi() {
+        return getListaAntroponimiNomi()
+    }// fine del metodo
+
+    //--costruisce una lista di nomi
+    public static ArrayList<Antroponimo> getListaAntroponimiNomi() {
+        return getListaAntroponimi(Pref.getInt(LibBio.TAGLIO_ANTROPONIMI), 'nome', 'asc')
+    }// fine del metodo
+
+    //--costruisce una lista di nomi
+    public static ArrayList<Antroponimo> getListaAntroponimiVoci() {
+        return getListaAntroponimi(Pref.getInt(LibBio.SOGLIA_ANTROPONIMI), 'voci', 'desc')
+    }// fine del metodo
+
+    //--costruisce una lista di nomi
+    public static ArrayList<Antroponimo> getListaAntroponimi(int sogliaTaglio, String sort, String order) {
+        ArrayList<Antroponimo> lista = null
+        ArrayList<Antroponimo> listaTmp
+
+        listaTmp = Antroponimo.findAllByVociGreaterThan(sogliaTaglio, [sort: sort, order: order])
+
+        if (listaTmp) {
+            lista = new ArrayList<Antroponimo>()
+            listaTmp.each {
+                if (LibBio.checkNome(it.nome)) {
+                    lista.add(it)
+                }// fine del blocco if
+            } // fine del ciclo each
+        }// fine del blocco if
+
+        return lista
     }// fine del metodo
 
     /**

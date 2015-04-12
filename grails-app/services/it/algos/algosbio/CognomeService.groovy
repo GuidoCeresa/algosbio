@@ -624,24 +624,6 @@ class CognomeService {
         }// fine del blocco if-else
     }// fine del metodo
 
-    //--costruisce una lista di cognomi
-    public static ArrayList<String> getListaTxtCognomi() {
-        ArrayList<String> listaCognomi
-        int taglio = Pref.getInt(LibBio.TAGLIO_COGNOMI, 100)
-        String query = "select testo from Cognome where voci>'${taglio}' order by testo asc"
-
-        //esegue la query
-        listaCognomi = (ArrayList<String>) Cognome.executeQuery(query)
-
-        return listaCognomi
-    }// fine del metodo
-
-    //--costruisce una lista di cognomi
-    public static ArrayList<Cognome> getListaCognomi() {
-        int taglio = Pref.getInt(LibBio.TAGLIO_COGNOMI, 100)
-
-        return Cognome.findAllByVociGreaterThan(taglio, [sort: 'testo', order: 'asc'])
-    }// fine del metodo
 
     public creaPagineControllo() {
         //crea la pagina riepilogativa
@@ -660,7 +642,7 @@ class CognomeService {
      */
     public paginaCognomi() {
         boolean debug = Pref.getBool(LibBio.DEBUG, false)
-        ArrayList<Cognome> listaVoci = getListaCognomi()
+        ArrayList<Cognome> listaVoci = getListaCognomiNomi()
         String testo = ''
         String titolo = progetto + 'Cognomi'
         String summary = 'Biobot'
@@ -740,7 +722,7 @@ class CognomeService {
         String testo = ''
         String nome = cognome.testo
         String tag = tagTitolo + nome
-int numVoci
+        int numVoci
 
         if (nome) {
             testo += '*'
@@ -792,12 +774,11 @@ int numVoci
     def paginaListe() {
         boolean debug = Pref.getBool(LibBio.DEBUG, false)
         int taglio = Pref.getInt(LibBio.TAGLIO_COGNOMI)
-        int soglia = Pref.getInt(LibBio.SOGLIA_COGNOMI)
         String testo = ''
         String titolo = progetto + 'Liste cognomi'
         String summary = LibBio.getSummary()
         int k = 0
-        def listaCognomi
+        ArrayList<Cognome> listaVoci = getListaCognomiVoci()
         Cognome cognome
         ArrayList lista = new ArrayList()
         String nome
@@ -805,8 +786,7 @@ int numVoci
         String vociTxt
         def nonServe
 
-        listaCognomi = Cognome.findAllByVociGreaterThan(soglia, [sort: 'voci', order: 'desc'])
-        listaCognomi?.each {
+        listaVoci?.each {
             vociTxt = ''
             cognome = (Cognome) it
             nome = cognome.testo
@@ -948,6 +928,52 @@ int numVoci
 
         return cognome
     } // fine del metodo
+
+    //--costruisce una lista di cognomi
+    public static ArrayList<String> getListaTxtCognomi() {
+        ArrayList<String> listaCognomi
+        int taglio = Pref.getInt(LibBio.TAGLIO_COGNOMI, 100)
+        String query = "select testo from Cognome where voci>'${taglio}' order by testo asc"
+
+        //esegue la query
+        listaCognomi = (ArrayList<String>) Cognome.executeQuery(query)
+
+        return listaCognomi
+    }// fine del metodo
+
+    //--costruisce una lista di cognomi
+    public static ArrayList<Cognome> getListaCognomi() {
+        return getListaCognomiNomi()
+    }// fine del metodo
+
+    //--costruisce una lista di cognomi
+    public static ArrayList<Cognome> getListaCognomiNomi() {
+        return getListaCognomi(Pref.getInt(LibBio.TAGLIO_COGNOMI), 'testo', 'asc')
+    }// fine del metodo
+
+    //--costruisce una lista di cognomi
+    public static ArrayList<Cognome> getListaCognomiVoci() {
+        return getListaCognomi(Pref.getInt(LibBio.SOGLIA_COGNOMI), 'voci', 'desc')
+    }// fine del metodo
+
+    //--costruisce una lista di cognomi
+    public static ArrayList<Cognome> getListaCognomi(int sogliaTaglio, String sort, String order) {
+        ArrayList<Cognome> lista = null
+        ArrayList<Cognome> listaTmp
+
+        listaTmp = Cognome.findAllByVociGreaterThan(sogliaTaglio, [sort: sort, order: order])
+
+        if (listaTmp) {
+            lista = new ArrayList<Cognome>()
+            listaTmp.each {
+                if (LibBio.checkNome(it.testo)) {
+                    lista.add(it)
+                }// fine del blocco if
+            } // fine del ciclo each
+        }// fine del blocco if
+
+        return lista
+    }// fine del metodo
 
     /**
      * creazione delle liste partendo da BioGrails
