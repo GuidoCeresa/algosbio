@@ -34,12 +34,22 @@ class BioCrono {
     def antroponimoService
     def cognomeService
 
+    protected uploadAttivita() {
+        uploadaMetaAttivita(true)
+        uploadaMetaAttivita(false)
+    }// fine del metodo execute
+
     protected uploadAttivitaPrimaMeta() {
         uploadaMetaAttivita(true)
     }// fine del metodo execute
 
     protected uploadAttivitaSecondaMeta() {
         uploadaMetaAttivita(false)
+    }// fine del metodo execute
+
+    protected uploadNazionalita() {
+        uploadaMetaNazionalita(true)
+        uploadaMetaNazionalita(false)
     }// fine del metodo execute
 
     protected uploadNazionalitaPrimaMeta() {
