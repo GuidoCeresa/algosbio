@@ -155,7 +155,7 @@ class BioCrono {
 
             //--costruisce una lista di cognomi
             if (Pref.getBool(LibBio.USA_LISTE_BIO_COGNOMI)) {
-                if (cognomeService&&bioService) {
+                if (cognomeService && bioService) {
                     cognomeService.uploadAllCognomi(bioService)
                 }// fine del blocco if
             } else {

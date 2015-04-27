@@ -379,7 +379,11 @@ class CognomeService {
             regolaWikilink(cognome, taglio)
 
         } else {
-            cognome.delete()
+            try { // prova ad eseguire il codice
+                cognome.delete()
+            } catch (Exception unErrore) { // intercetta l'errore
+                log.error unErrore
+            }// fine del blocco try-catch
         }// fine del blocco if-else
 
     }// fine del metodo
