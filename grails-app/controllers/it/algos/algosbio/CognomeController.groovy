@@ -208,7 +208,6 @@ class CognomeController {
 
     private uploadBase() {
         boolean debug = Pref.getBool(LibBio.DEBUG, false)
-     def   listaTmp = Cognome.findAllByVociGreaterThan(50, [sort: 'testo', order: 'asc'])
 
         if (cognomeService) {
             //--aggiorna il numero di voci per ogni cognome della lista (semi-statica)

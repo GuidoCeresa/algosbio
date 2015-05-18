@@ -335,6 +335,7 @@ class CognomeService {
         String info
 
         listaCognomi = Cognome.listOrderByVoci([max: numVociDaRicalcolare, sort: 'voci', order: 'asc'])
+        listaCognomi = Cognome.listOrderByTesto([max: numVociDaRicalcolare])//@todo via
         listaCognomi?.each {
             ricalcolaCognome(it, soglia, taglio)
             k++
@@ -367,7 +368,7 @@ class CognomeService {
         int numVoci
 
         if (checkCognome(cognome.testo)) {
-            numVoci = numeroVociCheUsanoCognome(cognome.testo)
+            numVoci = numeroVociCheUsanoCognome(cognome.testo,cognome)
             if (numVoci > soglia) {
                 cognome.voci = numVoci
                 cognome.save()
