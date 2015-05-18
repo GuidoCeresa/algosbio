@@ -9,8 +9,6 @@ import org.codehaus.groovy.grails.test.GrailsTestType
 /**
  * Created by gac on 15/02/15.
  */
-@TestFor(Nazionalita)
-@Mock(Nazionalita)
 class LibListeTest extends GrailsUnitTestCase{
 
     def wikiService = new WikiService()

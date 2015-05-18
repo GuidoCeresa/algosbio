@@ -15,6 +15,7 @@ import java.text.Normalizer
 class CognomeService {
 
 
+    static boolean transactional = false
     public static String PATH = 'Progetto:Biografie/Cognomi/Persone di cognome '
     private static String aCapo = '\n'
 
@@ -372,7 +373,7 @@ class CognomeService {
                 cognome.save()
             } else {
                 cognome.voci = TAG_CONTROLLATE
-                cognome.save()
+                cognome.save(flush: true)
             }// fine del blocco if-else
 
             //--riempimento del campo wikiUrl di Cognomi
@@ -380,7 +381,7 @@ class CognomeService {
 
         } else {
             try { // prova ad eseguire il codice
-                cognome.delete()
+//                cognome.delete()
             } catch (Exception unErrore) { // intercetta l'errore
                 log.error unErrore
             }// fine del blocco try-catch

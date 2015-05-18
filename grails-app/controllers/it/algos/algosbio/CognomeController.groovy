@@ -14,6 +14,7 @@ class CognomeController {
     def cognomeService
     def bioService
 
+    static boolean transactional = false
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
     private static int MAX = 1000
 
@@ -207,6 +208,7 @@ class CognomeController {
 
     private uploadBase() {
         boolean debug = Pref.getBool(LibBio.DEBUG, false)
+     def   listaTmp = Cognome.findAllByVociGreaterThan(50, [sort: 'testo', order: 'asc'])
 
         if (cognomeService) {
             //--aggiorna il numero di voci per ogni cognome della lista (semi-statica)
