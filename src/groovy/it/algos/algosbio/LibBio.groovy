@@ -4,7 +4,6 @@ import groovy.util.logging.Log4j
 import it.algos.algoslib.Lib
 import it.algos.algoslib.LibTesto
 import it.algos.algoslib.LibTime
-import it.algos.algospref.LibPref
 import it.algos.algospref.Pref
 import it.algos.algoswiki.Pagina
 import it.algos.algoswiki.QueryInfoCat
@@ -139,6 +138,8 @@ class LibBio {
     private static String[] TAG_ALL_TITOLI = ['Lady', 'Sir', 'Maestro', 'De', 'Van', 'Della', 'dos']
     private static String[] TAG_ALL_NOMI = ['Gian']
     private static String[] TAG_ALL_NOMI_CINESI = ['Zhang']
+    private
+    static String[] TAG_ALL_COGNOMI = ["d'Asburgo", "d'Asburgo-Lorena", "d'Este", "da Silva", "di Borbone", "O'Brien", "Knight"]
 
     /**
      * Recupera la mappa dalla pagina wiki
@@ -1322,7 +1323,7 @@ class LibBio {
     public static boolean checkNome(String nome) {
         boolean accettato = true
         String[] tagIniziale = TAG_INI_NUMERI + TAG_INI_CHAR + TAG_INI_APICI + TAG_INI_NOMI
-        String[] tagAll = TAG_ALL_ARABI + TAG_ALL_TITOLI + TAG_ALL_NOMI + TAG_ALL_NOMI_CINESI
+        String[] tagAll = TAG_ALL_ARABI + TAG_ALL_TITOLI + TAG_ALL_NOMI + TAG_ALL_NOMI_CINESI + TAG_ALL_COGNOMI
         String[] tag = tagIniziale + tagAll
         String spazio = ' '
 
