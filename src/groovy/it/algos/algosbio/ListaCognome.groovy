@@ -96,6 +96,22 @@ class ListaCognome extends ListaBio {
     }// fine del metodo
 
     /**
+     * Pagina principale a cui tornare
+     * Sovrascritto
+     */
+    @Override
+    protected String elaboraIncipitSpecifico() {
+        String ritorno = ''
+        String nome = getNome()
+
+        if (nome) {
+            ritorno = "{{incipit lista cognomi|cognome=${nome}}}"
+        }// fine del blocco if
+
+        return ritorno
+    }// fine del metodo
+
+    /**
      * Costruisce il titolo della pagina
      */
     @Override
