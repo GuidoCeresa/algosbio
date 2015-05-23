@@ -369,8 +369,8 @@ class CognomeService {
     }// fine del metodo
 
     private static void cancellaControllati() {
-        String query = 'delete from Cognome where voci=' + TAG_CONTROLLATE
-        Cognome.executeUpdate(query)
+//        String query = 'delete from Cognome where voci=' + TAG_CONTROLLATE
+//        Cognome.executeUpdate(query)
     }// fine del metodo
 
     private void ricalcolaCognome(Cognome cognome, int soglia, int taglio) {
