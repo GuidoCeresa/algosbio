@@ -11,7 +11,7 @@ import it.algos.algoswiki.WikiLib
 
 import java.text.Normalizer
 
-@Transactional
+@Transactional(readOnly = false)
 class CognomeService {
 
 
@@ -24,8 +24,8 @@ class CognomeService {
     private tagPunti = 'Altre...'
     private boolean titoloParagrafoConLink = true
     private String progetto = 'Progetto:Antroponimi/'
-    public static int TAG_DA_CONTROLLARE = -1
-    public static int TAG_CONTROLLATE = -2
+//    public static int TAG_DA_CONTROLLARE = -1
+//    public static int TAG_CONTROLLATE = -2
 
     /**
      * azzera i link tra BioGrails e Cognome
@@ -61,59 +61,66 @@ class CognomeService {
     /**
      * Aggiunta nuovi records
      * Vengono creati nuovi records per i cognomi presenti nelle voci (bioGrails) che superano la soglia minima
-     * listaCognomiCompleta: circa 132.000
-     * listaCognomiUnici: circa 130.000
+     * listaCognomiCompleta: circa 263.000
+     * listaCognomiUnici: circa 136.000
+     * listaCognomiValidi: circa 135.000
      */
     public void aggiunge() {
-        ArrayList<String> listaCognomiCompleta
-        ArrayList<String> listaCognomiUnici
+        ArrayList listaCognomiUnici
+        ArrayList<String> listaCognomiValidi
 
         //--recupera una lista 'grezza' di tutti i nomi
-        listaCognomiCompleta = creaListaCognomiCompleta()
+        listaCognomiUnici = creaListaCognomiUnici()
 
         //--elimina tutto ciò che compare oltre al cognome
-        listaCognomiUnici = elaboraCognomiUnici(listaCognomiCompleta)
+        listaCognomiValidi = elaboraCognomiValidi(listaCognomiUnici)
 
         //--(ri)costruisce i records di cognomi
-        spazzolaPacchetto(listaCognomiUnici)
+        spazzolaPacchetto(listaCognomiValidi)
 
         //--aggiunge i riferimenti alla voce principale di ogni record
 //        elaboraVocePrincipale()
     }// fine del metodo
 
     /**
-     * Recupera una lista 'grezza' di tutti i cognomi
-     * Circa 130.000
+     * Recupera una lista 'grezza' di tutti i cognomi unici
+     * Circa 136.000
      */
-    private static ArrayList<String> creaListaCognomiCompleta() {
+    private static ArrayList creaListaCognomiUnici() {
         String query = "select distinct cognome from BioGrails where cognome <>'' order by cognome asc"
-        return (ArrayList<String>) BioGrails.executeQuery(query)
+
+        return BioGrails.executeQuery(query)
     }// fine del metodo
 
     /**
      * Elabora tutti i cognomi
-     * Costruisce una lista di cognomi ''validi' e 'unici'
+     * Costruisce una lista di cognomi ''validi'
+     * Circa 135.000
      */
-    public static ArrayList<String> elaboraCognomiUnici(ArrayList<String> listaCognomiCompleta) {
-        ArrayList<String> listaCognomiUnici = new ArrayList<String>()
+    public static ArrayList<String> elaboraCognomiValidi(ArrayList listaCognomiUnici) {
+        ArrayList<String> listaCognomiValidi = new ArrayList<String>()
+        def valore
         String cognomeDaControllare
         String cognomeValido
 
         //--costruisce una lista di nomi 'unici'
-        listaCognomiCompleta?.each {
-            cognomeValido = ' '
-            cognomeDaControllare = (String) it
-            if (checkCognome(cognomeDaControllare)) {
-                cognomeValido = cognomeDaControllare
-            }// fine del blocco if
-            if (cognomeValido) {
-                if (!listaCognomiUnici.contains(cognomeValido)) {
-                    listaCognomiUnici.add(cognomeValido)
+        listaCognomiUnici?.each {
+            valore = it
+            if (valore && valore in String) {
+                cognomeValido = ' '
+                cognomeDaControllare = (String) valore
+                if (checkCognome(cognomeDaControllare)) {
+                    cognomeValido = cognomeDaControllare
+                }// fine del blocco if
+                if (cognomeValido) {
+                    if (!listaCognomiValidi.contains(cognomeValido)) {
+                        listaCognomiValidi.add(cognomeValido)
+                    }// fine del blocco if
                 }// fine del blocco if
             }// fine del blocco if
         }// fine del ciclo each
 
-        return listaCognomiUnici
+        return listaCognomiValidi
     }// fine del metodo
 
     private static boolean checkCognome(String cognomeIn) {
@@ -198,7 +205,8 @@ class CognomeService {
     /**
      * Spazzola la lista di cognomi
      */
-    public void spazzolaPacchetto(ArrayList<String> listaCognomiUnici) {
+    public void spazzolaPacchetto(ArrayList<String> listaCognomiValidi) {
+        String testoCognome
         int soglia = Pref.getInt(LibBio.SOGLIA_COGNOMI)
         long inizio = System.currentTimeMillis()
         long fine
@@ -206,28 +214,29 @@ class CognomeService {
         int k = 0
         String info
 
-//        for (int j = 0; j < 2000; j++) {
-//            spazzolaCognome(listaCognomiUnici.get(j), soglia)
-//        } // fine del ciclo for
+        for (int j = 0; j < 1000; j++) {
+            spazzolaCognome(listaCognomiValidi.get(j), soglia)
+        } // fine del ciclo for
 
-        listaCognomiUnici?.each {
-            spazzolaCognome(it, soglia)
-            k++
-            if (LibMat.avanzamento(k, 1000)) {
-                fine = System.currentTimeMillis()
-                durata = fine - inizio
-                durata = durata / 1000
-
-                info = 'Spazzolati '
-                info += LibTesto.formatNum(k)
-                info += ' cognomi su '
-                info += LibTesto.formatNum(listaCognomiUnici.size())
-                info += ' in '
-                info += LibTesto.formatNum(durata)
-                info += ' sec. totali'
-                log.info info
-            }// fine del blocco if
-        } // fine del ciclo each
+//        listaCognomiValidi?.each {
+//            testoCognome=it
+//            spazzolaCognome(testoCognome, soglia)
+//            k++
+//            if (LibMat.avanzamento(k, 1000)) {
+//                fine = System.currentTimeMillis()
+//                durata = fine - inizio
+//                durata = durata / 1000
+//
+//                info = 'Spazzolati '
+//                info += LibTesto.formatNum(k)
+//                info += ' cognomi su '
+//                info += LibTesto.formatNum(listaCognomiValidi.size())
+//                info += ' in '
+//                info += LibTesto.formatNum(durata)
+//                info += ' sec. totali'
+//                log.info info
+//            }// fine del blocco if
+//        } // fine del ciclo each
         log.info 'Spazzolati tutti'
     }// fine del metodo
 
@@ -236,20 +245,20 @@ class CognomeService {
      * Controlla la soglia minima
      * Crea un record per ogni cognome non ancora esistente (se supera la soglia)
      */
-    private void spazzolaCognome(String cognome, int soglia) {
+    private  void spazzolaCognome(String testoCognome, int soglia) {
         int numVoci
 
-//        if (cognome) {
-//            numVoci = numeroVociCheUsanoCognome(cognome)
-//            if (numVoci > soglia) {
-//                registraSingoloCognome(cognome, numVoci, true)
-//            }// fine del blocco if
-//        }// fine del blocco if
-
-        if (cognome) {
-            numVoci = TAG_DA_CONTROLLARE
-            registraSingoloCognome(cognome, numVoci, true)
+        if (testoCognome) {
+            numVoci = numeroVociCheUsanoCognome(testoCognome)
+            if (numVoci > soglia) {
+                registraSingoloCognome(testoCognome, numVoci, true)
+            }// fine del blocco if
         }// fine del blocco if
+
+//        if (cognome) {
+//            numVoci = TAG_DA_CONTROLLARE
+//            registraSingoloCognome(cognome, numVoci, true)
+//        }// fine del blocco if
     }// fine del metodo
 
     /**
@@ -273,17 +282,17 @@ class CognomeService {
             cognome.lunghezza = testo.length()
             cognome.voceRiferimento = voceRiferimento
             cognome.isVocePrincipale = vocePrincipale
-            cognome.save()
+            cognome.save(flush: true)
         }// fine del blocco if
 
         return cognome
     }// fine del metodo
 
-    private int numeroVociCheUsanoCognome(String testo) {
+    private  int numeroVociCheUsanoCognome(String testo) {
         return numeroVociCheUsanoCognome(testo, null)
     }// fine del metodo
 
-    private numeroVociCheUsanoCognome(String testo, Cognome cognome) {
+    private  numeroVociCheUsanoCognome(String testo, Cognome cognome) {
         int numVoci = 0
         String query = ''
         String sep = "'"
@@ -368,7 +377,7 @@ class CognomeService {
         int numVoci
 
         if (checkCognome(cognome.testo)) {
-            numVoci = numeroVociCheUsanoCognome(cognome.testo,cognome)
+            numVoci = numeroVociCheUsanoCognome(cognome.testo, cognome)
             if (numVoci > soglia) {
                 cognome.voci = numVoci
                 cognome.save()
