@@ -349,12 +349,12 @@ class CognomeController {
         titoloLista += ' records di cognomi su un totale di ' + Lib.Txt.formatNum(recordsTotali)
 
         //--aggiunta specifica di questo controller
-        int numRecNonControllate = Cognome.countByVoci(CognomeService.TAG_DA_CONTROLLARE)
-        int numRecControllate = Cognome.countByVociGreaterThan(Pref.getInt(LibBio.SOGLIA_COGNOMI, 20))
-        titoloLista += ' di cui ' + Lib.Txt.formatNum(numRecNonControllate)
-        titoloLista += ' non ancora controllati e '
-        titoloLista += Lib.Txt.formatNum(numRecControllate)
-        titoloLista += ' controllati.'
+//        int numRecNonControllate = Cognome.countByVoci(CognomeService.TAG_DA_CONTROLLARE)
+//        int numRecControllate = Cognome.countByVociGreaterThan(Pref.getInt(LibBio.SOGLIA_COGNOMI, 20))
+//        titoloLista += ' di cui ' + Lib.Txt.formatNum(numRecNonControllate)
+//        titoloLista += ' non ancora controllati e '
+//        titoloLista += Lib.Txt.formatNum(numRecControllate)
+//        titoloLista += ' controllati.'
 
         //--presentazione della view (index), secondo il modello
         //--menuExtra e campiLista possono essere nulli o vuoti

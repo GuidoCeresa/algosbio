@@ -382,8 +382,8 @@ class CognomeService {
                 cognome.voci = numVoci
                 cognome.save()
             } else {
-                cognome.voci = TAG_CONTROLLATE
-                cognome.save(flush: true)
+//                cognome.voci = TAG_CONTROLLATE
+//                cognome.save(flush: true)
             }// fine del blocco if-else
 
             //--riempimento del campo wikiUrl di Cognomi
