@@ -214,29 +214,29 @@ class CognomeService {
         int k = 0
         String info
 
-        for (int j = 0; j < 1000; j++) {
-            spazzolaCognome(listaCognomiValidi.get(j), soglia)
-        } // fine del ciclo for
+//        for (int j = 0; j < 1000; j++) {
+//            spazzolaCognome(listaCognomiValidi.get(j), soglia)
+//        } // fine del ciclo for
 
-//        listaCognomiValidi?.each {
-//            testoCognome=it
-//            spazzolaCognome(testoCognome, soglia)
-//            k++
-//            if (LibMat.avanzamento(k, 1000)) {
-//                fine = System.currentTimeMillis()
-//                durata = fine - inizio
-//                durata = durata / 1000
-//
-//                info = 'Spazzolati '
-//                info += LibTesto.formatNum(k)
-//                info += ' cognomi su '
-//                info += LibTesto.formatNum(listaCognomiValidi.size())
-//                info += ' in '
-//                info += LibTesto.formatNum(durata)
-//                info += ' sec. totali'
-//                log.info info
-//            }// fine del blocco if
-//        } // fine del ciclo each
+        listaCognomiValidi?.each {
+            testoCognome=it
+            spazzolaCognome(testoCognome, soglia)
+            k++
+            if (LibMat.avanzamento(k, 1000)) {
+                fine = System.currentTimeMillis()
+                durata = fine - inizio
+                durata = durata / 1000
+
+                info = 'Spazzolati '
+                info += LibTesto.formatNum(k)
+                info += ' cognomi su '
+                info += LibTesto.formatNum(listaCognomiValidi.size())
+                info += ' in '
+                info += LibTesto.formatNum(durata)
+                info += ' sec. totali'
+                log.info info
+            }// fine del blocco if
+        } // fine del ciclo each
         log.info 'Spazzolati tutti'
     }// fine del metodo
 
