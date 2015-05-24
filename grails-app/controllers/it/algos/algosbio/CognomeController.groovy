@@ -1,14 +1,14 @@
 package it.algos.algosbio
 
+import grails.transaction.Transactional
 import it.algos.algos.DialogoController
 import it.algos.algos.TipoDialogo
 import it.algos.algoslib.Lib
 import it.algos.algospref.Pref
 
 import static org.springframework.http.HttpStatus.*
-import grails.transaction.Transactional
 
-@Transactional(readOnly = false)
+//@Transactional(readOnly = false)
 class CognomeController {
 
     def cognomeService
@@ -284,6 +284,38 @@ class CognomeController {
     def list() {
         redirect(action: 'index', params: params)
     } // fine del metodo
+
+//    /**
+//     * Aggiunta nuovi records
+//     * Vengono creati nuovi records per i cognomi presenti nelle voci (bioGrails) che superano la soglia minima
+//     * listaCognomiCompleta: circa 263.000
+//     * listaCognomiUnici: circa 136.000
+//     * listaCognomiValidi: circa 135.000
+//     */
+//    private void aggiungeCognomi() {
+//        ArrayList listaCognomiUnici = null
+//        ArrayList<String> listaCognomiValidi = null
+//        int k = 0
+//        String testoCognome
+//        int soglia = Pref.getInt(LibBio.SOGLIA_COGNOMI)
+//        soglia = 3
+//
+//        //--recupera una lista 'grezza' di tutti i nomi
+//        if (cognomeService) {
+//            listaCognomiUnici = cognomeService.creaListaCognomiUnici()
+//
+//            //--elimina tutto ciò che compare oltre al cognome
+//            if (listaCognomiUnici) {
+//                listaCognomiValidi = cognomeService.elaboraCognomiValidi(listaCognomiUnici)
+//            }// fine del blocco if
+//
+//            listaCognomiValidi?.each {
+//                testoCognome = it
+//                cognomeService.spazzolaCognome(testoCognome, soglia)
+//                k++
+//            } // fine del ciclo each
+//        }// fine del blocco if
+//    }// fine del metodo
 
     def index(Integer max) {
         if (!params.max) params.max = MAX
