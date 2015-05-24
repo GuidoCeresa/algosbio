@@ -113,18 +113,24 @@ class CognomeService {
     public static ArrayList<String> differenzaCognomi(ArrayList<String> listaCognomiValidiGrails, ArrayList listaCognomiEsistenti) {
         ArrayList<String> listaCognomiNuovi = new ArrayList<String>()
         String cognomeCorrente = ''
-        String ultimoCognomeInserito = listaCognomiEsistenti.last()
+        String ultimoCognomeInserito = ''
         boolean copia = false
 
-        listaCognomiValidiGrails?.each {
-            cognomeCorrente = it
-            if (cognomeCorrente.equals(ultimoCognomeInserito)) {
-                copia = true
-            }// fine del blocco if
-            if (copia) {
-                listaCognomiNuovi.add(cognomeCorrente)
-            }// fine del blocco if
-        } // fine del ciclo each
+        if (listaCognomiEsistenti && listaCognomiEsistenti.size() > 0) {
+            ultimoCognomeInserito = listaCognomiEsistenti.last()
+
+            listaCognomiValidiGrails?.each {
+                cognomeCorrente = it
+                if (cognomeCorrente.equals(ultimoCognomeInserito)) {
+                    copia = true
+                }// fine del blocco if
+                if (copia) {
+                    listaCognomiNuovi.add(cognomeCorrente)
+                }// fine del blocco if
+            } // fine del ciclo each
+        } else {
+            listaCognomiNuovi = listaCognomiValidiGrails
+        }// fine del blocco if-else
 
         return listaCognomiNuovi
     }// fine del metodo
@@ -164,80 +170,80 @@ class CognomeService {
         return LibBio.checkNome(cognomeIn)
     }// fine del metodo
 
-    /**
-     * Elabora il singolo cognome
-     * Elimina caratteri 'anomali' dal cognome
-     */
-    private static String checkCognomeOld(String cognomeIn) {
-        String cognomeOut = ''
-        ArrayList listaTagContenuto = new ArrayList()
-        ArrayList listaTagIniziali = new ArrayList()
-        int pos
-        String tagSpazio = ' '
-
-        listaTagContenuto.add('(')
-
-        listaTagIniziali.add('"')
-        listaTagIniziali.add("''")//doppio apice
-        listaTagIniziali.add('ʿʿ')//doppio apostrofo
-        listaTagIniziali.add('‘')//altro tipo di apostrofo
-        listaTagIniziali.add('‛')//altro tipo di apostrofo
-        listaTagIniziali.add('[')
-        listaTagIniziali.add('(')
-        listaTagIniziali.add('.')
-        listaTagIniziali.add('<')
-        listaTagIniziali.add('{')
-        listaTagIniziali.add('&')
-        listaTagIniziali.add('A.')
-        listaTagIniziali.add('-')
-        listaTagIniziali.add('Al ') //arabo - Al più spazio
-
-        String tag = ''
-
-        if (cognomeIn && cognomeIn.length() > 2 && cognomeIn.length() < 100) {
-            cognomeOut = cognomeIn.trim()
-
-            // @todo Maria e Maria Cristina sono uguali
-            if (false) {
-                if (cognomeOut.contains(tagSpazio)) {
-                    pos = cognomeOut.indexOf(tagSpazio)
-                    cognomeOut = cognomeOut.substring(0, pos)
-                    cognomeOut = cognomeOut.trim()
-                }// fine del blocco if
-            }// fine del blocco if
-
-            listaTagContenuto?.each {
-                tag = (String) it
-                if (cognomeOut.contains(tag)) {
-                    pos = cognomeOut.indexOf((String) it)
-                    cognomeOut = cognomeOut.substring(0, pos)
-                    cognomeOut = cognomeOut.trim()
-                }// fine del blocco if
-            } // fine del ciclo each
-
-            listaTagIniziali?.each {
-                tag = (String) it
-
-                if (cognomeOut.startsWith(tag)) {
-                    cognomeOut = ''
-                }// fine del blocco if
-            } // fine del ciclo each
-
-            //nomeOut = nomeOut.toLowerCase()       //@todo va in errore per GianCarlo
-            cognomeOut = LibTesto.primaMaiuscola(cognomeOut)
-
-            //
-            if (false) {
-                cognomeOut = Normalizer.normalize(cognomeOut, Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", "")
-            }// fine del blocco if
-
-            if (cognomeOut.length() < 2) {
-                cognomeOut = ''
-            }// fine del blocco if
-        }// fine del blocco if
-
-        return cognomeOut
-    }// fine del metodo
+//    /**
+//     * Elabora il singolo cognome
+//     * Elimina caratteri 'anomali' dal cognome
+//     */
+//    private static String checkCognomeOld(String cognomeIn) {
+//        String cognomeOut = ''
+//        ArrayList listaTagContenuto = new ArrayList()
+//        ArrayList listaTagIniziali = new ArrayList()
+//        int pos
+//        String tagSpazio = ' '
+//
+//        listaTagContenuto.add('(')
+//
+//        listaTagIniziali.add('"')
+//        listaTagIniziali.add("''")//doppio apice
+//        listaTagIniziali.add('ʿʿ')//doppio apostrofo
+//        listaTagIniziali.add('‘')//altro tipo di apostrofo
+//        listaTagIniziali.add('‛')//altro tipo di apostrofo
+//        listaTagIniziali.add('[')
+//        listaTagIniziali.add('(')
+//        listaTagIniziali.add('.')
+//        listaTagIniziali.add('<')
+//        listaTagIniziali.add('{')
+//        listaTagIniziali.add('&')
+//        listaTagIniziali.add('A.')
+//        listaTagIniziali.add('-')
+//        listaTagIniziali.add('Al ') //arabo - Al più spazio
+//
+//        String tag = ''
+//
+//        if (cognomeIn && cognomeIn.length() > 2 && cognomeIn.length() < 100) {
+//            cognomeOut = cognomeIn.trim()
+//
+//            // @todo Maria e Maria Cristina sono uguali
+//            if (false) {
+//                if (cognomeOut.contains(tagSpazio)) {
+//                    pos = cognomeOut.indexOf(tagSpazio)
+//                    cognomeOut = cognomeOut.substring(0, pos)
+//                    cognomeOut = cognomeOut.trim()
+//                }// fine del blocco if
+//            }// fine del blocco if
+//
+//            listaTagContenuto?.each {
+//                tag = (String) it
+//                if (cognomeOut.contains(tag)) {
+//                    pos = cognomeOut.indexOf((String) it)
+//                    cognomeOut = cognomeOut.substring(0, pos)
+//                    cognomeOut = cognomeOut.trim()
+//                }// fine del blocco if
+//            } // fine del ciclo each
+//
+//            listaTagIniziali?.each {
+//                tag = (String) it
+//
+//                if (cognomeOut.startsWith(tag)) {
+//                    cognomeOut = ''
+//                }// fine del blocco if
+//            } // fine del ciclo each
+//
+//            //nomeOut = nomeOut.toLowerCase()       //@todo va in errore per GianCarlo
+//            cognomeOut = LibTesto.primaMaiuscola(cognomeOut)
+//
+//            //
+//            if (false) {
+//                cognomeOut = Normalizer.normalize(cognomeOut, Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", "")
+//            }// fine del blocco if
+//
+//            if (cognomeOut.length() < 2) {
+//                cognomeOut = ''
+//            }// fine del blocco if
+//        }// fine del blocco if
+//
+//        return cognomeOut
+//    }// fine del metodo
 
     /**
      * Spazzola la lista di cognomi
@@ -376,7 +382,7 @@ class CognomeService {
         listaCognomi?.each {
             ricalcolaCognome(it)
             k++
-            if (LibMat.avanzamento(k, 10)) {
+            if (LibMat.avanzamento(k, 100)) {
                 fine = System.currentTimeMillis()
                 durata = fine - inizio
                 durata = durata / 1000
@@ -408,31 +414,31 @@ class CognomeService {
         }// fine del blocco if
     }// fine del metodo
 
-    private void ricalcolaCognome(Cognome cognome, int soglia, int taglio) {
-        int numVoci
-
-        if (checkCognome(cognome.testo)) {
-            numVoci = numeroVociCheUsanoCognome(cognome.testo, cognome)
-            if (numVoci > soglia) {
-                cognome.voci = numVoci
-                cognome.save(flush: true)
-            } else {
-//                cognome.voci = TAG_CONTROLLATE
+//    private void ricalcolaCognome(Cognome cognome, int soglia, int taglio) {
+//        int numVoci
+//
+//        if (checkCognome(cognome.testo)) {
+//            numVoci = numeroVociCheUsanoCognome(cognome.testo, cognome)
+//            if (numVoci > soglia) {
+//                cognome.voci = numVoci
 //                cognome.save(flush: true)
-            }// fine del blocco if-else
-
-            //--riempimento del campo wikiUrl di Cognomi
-            regolaWikilink(cognome, taglio)
-
-        } else {
-            try { // prova ad eseguire il codice
-//                cognome.delete()
-            } catch (Exception unErrore) { // intercetta l'errore
-                log.error unErrore
-            }// fine del blocco try-catch
-        }// fine del blocco if-else
-
-    }// fine del metodo
+//            } else {
+////                cognome.voci = TAG_CONTROLLATE
+////                cognome.save(flush: true)
+//            }// fine del blocco if-else
+//
+//            //--riempimento del campo wikiUrl di Cognomi
+//            regolaWikilink(cognome, taglio)
+//
+//        } else {
+//            try { // prova ad eseguire il codice
+////                cognome.delete()
+//            } catch (Exception unErrore) { // intercetta l'errore
+//                log.error unErrore
+//            }// fine del blocco try-catch
+//        }// fine del blocco if-else
+//
+//    }// fine del metodo
 
     // Elabora tutte le pagine
     def elabora() {
