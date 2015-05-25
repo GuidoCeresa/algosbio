@@ -406,7 +406,8 @@ class CognomeController {
         //--selezione dei menu extra
         //--solo azione e di default controller=questo; classe e titolo vengono uguali
         //--mappa con [cont:'controller', action:'metodo', icon:'iconaImmagine', title:'titoloVisibile']
-        if (cognomeInstance.isVocePrincipale) {
+//        if (cognomeInstance.isVocePrincipale) {
+        if (true) {
             menuExtra = [
                     [cont: 'cognome', action: "uploadSingoloCognome/${cognomeInstance.id}", icon: 'database', title: 'UploadSingoloCognome'],
             ]

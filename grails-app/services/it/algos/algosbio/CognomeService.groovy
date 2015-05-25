@@ -8,8 +8,6 @@ import it.algos.algospref.Pref
 import it.algos.algoswiki.Edit
 import it.algos.algoswiki.WikiLib
 
-import java.text.Normalizer
-
 //@Transactional(readOnly = false)
 class CognomeService {
 
@@ -261,7 +259,7 @@ class CognomeService {
             testoCognome = it
             spazzolaCognome(testoCognome, soglia)
             k++
-            if (LibMat.avanzamento(k, 1000)) {
+            if (LibMat.avanzamento(k, 10000)) {
                 fine = System.currentTimeMillis()
                 durata = fine - inizio
                 durata = durata / 1000
@@ -287,9 +285,14 @@ class CognomeService {
     public void spazzolaCognome(String testoCognome, int soglia) {
         int numVoci
 
+        if (testoCognome.equals('Acquaviva')) {
+            def stop
+        }// fine del blocco if
+
         if (testoCognome) {
-            numVoci = numeroVociCheUsanoCognome(testoCognome)
+            numVoci = numBioCheUsanoCognome(testoCognome)
             if (numVoci > soglia) {
+                numeroVociCheUsanoCognome(testoCognome)
                 registraSingoloCognome(testoCognome, numVoci, true)
             }// fine del blocco if
         }// fine del blocco if
@@ -320,6 +323,21 @@ class CognomeService {
         }// fine del blocco if
 
         return cognome
+    }// fine del metodo
+
+    private int numBioCheUsanoCognome(String testo) {
+        int numVoci = 0
+        String sep = "'"
+
+        if (testo.contains(sep)) {
+            testo = testo.replace(sep, sep + sep)
+        }// fine del blocco if
+
+        if (testo) {
+            numVoci = BioGrails.countByCognome(testo)
+        }// fine del blocco if-else
+
+        return numVoci
     }// fine del metodo
 
     private int numeroVociCheUsanoCognome(String testo) {
@@ -353,7 +371,7 @@ class CognomeService {
                 log.warn 'Errore numeroVociCheUsanoCognome = ' + testo
             }// fine del blocco try-catch
         } else {
-            numVoci = BioGrails.countByCognomeLikeOrCognomeLike(testo, testoWillCardA)
+//            numVoci = BioGrails.countByCognomeLikeOrCognomeLike(testo, testoWillCardA)
         }// fine del blocco if-else
 
         return numVoci
