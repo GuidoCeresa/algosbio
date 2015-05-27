@@ -117,13 +117,15 @@ class CognomeService {
         if (listaCognomiEsistenti && listaCognomiEsistenti.size() > 0) {
             ultimoCognomeInserito = listaCognomiEsistenti.last()
 
+            ultimoCognomeInserito = 'Russo'//@todo levare
+
             listaCognomiValidiGrails?.each {
                 cognomeCorrente = it
-                if (cognomeCorrente.equals(ultimoCognomeInserito)) {
-                    copia = true
-                }// fine del blocco if
                 if (copia) {
                     listaCognomiNuovi.add(cognomeCorrente)
+                }// fine del blocco if
+                if (cognomeCorrente.equals(ultimoCognomeInserito)) {
+                    copia = true
                 }// fine del blocco if
             } // fine del ciclo each
         } else {
@@ -259,7 +261,7 @@ class CognomeService {
             testoCognome = it
             spazzolaCognome(testoCognome, soglia)
             k++
-            if (LibMat.avanzamento(k, 10000)) {
+            if (LibMat.avanzamento(k, 1000)) {
                 fine = System.currentTimeMillis()
                 durata = fine - inizio
                 durata = durata / 1000
