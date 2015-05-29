@@ -117,8 +117,6 @@ class CognomeService {
         if (listaCognomiEsistenti && listaCognomiEsistenti.size() > 0) {
             ultimoCognomeInserito = listaCognomiEsistenti.last()
 
-            ultimoCognomeInserito = 'Russo'//@todo levare
-
             listaCognomiValidiGrails?.each {
                 cognomeCorrente = it
                 if (copia) {
@@ -286,10 +284,6 @@ class CognomeService {
      */
     public void spazzolaCognome(String testoCognome, int soglia) {
         int numVoci
-
-        if (testoCognome.equals('Acquaviva')) {
-            def stop
-        }// fine del blocco if
 
         if (testoCognome) {
             numVoci = numBioCheUsanoCognome(testoCognome)
