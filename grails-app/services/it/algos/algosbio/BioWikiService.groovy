@@ -646,7 +646,11 @@ class BioWikiService {
                     mappa = creaMappa((ArrayList) it)
                     elencoPageids = creaStringaChiavi(mappa)
                     if (elencoPageids) {
-                        query = new QueryTimestamp(elencoPageids)
+                        try { // prova ad eseguire il codice
+                            query = new QueryTimestamp(elencoPageids)
+                        } catch (Exception unErrore) { // intercetta l'errore
+                            log.error unErrore
+                        }// fine del blocco try-catch
                         if (query) {
                             listaWrap = query.getListaWrapTime()
                             if (listaWrap) {
