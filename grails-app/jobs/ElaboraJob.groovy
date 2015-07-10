@@ -13,6 +13,7 @@ class ElaboraJob {
     //--MON, TUE, WED, THU, FRI, SAT, SUN
     //--lunedì, mercoledì, venerdì e domenica dalle 10 alle 11 di sera
     private static String cronExpressionElabora = "0 0 11-23 ? * MON,WED,THU,FRI,SAT,SUN"
+
     static triggers = {
         cron name: 'elabora', cronExpression: cronExpressionElabora
     }// fine del metodo statico

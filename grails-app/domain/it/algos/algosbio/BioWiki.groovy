@@ -13,6 +13,8 @@
 
 package it.algos.algosbio
 
+import grails.rest.*
+
 import java.sql.Timestamp
 import java.text.SimpleDateFormat
 
@@ -20,6 +22,7 @@ import java.text.SimpleDateFormat
  * Classe con esattamente i dati esistenti sul server (nel momento in cui li legge)
  * Fotocopia esatta
  */
+@Resource(uri='/wiki')
 class BioWiki {
 
     /** nomi interni dei campi (ordine non garantito) */

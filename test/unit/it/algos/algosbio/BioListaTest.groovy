@@ -43,7 +43,6 @@ class BioListaTest extends GroovyTestCase {
 
         def lista = Attivita.list()
         def stop
-
         mappa = BioLista.getMappaNazionalita(listaVoci)
 
 

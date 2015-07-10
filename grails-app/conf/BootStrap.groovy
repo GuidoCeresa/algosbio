@@ -4,11 +4,14 @@ import it.algos.algosbio.LibPass
 import it.algos.algospref.Pref
 import it.algos.algoswiki.ErrLogin
 import it.algos.algoswiki.Login
+import it.algos.algosbio.BioWiki
 
 class BootStrap {
 
 
     def init = { servletContext ->
+        new BioWiki(pageid:27,title:"Stand").save()
+        new BioWiki(pageid:28,title:"Shining").save()
     } // fine della closure
 
     def destroy = {

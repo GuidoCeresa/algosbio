@@ -57,16 +57,16 @@ grails.project.dependency.resolution = {
 
     plugins {
         // plugins for the build system only
-        build ":tomcat:7.0.54"
+        build ":tomcat:7.0.55.2" // or ":tomcat:8.0.20"
         build ":release:3.0.1"
 
         // plugins for the compile step
-        compile ':cache:1.1.7'
         compile ":scaffolding:2.1.2"
-        compile ":asset-pipeline:1.8.11"
+        compile ':cache:1.1.8'
+        compile ":asset-pipeline:2.1.5"
 
         // plugins needed at runtime but not for compilation
-        runtime ":hibernate4:4.3.5.5"
+        runtime ":hibernate4:4.3.8.1" // or ":hibernate:3.6.10.18"
         runtime ":database-migration:1.4.0"
         runtime ":jquery:1.11.1"
 
@@ -76,7 +76,7 @@ grails.project.dependency.resolution = {
 
         //--plugin della algos
         compile ":algos:1.45"
-        compile ":algoswiki:1.03"
+        compile ":algoswiki:1.05"
 
 
     }// fine della closure plugins

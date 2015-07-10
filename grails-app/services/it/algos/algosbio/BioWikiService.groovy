@@ -17,11 +17,10 @@ import groovy.util.logging.Log4j
 import it.algos.algoslib.Lib
 import it.algos.algoslib.LibArray
 import it.algos.algoslib.LibTesto
-import it.algos.algospref.LibPref
 import it.algos.algospref.Pref
 import it.algos.algospref.Preferenze
 import it.algos.algoswiki.Login
-import it.algos.algoswiki.QueryCatPageid
+import it.algos.algoswiki.QueryCatWiki
 import it.algos.algoswiki.QueryTimestamp
 import it.algos.algoswiki.WrapTime
 
@@ -261,7 +260,7 @@ class BioWikiService {
         // le legge da una lista, modificabile 'al volo'
         esclusi = Esclusi.list()
         esclusi?.each {
-            codEscluso=it.pageid
+            codEscluso = it.pageid
             if (esclusi.contains(codEscluso)) {
                 listaRecordsModificatiBio.remove(listaRecordsModificatiBio.indexOf(it.pageid))
             }// fine del blocco if
@@ -312,7 +311,7 @@ class BioWikiService {
         Login login = grailsApplication.config.login
         boolean debug = Pref.getBool(LibBio.DEBUG)
         String catDebug = Pref.getStr(LibBio.CAT_DEBUG)
-        QueryCatPageid query = null
+        QueryCatWiki query = null
         long inizio = System.currentTimeMillis()
         def minuti
 
@@ -337,7 +336,7 @@ class BioWikiService {
         }// fine del blocco if-else
 
         try { // prova ad eseguire il codice
-            query = new QueryCatPageid(login, titoloCategoria)
+            query = new QueryCatWiki(titoloCategoria)
         } catch (Exception unErrore) { // intercetta l'errore
             logWikiService.error "Non sono riuscito a caricare la categoria ${titoloCategoria}"
             log.error "Non sono riuscito a caricare la categoria ${titoloCategoria}"
@@ -347,7 +346,7 @@ class BioWikiService {
 
         if (continua) {
             try { // prova ad eseguire il codice
-                lista = query.getListaIds()
+                lista = query.getListaPageids()
             } catch (Exception unErrore) { // intercetta l'errore
                 logWikiService.error "Non sono riuscito ad estrarre le pageids dalla categoria ${titoloCategoria}"
                 log.error "Non sono riuscito ad estrarre le pageids dalla categoria ${titoloCategoria}"
