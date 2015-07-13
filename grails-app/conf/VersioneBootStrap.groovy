@@ -1,16 +1,8 @@
 import groovy.sql.Sql
-import it.algos.algosbio.Anno
-import it.algos.algosbio.Antroponimo
-import it.algos.algosbio.Genere
-import it.algos.algosbio.Giorno
-import it.algos.algosbio.LibPass
-import it.algos.algosbio.Localita
-import it.algos.algosbio.Secolo
-import it.algos.algoslib.Mese
+import it.algos.algosbio.*
 import it.algos.algospref.Pref
 import it.algos.algospref.Preferenze
 import it.algos.algospref.Type
-import it.algos.algosbio.LibBio
 
 import javax.sql.DataSource
 
@@ -1053,6 +1045,16 @@ class VersioneBootStrap {
             pref.save(flush: true)
             versioneService.newVersione('Preferenze', 'USA_CRONO_COGNOMI di default true')
         }// fine del blocco if
+
+        //--modifica i caratteri UTF-8 di tre colonne
+        if (versioneService && versioneService.installaVersione(111)) {
+            //@todo occorre modificare manualmente il db
+            //@todo "alter table bio_wiki default character set utf8mb4, modify post_cognome longtext character set utf8mb4 collate utf8mb4_unicode_ci"
+            //@todo "alter table bio_wiki default character set utf8mb4, modify post_cognome_virgola longtext character set utf8mb4 collate utf8mb4_unicode_ci"
+            //@todo "alter table bio_wiki default character set utf8mb4, modify testo_template longtext character set utf8mb4 collate utf8mb4_unicode_ci"
+            versioneService.newVersione('Database', 'Modificati con utf8mb4 i campi: BioWiki.post_cognome, BioWiki.post_cognome_virgola, BioWiki.testo_template')
+        }// fine del blocco if
+
     }// fine della closure
 
 

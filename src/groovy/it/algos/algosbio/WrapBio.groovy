@@ -1361,6 +1361,7 @@ public class WrapBio {
             try { // prova ad eseguire il codice
                 bioRegistrata = bioOriginale.save(flush: true)
             } catch (Exception unErrore) { // intercetta l'errore
+                def step
                 try { // prova ad eseguire il codice
                     log.error(avviso)
                     logWikiService.warn(avviso)

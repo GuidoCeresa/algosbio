@@ -87,7 +87,7 @@ grails.project.repos.algosRepo.type = "maven"
 grails.project.repos.algosRepo.username = "admin"
 grails.project.repos.algosRepo.password = "password"
 
-
+grails.server.port.http = 8090
 // This closure is passed the command line arguments
 // used to start the war process.
 //grails.war.copyToWebApp = { args ->
