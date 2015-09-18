@@ -3,6 +3,7 @@ import it.algos.algospref.Pref
 
 /**
  * Created by gac on 02/07/14.
+ *
  */
 class CicloJob {
     // utilizzo di un service con la businessLogic per l'elaborazione dei dati
@@ -22,7 +23,7 @@ class CicloJob {
     //--MON, TUE, WED, THU, FRI, SAT, SUN
 
 //    private static String cronExpressionCiclo = "0 0 0 ? * SUN-FRI" //--a mezzanotte, tutti i giorni sabato escluso
-    private static String cronExpressionCiclo = "0 0 0 ? * *" //--tutti i giorni a mezzanotte
+    private static String cronExpressionCiclo = "10 0 0 ? * *" //--tutti i giorni a mezzanotte e dieci
 
     static triggers = {
         cron name: 'ciclo', cronExpression: cronExpressionCiclo
