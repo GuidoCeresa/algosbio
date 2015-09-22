@@ -23,7 +23,7 @@ class CicloJob {
     //--MON, TUE, WED, THU, FRI, SAT, SUN
 
 //    private static String cronExpressionCiclo = "0 0 0 ? * SUN-FRI" //--a mezzanotte, tutti i giorni sabato escluso
-    private static String cronExpressionCiclo = "10 0 0 ? * *" //--tutti i giorni a mezzanotte e dieci
+    private static String cronExpressionCiclo = "0 10 0 ? * *" //--tutti i giorni a mezzanotte e dieci
 
     static triggers = {
         cron name: 'ciclo', cronExpression: cronExpressionCiclo
