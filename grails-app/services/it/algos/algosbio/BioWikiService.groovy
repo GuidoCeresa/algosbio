@@ -649,6 +649,7 @@ class BioWikiService {
                             query = new QueryTimestamp(elencoPageids)
                         } catch (Exception unErrore) { // intercetta l'errore
                             log.error unErrore
+                            int a=87;
                         }// fine del blocco try-catch
                         if (query) {
                             listaWrap = query.getListaWrapTime()

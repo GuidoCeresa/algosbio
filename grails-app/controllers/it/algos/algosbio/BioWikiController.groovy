@@ -354,7 +354,8 @@ class BioWikiController {
         String titoloLista
         int recordsTotali
         def noMenuCreate = true
-        new WrapBio(678456)
+//        new WrapBio(678456)
+        new WrapBio("Michela Vittoria Brambilla‎ ")
 
         //--selezione dei menu extra
         //--solo azione e di default controller=questo; classe e titolo vengono uguali
